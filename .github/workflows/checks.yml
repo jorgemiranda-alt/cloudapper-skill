@@ -1,0 +1,25 @@
+name: checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  skill-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Leak and structure checks
+        run: python scripts/check_skill.py
+        env:
+          LEAK_DENYLIST: ${{ secrets.LEAK_DENYLIST }}
+      - name: Secret scan of the whole history
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

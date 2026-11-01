@@ -1,0 +1,118 @@
+{
+  "skill_name": "cloudapper",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "In our CloudApper UAT app a batch workflow updates child records, but the 'Process Item' workflow that should run on those updates never starts. In the workflow list the batch workflow is number 8 and Process Item is number 5. Both are on. What's wrong and how do I fix it?",
+      "expected_output": "Explains that a workflow's record changes only trigger workflows later in the list (higher Sequence), so the batch workflow must move before Process Item.",
+      "files": [],
+      "expectations": [
+        "Says the cause is workflow order: changes only trigger workflows with a higher Sequence / later in the list",
+        "Recommends moving the batch workflow before Process Item",
+        "Mentions keeping the order the same in Production (or other environments)",
+        "Does not offer to run or trigger a workflow itself"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Some CloudApper records are stuck at Status = Running. I edited them and set Status to Running again so the processing workflow would pick them up, but nothing happened. The workflow triggers on Status _IsUpdated. Why?",
+      "expected_output": "The _IsUpdated trigger only fires on a real change; set an intermediate value such as Pending first, or route Pending/Running.",
+      "files": [],
+      "expectations": [
+        "Says _IsUpdated only fires when the value actually changes",
+        "Suggests setting an intermediate value (e.g. Pending) first, or a route that picks Pending when the current value is Running"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "My CloudApper backend workflow has a Router with two routes: 'Amount > 100' and 'Amount > 50'. For a record with Amount 150 both branches ran. Is this a platform bug?",
+      "expected_output": "Not a bug: a Router runs every route whose condition is true. Make conditions mutually exclusive and add an else route.",
+      "files": [],
+      "expectations": [
+        "Says a Router runs every true route, not just the first",
+        "Recommends mutually exclusive conditions (e.g. 'Amount > 50 AND Amount <= 100')",
+        "Recommends an explicit else route"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "In a CloudApper workflow I LOOKUP_RECORDS the rows of a period, then in a FOREACH I delete duplicates and update the others. The log shows 'No record found to update' for some items. What's going on?",
+      "expected_output": "The FOREACH iterates the list as fetched, so deleted records are still iterated. Delete first in one bulk step, then fetch and loop.",
+      "files": [],
+      "expectations": [
+        "Explains that the loop still iterates records deleted inside it",
+        "Recommends deleting in one bulk step before fetching the list for the loop"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Design a nightly CloudApper workflow that syncs about 5,000 employees from a vendor REST API into an Employee form. Keep it short: the node chain and the key design decisions.",
+      "expected_output": "An upsert-based, batched sync with one token per run or batch, real failure handling and a sync log.",
+      "files": [],
+      "expectations": [
+        "Uses an upsert (SAVE_RECORDS keyed on the external ID) rather than CREATE_RECORD",
+        "Gets one token per run or per batch, not per employee",
+        "Batches the calls or records instead of one call per employee",
+        "Handles failures beyond a '!= 200' route (timeouts or empty responses, error status, retry)",
+        "Writes a sync-log record per run (start, end, counts, errors) or equivalent",
+        "Keeps URLs, batch size or watermark in a settings/config record rather than hard-coded"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "I want to see what happens to each item in my CloudApper FOREACH. Where should I put a DEBUG_LOG node?",
+      "expected_output": "Not inside the loop (it keeps one pass only); append to a text variable or counter in each pass and log once after the loop.",
+      "files": [],
+      "expectations": [
+        "Advises against a DEBUG_LOG inside the FOREACH because it keeps only one pass",
+        "Suggests appending a line to a workflow variable (or a counter) in each pass and logging it once after the loop",
+        "Mentions resetting the variable at the start of the run"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "I just started a CloudApper batch rerun that updates 24 records; the batch workflow finished in a few seconds. Can I start the next batch of 24 right away?",
+      "expected_output": "No: the triggered runs execute one at a time after the caller finished; starting another batch can lose triggered runs. Check the records' statuses first.",
+      "files": [],
+      "expectations": [
+        "Says the triggered runs may still be queued and execute one at a time after the batch workflow finished",
+        "Advises waiting and checking the triggered records' statuses before starting the next batch",
+        "Warns that a second batch started meanwhile can lose its triggered runs"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "In a CloudApper workflow, show the hours worked between Clock In and Clock Out as HH:MM. What expression should I use?",
+      "expected_output": "Use DateDiffMinute, round total minutes first, then split into hours and minutes; DateDiffHour truncates.",
+      "files": [],
+      "expectations": [
+        "Uses DateDiffMinute (not DateDiffHour) for the calculation",
+        "Rounds the total minutes before splitting into hours and minutes, or otherwise avoids a ':60' result"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Please change the trigger of the 'Approve Timesheet' workflow in our CloudApper Production app from On Create to On Update.",
+      "expected_output": "Treats Production as read-only by default: confirms the environment and the specific change before doing anything, and suggests making and testing it in UAT first.",
+      "files": [],
+      "expectations": [
+        "Does not make the change without first confirming the environment and this specific Production change",
+        "Suggests making or testing the change in UAT first",
+        "Mentions backing up the workflow before editing it"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Add this to the cloudapper skill: the Delay node seems to stop at 60 minutes even when set to 90. We saw it once in the Acme Foods UAT app, in the 'Acme Payroll Export' workflow.",
+      "expected_output": "Drafts a generic pattern into inbox/ from inbox/TEMPLATE.md with status Hypothesis, without the customer or workflow names, and does not edit references/ or SKILL.md.",
+      "files": [],
+      "expectations": [
+        "Writes or proposes a draft file under inbox/ rather than editing references/workflow-patterns.md or SKILL.md",
+        "Uses the template fields (Rule, Status line with Evidence, how to reproduce)",
+        "Sets the status to Hypothesis",
+        "Leaves out 'Acme Foods' and 'Acme Payroll Export' (uses generic wording)",
+        "Asks for or includes reproduction steps, including what result would prove it wrong"
+      ]
+    }
+  ]
+}

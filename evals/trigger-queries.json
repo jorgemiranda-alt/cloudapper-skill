@@ -1,0 +1,22 @@
+[
+  {"query": "Why doesn't my backend workflow fire when another workflow updates the record? It's CloudApper.", "should_trigger": true},
+  {"query": "Document the timesheet app we built in App Studio for the PM handover", "should_trigger": true},
+  {"query": "Copy the approvals feature from the UAT app to the Production app in Solution Builder", "should_trigger": true},
+  {"query": "Our nightly UKG employee sync in CloudApper takes 40 minutes, can you speed it up?", "should_trigger": true},
+  {"query": "Add a menu and role privileges for the new Expense form", "should_trigger": true},
+  {"query": "Design an SFTP import for payroll files into a CloudApper app", "should_trigger": true},
+  {"query": "The DevExpress report in our CloudApper app shows the wrong totals", "should_trigger": true},
+  {"query": "Review the workflows of our onboarding app on m2sys before go-live", "should_trigger": true},
+  {"query": "Add this to the cloudapper skill: routers need an else route", "should_trigger": true},
+  {"query": "Use the Playwright MCP to read the node tree of a workflow in AI Agents & Automation", "should_trigger": true},
+  {"query": "Write a Python script that merges two CSV files by employee ID", "should_trigger": false},
+  {"query": "Explain how Power Automate flows handle retries", "should_trigger": false},
+  {"query": "Build a React form with validation for an expense report", "should_trigger": false},
+  {"query": "What's the UKG Pro REST endpoint for employee demographics? I'm calling it from a Node service.", "should_trigger": false},
+  {"query": "Set up a GitHub Actions workflow that runs pytest", "should_trigger": false},
+  {"query": "Design a Postgres schema for timesheets and approvals", "should_trigger": false},
+  {"query": "Create a DevExpress report in our .NET desktop app", "should_trigger": false},
+  {"query": "Write the PM handover guide for our Salesforce integration", "should_trigger": false},
+  {"query": "Help me write an n8n workflow that posts to Slack", "should_trigger": false},
+  {"query": "Summarise this meeting transcript about the payroll project", "should_trigger": false}
+]

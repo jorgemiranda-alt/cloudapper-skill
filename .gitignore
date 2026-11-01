@@ -1,0 +1,6 @@
+# Local customer-name denylist for scripts/check_skill.py; it is customer data itself
+.leak-denylist
+# Eval runs (outputs may contain session details)
+evals/results/
+*-workspace/
+__pycache__/
