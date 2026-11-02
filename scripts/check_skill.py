@@ -163,8 +163,6 @@ def check_references(root, report, skill_text):
                 report.error(where, f"{entry_id} Status line must look like '**Status:** Observed · checked 2026-11 · ...'")
                 continue
             kind, when, year, month, rest = m.groups()
-            if kind == "Hypothesis":
-                report.error(where, f"{entry_id} is a Hypothesis; drafts belong in inbox/")
             if kind == "Verified" and "Evidence:" not in rest:
                 report.error(where, f"{entry_id} is Verified but has no Evidence")
             if when == "baseline":

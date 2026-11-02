@@ -36,10 +36,10 @@ Optionally, create `.leak-denylist` in the repo root with the customer, app and 
 |---|---|---|
 | `SKILL.md` | Rules for every task + routing table | When the skill triggers |
 | `references/` | Topic guides; `workflow-patterns.md` holds the numbered patterns (WP-001 …) | When a task needs that topic |
-| `inbox/` | Pattern drafts awaiting review; `TEMPLATE.md` | Only `TEMPLATE.md`, when drafting |
+| `inbox/` | Older drafts from the former review flow; apply and delete when relevant | No |
 | `retired.md` | Patterns removed as wrong or outdated | No |
-| `CHANGELOG.md` | One line per merged change | No |
-| `CONTRIBUTING.md` | How to add, review, verify and retire patterns | No |
+| `CHANGELOG.md` | One line per change | No |
+| `CONTRIBUTING.md` | How Claude adds, changes and retires entries (direct local edits) | When updating the skill |
 | `evals/` | Test prompts to compare skill versions | No |
 | `scripts/check_skill.py` | Leak and structure checks (pre-commit hook and CI) | No |
 | `scripts/validate-workflows.js` | Read-only workflow node validator, run in a signed-in App Studio page (WP-038) | When a task runs it |
@@ -47,4 +47,4 @@ Optionally, create `.leak-denylist` in the repo root with the customer, app and 
 
 ## Contributing
 
-In a session, say "add this to the cloudapper skill". Claude writes a draft to `inbox/`; open a pull request with it. See [CONTRIBUTING.md](CONTRIBUTING.md) for review, statuses (Hypothesis → Observed → Verified) and retiring entries.
+In a session, say "add this to the cloudapper skill". Claude applies it directly to the local skill (references, scripts, CHANGELOG) and commits on `main`, with no inbox, pull request or review step. See [CONTRIBUTING.md](CONTRIBUTING.md) for the entry format, statuses and retiring entries.

@@ -69,8 +69,9 @@ Markdown only (PDF only on request), internal audience only (no customer emails)
 
 ## Adding knowledge to this skill
 
-When the user asks to add something to this skill ("add this to the cloudapper skill"):
+When the user asks to add something to this skill ("add this to the cloudapper skill"), or a session finds reusable knowledge and the user agrees, **apply it directly in this skill's local folder, in the same session**. There is no inbox, pull request, review or approval step, and nothing is pushed.
 
-1. Read `inbox/TEMPLATE.md` in this skill's folder and write the draft to `inbox/<yyyy-mm-dd>-<short-name>.md` with status `Hypothesis`. Write it generically: no customer, app, form, workflow or person names, IDs, real hosts or credentials.
-2. Search `references/` for entries the draft confirms or contradicts, and list them in the draft's review notes.
-3. Don't edit `SKILL.md` or `references/` yourself unless the user says they are a maintainer applying a reviewed change. Tell the user to open a pull request with the draft (`CONTRIBUTING.md` has the flow).
+1. Write it generically: no customer, app, form, workflow or person names, IDs, real hosts or credentials.
+2. Search `references/` for entries it confirms or contradicts. Update or correct the existing entry instead of adding a duplicate; move a wrong entry to `retired.md` with the reason.
+3. Add a new entry to the right reference file in the entry format (`CONTRIBUTING.md`). Give it the next free `WP-` number across all reference files and update the Contents and ID ranges. Set `Status` to what the evidence supports: `Observed` when seen on a live app, `Hypothesis` when reasoned out or seen once without a confirmed cause. Add scripts to `scripts/` and pointers here or in `README.md` when a task needs them.
+4. Add a `CHANGELOG.md` line, run `python scripts/check_skill.py`, fix what it reports, and commit on the local `main` branch. Don't create branches, open pull requests or push unless the user asks.

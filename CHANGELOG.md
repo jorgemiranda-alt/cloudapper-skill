@@ -1,9 +1,10 @@
 # Changelog
 
-One line per merged change: date, what changed, entry IDs, PR link. Newest first.
+One line per change: date, what changed, entry IDs. Newest first.
 
 ## 2026-11
 
+- 2026-11-02: Changed the update flow: Claude applies feedback directly to the local skill and commits on `main`. No inbox, pull request, review or approval step, and no push unless asked. Rewrote `CONTRIBUTING.md`, "Adding knowledge to this skill" in `SKILL.md`, `README.md` and `learning-and-prompting.md`. `check_skill.py` no longer rejects `Hypothesis` entries in `references/`.
 - 2026-11-02: Added WP-039 (test by a real run on a test record and verify the output; no dry-run mode; the `Workflows/run` and `launch-connector` endpoints) and WP-040 (a space filter operator is ignored) in `api-reference.md`, and WP-041 (a create on a unique field is skipped without a message) in `workflow-patterns.md`, status Observed. Added `scripts/verify-workflow-run.js`. `validate-workflows.js` now reports a space operator on lookup and delete filters as an error, and finds the API host correctly on runtime pages. Corrected the WP-034 caveat, documented the execution-log fields, and added a "numbers are wrong" debugging procedure and pointers in `SKILL.md`, the safe-change checklist and `README.md`.
 - 2026-11-02: Added WP-038 (validate nodes without the builder: the `validate-expression` endpoint and what it misses) and `scripts/validate-workflows.js`, in `api-reference.md`, status Observed. Added a WP-030 caveat (single-field and left-hand expressions need no `ExpressionText`), pointers in `SKILL.md`, the node-building procedure and `README.md`.
 - 2026-11-02: Added WP-035 (iterator node type), WP-036 (`=` not `contains`; test filters through the records API) and WP-037 (set a reference through the records API) in `api-reference.md`; corrected WP-033 (two-layer argument for a field inside a referenced record; an empty filter value returns the first record); updated the node-building procedure; broadened WP-032 (child-record nodes need parent form and subform field, not the standalone form); status Observed.

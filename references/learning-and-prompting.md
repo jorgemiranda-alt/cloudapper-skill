@@ -46,4 +46,4 @@ The skill holds **only reusable knowledge**: how the platform behaves, API shape
 
 ## Keeping this skill current
 
-When a session teaches something reusable, ask "add this to the cloudapper skill". Claude drafts it into the skill's `inbox/` in generic terms, with how it was seen and how to reproduce it. A teammate reviews it in a pull request before it reaches everyone; wrong entries are retired, not left in place. The full flow is in the skill's `CONTRIBUTING.md`.
+When a session teaches something reusable, ask "add this to the cloudapper skill". Claude applies it directly to the local skill in generic terms, with how it was seen. It updates or retires any entry the new knowledge contradicts, so wrong entries are not left in place. There is no review step. The full flow is in the skill's `CONTRIBUTING.md`.
