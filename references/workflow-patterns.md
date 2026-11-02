@@ -6,7 +6,7 @@ Each entry's heading names the situation. **Rule** says what to do, **Why** says
 - `Observed`: seen on a live app by one person. Fine to follow; for a risky change, say you're relying on an Observed entry and test in UAT first.
 - `baseline` instead of a date: imported when the skill moved to its repo (2026-11) and not re-checked since.
 
-IDs (`WP-001`) are stable and shared across reference files (WP-027 and WP-028 are API techniques in `api-reference.md`); cite them in reviews and docs. Drafts in `inbox/` and anything in `retired.md` are not guidance; don't read them as rules.
+IDs (`WP-001`) are stable and shared across reference files (WP-027 and WP-028 are API techniques in `api-reference.md`; WP-029 sits in section 6); cite them in reviews and docs. Drafts in `inbox/` and anything in `retired.md` are not guidance; don't read them as rules.
 
 ## Contents
 1. Triggers and order: WP-001 to WP-004
@@ -14,7 +14,7 @@ IDs (`WP-001`) are stable and shared across reference files (WP-027 and WP-028 a
 3. Routers: WP-009
 4. Performance: WP-010
 5. Errors, logging and validation: WP-011 to WP-015
-6. Integrations and sync: WP-016 to WP-019
+6. Integrations and sync: WP-016 to WP-019, WP-029
 7. Data, setup and expressions: WP-020 to WP-026
 8. Procedures: debugging, readable workflows, node JSON, safe-change checklist, review scan
 
@@ -126,6 +126,15 @@ IDs (`WP-001`) are stable and shared across reference files (WP-027 and WP-028 a
 ### WP-019 Notification queue
 **Rule:** Workflows create Notification records; one "Send Notification" workflow (After Create) sends them using the record's To field, with one test-redirect switch for non-production instead of duplicate test rows.
 **Status:** Observed · baseline
+
+### WP-029 Bulk-saved records have no references; link them in an After Create workflow
+**Rule:** When rows are written by `TRANSFORM_RECORDS` → `SAVE_RECORDS` (or any bulk write), add an After Create workflow on the loaded form that fills its reference fields from values the new record already carries:
+1. One `LOOKUP_RECORD` per target, filtered on a field of the trigger record (e.g. `<Target>.<Key> = trigger.<KeyCopy>`), not on a loop item or the parent's primary value. Use the record's own source value (e.g. a transfer's own org path), so each row links to the node it belongs to.
+2. A ROUTER with one route "Found" = `id isNotEmpty` on every lookup (AND). No halt: an unmatched row is still saved and stays unlinked.
+3. `UPDATE_RECORD` on the same form, matched with `id = trigger record id` (WP-024), assigning each reference field (ControlType 12) from its lookup node (`Field "id"`, `NodeId` = the lookup node).
+**Why:** A bulk save has no loop record to take a parent from. `ParentId` is only set by a `CREATE_RECORD` inside a loop over the parent.
+**Caveats:** The form does not need to be a child form; plain reference fields are enough, so don't use `ParentId` here. The workflow needs a higher Sequence than the one that saves the rows (WP-001). Add the reference fields to the form and reload the app first. Keep it off until the loading workflow (WP-016) is tested.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: structure of a corrected workflow read back from a test app; no run result recorded yet, so whether Save Records fires After Create once per saved row is unconfirmed.
 
 ## 7. Data, setup and expressions
 
