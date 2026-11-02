@@ -2,6 +2,8 @@
 
 Hosts depend on the cluster (see platform-model.md §1). Below, `API` = `https://<cluster>-api.cloudapper.com/api/`, `DAPI` = `https://<cluster>-designapi.cloudapper.com/api/` (or `api-design-cl2...`), `RAPI` = `https://<cluster>-reportapi.cloudapper.com/api/v3/`.
 
+Entries headed `WP-0xx` use the format and statuses explained at the top of `workflow-patterns.md`.
+
 ## Contents
 1. Auth headers and big-int versions
 2. App details and records
@@ -35,6 +37,12 @@ const body = JSON.stringify({ ...w, Version: '__VER__' }).replace('"Version":"__
 - `GET API v3/Apps/{appId}/details` → `Result.Schemas` (forms with runtime `Fields`, `CustomActionsConfiguration`, `Version`), `ParentChildRelations`, `Menus` (role-filtered), `AllMenus`, `Roles`, `RecordRolePrivileges`, `WorkflowDefinition` (UI workflows).
 - `POST API v3/Records/fetch` body `{StartRow, TotalRows (≤1000), SearchType:0, TypeId:<formId>, FilterConfigurations:[], SortConfigurations:[]}` → `Result.{Count, Items}`. Page through with StartRow. Items carry `id`, `DisplayName`, field values and `<field>ReferenceId` for references.
 
+### WP-027 Update many records in one API call
+**Rule:** `POST API v3/Records?records-required=true` with `{"Items":[{"TypeId":<formId>,"id":<record id>,"_version_":<version>,"<field>":<value>}]}`, in batches (20 per call worked). Read the records first with `Records/fetch`, quote the 19-digit `_version_` before parsing (§1), and write it back as a raw number.
+**Why:** It's the call the runtime UI makes when it saves records.
+**Caveats:** Check the client ID in the page URL before writing.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: 106 records updated in 6 calls and read back.
+
 ## 3. Workflows
 
 - `GET API v3/Workflows` → all workflows with full definitions (large: return summaries only).
@@ -47,6 +55,13 @@ const body = JSON.stringify({ ...w, Version: '__VER__' }).replace('"Version":"__
 
 - `POST DAPI EntityType/SaveEntityType` → create/update a form (top-level or child). Body = the designer's full form definition (`AllFields` in design format, `EntityTypeID`, `GlobalTypeID`, `Tittle` [sic], `IsEdit`, `Version` (string), `Client`, `ParentSchemas`, `ChildSchemas`, `CustomActionsConfiguration`, settings). New form: `IsEdit:false`, `Version:"0"`, your own GUID as EntityTypeID. Update: `IsEdit:true` + live Version.
   - Easiest reliable way to get a valid body: open the form in the designer, click Save with the request **blocked** (`route.abort`), keep `postData()`. See playwright-efficiency.md "capture" and "save-swap".
+
+### WP-028 Add a field to a form by replaying the designer's save
+**Rule:** Capture the designer's own save body (above), add a copy of an existing field of the same control type with a new internal name, label and sequence, raise `StringFieldLastIndex` (or the matching counter), and send it with the raw live `Version`. Don't drag controls from automation.
+**Why:** Drag and drop in the designer is unreliable from automation; a saved form body is a reliable source of a valid field definition.
+**Caveats:** Send the replayed save through a frame without your interceptor, or the interceptor swallows it. The runtime may not show the field until **Reload App** (platform-model.md, caching). Check the client ID before writing.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: a choice field added to a form, present in the app details and shown on the form after Reload App.
+
   - Design-format fields for child forms are also in `GET DAPI user-management/get-app-data-for-design/{client}/{app}/{userId}` → `Result.EventTypes[].AllFields` (top-level in `EntityTypes`).
 - `POST DAPI EntityType/DeleteEntityType` body `{entityType:<full design object>, LiAnalyticsSetting:null}`; simplest is the designer's **Delete This Form** menu, guarded by a route that checks the form ID.
 

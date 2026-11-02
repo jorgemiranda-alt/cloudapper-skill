@@ -19,7 +19,7 @@ The skill holds reusable CloudApper knowledge that Claude loads on every CloudAp
    - The evidence supports the status asked for:
      - `Observed` is enough for low-risk entries (naming, logging, performance, UI behaviour).
      - `Verified` is required for entries about writing or deleting data, integrations and error handling. A second person follows "How to reproduce" in a test app and records the result in the PR.
-5. **Promote.** The maintainer moves the entry into the right section of `references/workflow-patterns.md`, gives it the next free `WP-` number, updates the section range in Contents, deletes the inbox file, and adds a line to `CHANGELOG.md`. If the entry is one of the platform facts listed in `SKILL.md`, update that list too.
+5. **Promote.** The maintainer moves the entry into the right section of `references/workflow-patterns.md` (or of another reference file when it's an API or designer technique), gives it the next free `WP-` number across all reference files, updates the section range in Contents, deletes the inbox file, and adds a line to `CHANGELOG.md`. If the entry is one of the platform facts listed in `SKILL.md`, update that list too.
 
 A draft that needs a test nobody can run yet can be merged into `inbox/` so it isn't lost. Inbox drafts are reviewed at every re-check (below): promote, keep for one more round, or delete.
 
