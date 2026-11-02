@@ -204,6 +204,10 @@ IDs (`WP-001`) are stable and shared across reference files (WP-027 and WP-028 a
 - Never hand-invent node shapes: copy a working node of the same type (lookup with rules, router/route, create with `ParentId`, update by id, foreach, debug log) and change IDs, forms and fields.
 - Node IDs `s` + 13 digits, unique per workflow; `__argN__` / `__expN__` names unique per workflow.
 - Generate the JSON with a small builder script from a backup file; apply with a guarded script; read back and open the builder once to confirm it renders.
+- Prefer a node the **designer itself saved** for the same action and field type (ask the user to build one by hand if none exists) over a node you built, and copy its exact shape: rule `Label`, `Operator`, `FieldNodeId` and `ControlType`/`DataType`. The API accepts shapes the editor then can't read.
+- A template node carries settings from where it was copied. Reset or re-point them for the new form, for example a lookup's `parentTypeId` / `parentReferenceField` (a wrong value blanks "Type of Record") and any leftover form ids.
+- Give each expression an `ExpressionText`; declare arguments as text/number/date (`ControlType` 4, 3 or 11) rather than copying a lookup-display or time-choice type; write a plain trigger field as `__TRIGGERRECORD.<field>` and a reference field with the referenced form id in the path.
+- After saving, open **every** new node in the editor and clear its errors before asking the user to run anything: a clean run log does not show that the editor can read the node.
 
 ### Safe-change checklist
 
