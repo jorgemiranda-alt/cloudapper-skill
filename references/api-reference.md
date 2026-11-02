@@ -43,6 +43,12 @@ const body = JSON.stringify({ ...w, Version: '__VER__' }).replace('"Version":"__
 **Caveats:** Check the client ID in the page URL before writing.
 **Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: 106 records updated in 6 calls and read back.
 
+### WP-037 Set a reference field through the records API
+**Rule:** In a `Records` update item, set a reference field with three keys: `"<field>": <display text of the target>`, `"<field>ReferenceId": <target record id>`, `"<field>ReferenceTypeId": <target form id>`. Read one record back to confirm before updating the rest. Use a filtered `Records/fetch` for the target (e.g. by a unique field) instead of fetching a whole large form.
+**Why:** Records store a reference as these three keys. Setting only the text does not link the record.
+**Caveats:** An update may fire workflows triggered on edit of that form; check before a bulk change. A 45-second page limit can cut a long call: do it in batches (WP-027) and check what changed before repeating.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: 135 records relinked to the correct employee in 7 calls and read back; a one-record test first.
+
 ## 3. Workflows
 
 - `GET API v3/Workflows` → all workflows with full definitions (large: return summaries only).
@@ -61,21 +67,32 @@ const body = JSON.stringify({ ...w, Version: '__VER__' }).replace('"Version":"__
 **Why:** The editor reported "Value cannot be null. (Parameter 'type')" for those control types: it has no value type for them.
 **Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: error seen on type 38 and 33 arguments; the text-typed nodes were saved, with the editor result after the change not yet recorded.
 
-### WP-032 A cloned lookup keeps its parent settings
-**Rule:** When you clone a `LOOKUP_RECORDS` node for another form, reset `parentTypeId` and `parentReferenceField` to the real parent form and its subform field (e.g. a pool and its jobs subform), or to empty strings when the records have no parent.
-**Why:** The copied settings say "children of `<OtherParent>` through subform N". The node saves and runs, but the editor shows a blank "Type of Record".
-**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: three cloned lookups showed a blank type; the corrected nodes are saved, with the editor result not yet recorded.
+### WP-032 A node on a child record needs its parent settings (and a cloned lookup keeps the old ones)
+**Rule:** When a create, update, delete or lookup node works on records of a **child form** (the dropdown lists it under its parent, e.g. "Tip Distribution (Tip Distribution)" under Pool Allocation), set `parentTypeId` to the parent form and `parentReferenceField` to the subform field on the parent that holds the children (e.g. `subformList0`), in addition to `typeId`. Don't pick the standalone form for line items: the standalone entry does not link them to the parent. When you clone a lookup for another form, reset both to the real values, or to empty strings when the records have no parent.
+**Why:** The dropdown stores a child choice as parent form + subform field. A node without them uses the standalone form, and a node copied from another lookup keeps the old parent ("children of `<OtherParent>` through subform N"): it saves and runs, but the editor shows a blank "Type of Record".
+**Caveats:** Keep the `<Child> (Parent)` assignment on create nodes, set to the parent record that triggered the run. Find the subform field with the parent form's fields (ControlType 41 whose `ReferenceTypeId` is the child form).
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: three cloned lookups showed a blank type; create and update nodes built with the standalone child form were corrected to the parent + subform values; after a reload the dropdown showed the child entry under its parent (confirmed by the app owner).
 
 ### WP-033 Write argument paths in the designer's formats
-**Rule:** `FieldNodeId` shapes: a plain trigger field is `__TRIGGERRECORD.<field>` (no form id); the trigger's id is `__TRIGGERRECORD` with `Field: "id"`; a field inside a record the trigger references is `__TRIGGERRECORD.<ReferencedFormId>.<referenceField>.<field>` (`NodeId` = the reference field, `TypeId` = the referenced form); a reference field used as a value is `<nodeId>.<ReferencedFormId>.<referenceField>` with ControlType 12; a whole fetched or iterated record is its node id with `Field: "id"`. Don't end a path in `.id` to get a referenced record's id.
-**Why:** A path in the wrong shape saves and runs, but the editor can't resolve it: a raw `__argN__` name or an empty value.
-**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: shapes read from designer-saved nodes in the same app; the form-id form on a plain trigger field and the `.id` form each failed to resolve in the editor; the corrected nodes are saved, with the editor result not yet recorded.
+**Rule:** `FieldNodeId` shapes: a plain trigger field is `__TRIGGERRECORD.<field>` (no form id); the trigger's id is `__TRIGGERRECORD` with `Field: "id"`; a field inside a record the trigger references is a **two-layer argument**: an outer argument for the reference field (`Field` is an expression object, `FieldNodeId: __TRIGGERRECORD.<ReferencedFormId>.<referenceField>`, `NodeId: "__TRIGGERRECORD"`, `TypeId` = the trigger form, ControlType 12) whose `Field.Arguments` holds the inner argument (`Field: "<field>"`, `FieldNodeId: __TRIGGERRECORD.<ReferencedFormId>.<referenceField>.<field>`, `NodeId` = the reference field, `TypeId` = the referenced form); a reference field used as a value is `<nodeId>.<ReferencedFormId>.<referenceField>` with ControlType 12; a whole fetched or iterated record is its node id with `Field: "id"`. Don't end a path in `.id` to get a referenced record's id.
+**Why:** A path in the wrong shape saves and runs, but it resolves to nothing: a raw `__argN__` name or an empty value in the editor, and an empty value at run time. An empty filter value makes a lookup ignore the filter and return the first record, which links every row to the same record without any error.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: shapes read from designer-saved nodes in the same app; a single-layer nested argument gave empty strings at run time; a plain trigger field written with the form id left a lookup unfiltered, so 136 records linked to one wrong employee (found by reading the data); both were fixed and the run then produced correct values.
 
 ### WP-034 Write update and create nodes the way the designer saves them
 **Rule:** In `UPDATE_RECORD` / `CREATE_RECORD`, an id filter uses `Field: "id"`, `Label: "<form title>"`, `Operator: "="`, and `FieldNodeId` = the node's own id. A reference-field assignment uses `FieldNodeId: "<nodeId>.<ReferencedFormId>.<field>"`, `ControlType: 12`, `Operator: "="`, and a value that is another reference or a whole record, not a text name.
 **Why:** Written another way (label "Id", blank operator, `<nodeId>.id`), the node saves and runs, but the editor shows the field unlabeled and the operator or value blank.
 **Caveats:** Some older nodes store a single space for equals and display the same; use `=` for new nodes. When unsure, copy a node the designer saved (see the procedure on building node JSON in `workflow-patterns.md`).
 **Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: format read from an update node the designer saved; two update nodes and a create node built differently showed blank labels in the editor; the corrected nodes are saved, with the editor result not yet recorded.
+
+### WP-035 An iterator node needs node type `FOREACH`
+**Rule:** Set the node's `type` to match its action: `TRIGGER`, `ACTION` (lookups, assigns, creates, updates, deletes, debug logs, connectors, transform, save), `FOREACH` (iterators), `ROUTER`, `ROUTE`. When you build nodes, take `type` from existing nodes of the same `actionType`, not a default of `ACTION`.
+**Why:** The engine dispatches on the node's `type`. A `FOREACH` iterator typed `ACTION` runs as an ordinary action and fails with "Requested value 'FOREACH' was not found" (parsing the action type), stopping at the first iterator.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: three iterators typed `ACTION` failed the run at the first loop; after setting `FOREACH` the same workflow ran through all nodes.
+
+### WP-036 Filter with `=`, not `contains`, and test a filter through the records API first
+**Rule:** For an exact text match use the `=` operator on the full value; don't use `contains` to match part of a path or phrase. Store literal filter values as plain strings (e.g. `"False"`), as existing nodes do, not as an expression of a quoted string. Before building a lookup, try its filter with `POST API v3/Records/fetch` (`FilterConfigurations:[{Condition:"AND",Rules:[{Field,Operator,Value}]}]`, read-only) and compare the count with what you expect.
+**Why:** `contains` behaved as a word match: "Back of House" matched every record, and values containing `/` matched all of them, while `=` returned exactly the expected set. A node with a `contains` filter on such text failed at run time with "Query syntax error".
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: records-API tests of single filters (contains returned all 136; `=` returned exactly 119; the full set of `=`, date and flag filters returned the expected 3 rows); the lookup rebuilt with `=` then ran.
 
 ## 4. Forms (design API)
 

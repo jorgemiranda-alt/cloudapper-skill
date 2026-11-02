@@ -6,7 +6,7 @@ Each entry's heading names the situation. **Rule** says what to do, **Why** says
 - `Observed`: seen on a live app by one person. Fine to follow; for a risky change, say you're relying on an Observed entry and test in UAT first.
 - `baseline` instead of a date: imported when the skill moved to its repo (2026-11) and not re-checked since.
 
-IDs (`WP-001`) are stable and shared across reference files (WP-027, WP-028 and WP-030 to WP-034 are API techniques in `api-reference.md`; WP-029 sits in section 6); cite them in reviews and docs. Drafts in `inbox/` and anything in `retired.md` are not guidance; don't read them as rules.
+IDs (`WP-001`) are stable and shared across reference files (WP-027, WP-028, WP-030 to WP-037 are API techniques in `api-reference.md`; WP-029 sits in section 6); cite them in reviews and docs. Drafts in `inbox/` and anything in `retired.md` are not guidance; don't read them as rules.
 
 ## Contents
 1. Triggers and order: WP-001 to WP-004
@@ -207,7 +207,8 @@ IDs (`WP-001`) are stable and shared across reference files (WP-027, WP-028 and 
 - Prefer a node the **designer itself saved** for the same action and field type (ask the user to build one by hand if none exists) over a node you built, and copy its exact shape: rule `Label`, `Operator`, `FieldNodeId` and `ControlType`/`DataType`. The API accepts shapes the editor then can't read.
 - A template node carries settings from where it was copied. Reset or re-point them for the new form, for example a lookup's `parentTypeId` / `parentReferenceField` (WP-032) and any leftover form ids; write update and create nodes as the designer saves them (WP-034).
 - Give each expression an `ExpressionText` (WP-030); declare arguments as text/number/date rather than copying a lookup-display or time-choice type (WP-031); write trigger and reference paths in the designer's formats (WP-033).
-- After saving, open **every** new node in the editor and clear its errors before asking the user to run anything: a clean run log does not show that the editor can read the node.
+- Take each node's `type` from existing nodes of the same action (iterators are `FOREACH`, WP-035), and test a lookup's filter through `Records/fetch` before relying on it; use `=`, not `contains` (WP-036).
+- After saving, open **every** new node in the editor and clear its errors before asking the user to run anything: a clean run log does not show that the editor can read the node. Then check the first run's records, not only its status: a filter that resolves to empty can run cleanly and link every row to the same record (WP-033).
 
 ### Safe-change checklist
 
