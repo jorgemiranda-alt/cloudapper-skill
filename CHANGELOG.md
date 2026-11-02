@@ -4,6 +4,7 @@ One line per merged change: date, what changed, entry IDs, PR link. Newest first
 
 ## 2026-11
 
+- 2026-11-02: Added WP-035 (iterator node type), WP-036 (`=` not `contains`; test filters through the records API) and WP-037 (set a reference through the records API) in `api-reference.md`; corrected WP-033 (two-layer argument for a field inside a referenced record; an empty filter value returns the first record); updated the node-building procedure; status Observed.
 - 2026-11-02: Added WP-030 to WP-034 in `api-reference.md` (API-built nodes that run but the editor cannot read: expression text, argument types, cloned lookup parent settings, argument path formats, update/create node format; status Observed), a pointer in `SKILL.md`, and cross-references in the node-building procedure of `workflow-patterns.md`.
 - 2026-11-01: Promoted the link-references inbox draft as WP-029 (After Create workflow that fills reference fields on bulk-saved records) in `workflow-patterns.md`, status Observed.
 - 2026-11-01: Promoted the bulk-update inbox draft as WP-027 (bulk record update) and WP-028 (add a form field by replaying the designer save) in `api-reference.md`, status Observed.
