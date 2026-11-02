@@ -61,6 +61,7 @@ Learned the hard way; details and evidence in `references/workflow-patterns.md`.
 - After every change, **verify by reading back** (API) and, for workflows, open the builder once to check it renders.
 - Large or repeated tasks: write a small builder script (Python) that produces the JSON from templates taken from existing nodes, then a guarded apply script. Keep both in the project so the change is repeatable and reviewable.
 - Nodes built through the API run but may not open in the editor (WP-030 to WP-038 in `references/api-reference.md`). Copy a node the designer itself saved, run `scripts/validate-workflows.js` (read-only, WP-038) and fix its errors, then open every new node in the editor and clear its errors before asking the user to run the workflow, then check the first run's records (a filter that resolves to empty runs cleanly and links every row to the same record).
+- **Testing a workflow means a real run: there is no dry-run mode.** The user runs it on a marked UAT test record. Then check the output with `scripts/verify-workflow-run.js` (read-only, WP-039): it follows a chain of workflows through their execution logs and compares the written records with values calculated from the business rule. A run logged as successful can still have written wrong values.
 
 ## Documentation defaults
 

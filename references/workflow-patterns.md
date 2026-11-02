@@ -6,7 +6,7 @@ Each entry's heading names the situation. **Rule** says what to do, **Why** says
 - `Observed`: seen on a live app by one person. Fine to follow; for a risky change, say you're relying on an Observed entry and test in UAT first.
 - `baseline` instead of a date: imported when the skill moved to its repo (2026-11) and not re-checked since.
 
-IDs (`WP-001`) are stable and shared across reference files (WP-027, WP-028, WP-030 to WP-038 are API techniques in `api-reference.md`; WP-029 sits in section 6); cite them in reviews and docs. Drafts in `inbox/` and anything in `retired.md` are not guidance; don't read them as rules.
+IDs (`WP-001`) are stable and shared across reference files (WP-027, WP-028, WP-030 to WP-040 are API techniques in `api-reference.md`; WP-029 sits in section 6, WP-041 in section 7); cite them in reviews and docs. Drafts in `inbox/` and anything in `retired.md` are not guidance; don't read them as rules.
 
 ## Contents
 1. Triggers and order: WP-001 to WP-004
@@ -15,7 +15,7 @@ IDs (`WP-001`) are stable and shared across reference files (WP-027, WP-028, WP-
 4. Performance: WP-010
 5. Errors, logging and validation: WP-011 to WP-015
 6. Integrations and sync: WP-016 to WP-019, WP-029
-7. Data, setup and expressions: WP-020 to WP-026
+7. Data, setup and expressions: WP-020 to WP-026, WP-041
 8. Procedures: debugging, readable workflows, node JSON, safe-change checklist, review scan
 
 ## 1. Triggers and order
@@ -172,6 +172,11 @@ IDs (`WP-001`) are stable and shared across reference files (WP-027, WP-028, WP-
 **Why:** In workflows `IsNull(x)` takes one argument and returns true/false.
 **Status:** Observed · baseline
 
+### WP-041 A create on a unique field is skipped without a message when the value exists
+**Rule:** Before relying on a `CREATE_RECORD` in a re-run, check whether the form marks a field it writes as unique (`UniqueField` in `GET API v3/forms`). To rebuild the rows on a re-run, delete them in one bulk step first (WP-006, WP-008); don't count on the create to replace them.
+**Why:** A create whose unique value already exists adds no row, and the step logs no message. The rest of the run goes on, so rows that should be gone (for example a span that no longer qualifies) stay and are counted.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: a re-run on the same parent left the same three child rows, and the create step's log entry had no message; the field's `UniqueField` is true.
+
 ## 8. Procedures
 
 ### Debugging
@@ -181,6 +186,11 @@ IDs (`WP-001`) are stable and shared across reference files (WP-027, WP-028, WP-
 2. Is the source workflow **before** the target in the list (WP-001)?
 3. Does the trigger rule match? For `_IsUpdated`, did the value really change (WP-002)?
 4. Read both workflows' execution logs (API) around that time; no entry = never triggered.
+
+**"It runs but the numbers are wrong"**
+1. Run `scripts/verify-workflow-run.js` on the run with business checks (WP-039): it shows which record and which value are off.
+2. Check lookups for a filter that doesn't filter: a space operator (WP-040), `contains` (WP-036), an empty value (WP-033). Compare a lookup's count through `Records/fetch` with the count you expect.
+3. On a re-run, look for rows from earlier runs that were never deleted (WP-041).
 
 **"It's stuck at Running / In Progress"**
 1. Find the chain: who sets the status, who should pick it up next (job records, trigger rules).
@@ -213,7 +223,7 @@ IDs (`WP-001`) are stable and shared across reference files (WP-027, WP-028, WP-
 
 ### Safe-change checklist
 
-1. Environment confirmed (UAT unless told otherwise). 2. Backup of every workflow touched. 3. Change through a template-based builder. 4. Verify: read-back, builder renders, order and on/off unchanged unless intended. 5. The user runs the test; read the execution logs and records and report timings and results.
+1. Environment confirmed (UAT unless told otherwise). 2. Backup of every workflow touched. 3. Change through a template-based builder. 4. Verify: read-back, builder renders, order and on/off unchanged unless intended. 5. The user runs the test on a test record. Read the execution logs and records with `scripts/verify-workflow-run.js` and business checks (WP-039), and report timings and results.
 
 ### Review scan
 

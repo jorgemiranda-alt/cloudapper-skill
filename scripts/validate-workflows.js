@@ -25,9 +25,11 @@ async function validateWorkflows(opts = {}) {
   const m = location.pathname.match(/\/(\d{6,})\/app\/([0-9a-fA-F-]{36})/);
   if (!m) throw new Error('Open an App Studio page of the app first (URL with /<clientId>/app/<appId>).');
   const [, clientId, appId] = m;
+  // The page also calls other API hosts (e.g. an AI service), so take the host that served the app's
+  // records, app details or workflows.
   const apiBase = o.apiBase || (() => {
     const hit = performance.getEntriesByType('resource').map(e => e.name)
-      .find(u => /^https:\/\/[^/]*api[^/]*\.cloudapper\.com\/api\/v3\//.test(u) && !/marketplace|design|report/.test(u));
+      .find(u => /^https:\/\/[^/]*api[^/]*\.cloudapper\.com\/api\/v3\/(Records|Apps|Workflows|forms)\b/i.test(u) && !/marketplace|design|report/.test(u));
     return hit ? hit.replace(/(\/api\/).*/, '$1') : null;
   })();
   if (!apiBase) throw new Error('Could not find the API host in the page; pass apiBase.');
@@ -251,7 +253,11 @@ async function validateWorkflows(opts = {}) {
         const op = r.Operator;
         if (op === undefined || op === null || op === '') add('error', 'RULE_OPERATOR', 'Filter rule has no Operator', n, p);
         else if (/contains/i.test(op)) add('warn', 'CONTAINS_FILTER', 'Filter uses "' + op + '"; it matches words, not text. Use "=" for an exact match (WP-036)', n, p);
-        else if (op === ' ') add('info', 'RULE_OPERATOR', 'Operator is a single space (older equals); write "=" in new nodes (WP-034)', n, p);
+        else if (String(op).trim() === '') {
+          // A space in a lookup or delete filter is ignored: the node reads every record (WP-040).
+          if (/^(LOOKUP_RECORDS?|DELETE_RECORDS)$/.test(type)) add('error', 'RULE_OPERATOR', 'Operator is a space, so this filter is ignored and the node reads every record; write "=" (WP-040)', n, p);
+          else add('info', 'RULE_OPERATOR', 'Operator is a single space (older equals); write "=" in new nodes (WP-034, WP-040)', n, p);
+        }
         const noValueOps = /empty|null|blank/i;
         const v = r.Value;
         const emptyValue = v === undefined || v === null || v === '' || (typeof v === 'object' && typeof v.Expression === 'string' && !v.Expression.trim());
