@@ -51,6 +51,32 @@ const body = JSON.stringify({ ...w, Version: '__VER__' }).replace('"Version":"__
 - `PUT API v3/Workflows/sequence` body `{NewSequneceNo, OldSequneceNo}` (platform spelling) → moves one workflow to a position and shifts the rest, like dragging in the list. Reorder by walking the target order and moving each workflow into its slot, re-reading after each move.
 - `POST API v3/auditlogs/workflows/fetch-execution-log` body `{AutomationId, StartRow, TotalRows}` → `Items[{ExecutionId, StartTime, EndTime, Status, Message, MessageLevel, Nodes}]` (Status 1 ok, 2 failed, 3 running). `Nodes` (JSON string or array) = per step `{NodeId, StartTime, EndTime, ElapsedTime, MessageLevel, Status, Message}`: map NodeId to step names to find which step warned (MessageLevel 2 = warning). Debug-log text is not in it (view it in the designer).
 
+### WP-030 Give every API-built expression an `ExpressionText`
+**Rule:** For each `{Expression, Arguments}` you write, add `ExpressionText`: the expression with each `__argN__` replaced by `[<FormTitle> (<NodeName>) . <FieldLabel>]` (e.g. `[Workflow Variables (Trigger) . dateIndex] + 1`), and `NodeDisplayText: ""`.
+**Why:** The run uses `Expression` and `Arguments`, so the node works. The Expression Editor builds its field chips from `ExpressionText`; without it the editor shows raw `__argN__` names and "Unknown identifier".
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: unknown-identifier errors on API-built expressions; after adding the text the same expression showed field chips.
+
+### WP-031 Declare expression arguments as text, number or date
+**Rule:** For an argument from a lookup-display (ControlType 38) or time-choice (33/34) field, write `ControlType: 4, DataType: 1` (text). Use standard types (4, 3, 11, 1) for arguments; don't copy the field's own control type blindly.
+**Why:** The editor reported "Value cannot be null. (Parameter 'type')" for those control types: it has no value type for them.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: error seen on type 38 and 33 arguments; the text-typed nodes were saved, with the editor result after the change not yet recorded.
+
+### WP-032 A cloned lookup keeps its parent settings
+**Rule:** When you clone a `LOOKUP_RECORDS` node for another form, reset `parentTypeId` and `parentReferenceField` to the real parent form and its subform field (e.g. a pool and its jobs subform), or to empty strings when the records have no parent.
+**Why:** The copied settings say "children of `<OtherParent>` through subform N". The node saves and runs, but the editor shows a blank "Type of Record".
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: three cloned lookups showed a blank type; the corrected nodes are saved, with the editor result not yet recorded.
+
+### WP-033 Write argument paths in the designer's formats
+**Rule:** `FieldNodeId` shapes: a plain trigger field is `__TRIGGERRECORD.<field>` (no form id); the trigger's id is `__TRIGGERRECORD` with `Field: "id"`; a field inside a record the trigger references is `__TRIGGERRECORD.<ReferencedFormId>.<referenceField>.<field>` (`NodeId` = the reference field, `TypeId` = the referenced form); a reference field used as a value is `<nodeId>.<ReferencedFormId>.<referenceField>` with ControlType 12; a whole fetched or iterated record is its node id with `Field: "id"`. Don't end a path in `.id` to get a referenced record's id.
+**Why:** A path in the wrong shape saves and runs, but the editor can't resolve it: a raw `__argN__` name or an empty value.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: shapes read from designer-saved nodes in the same app; the form-id form on a plain trigger field and the `.id` form each failed to resolve in the editor; the corrected nodes are saved, with the editor result not yet recorded.
+
+### WP-034 Write update and create nodes the way the designer saves them
+**Rule:** In `UPDATE_RECORD` / `CREATE_RECORD`, an id filter uses `Field: "id"`, `Label: "<form title>"`, `Operator: "="`, and `FieldNodeId` = the node's own id. A reference-field assignment uses `FieldNodeId: "<nodeId>.<ReferencedFormId>.<field>"`, `ControlType: 12`, `Operator: "="`, and a value that is another reference or a whole record, not a text name.
+**Why:** Written another way (label "Id", blank operator, `<nodeId>.id`), the node saves and runs, but the editor shows the field unlabeled and the operator or value blank.
+**Caveats:** Some older nodes store a single space for equals and display the same; use `=` for new nodes. When unsure, copy a node the designer saved (see the procedure on building node JSON in `workflow-patterns.md`).
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: format read from an update node the designer saved; two update nodes and a create node built differently showed blank labels in the editor; the corrected nodes are saved, with the editor result not yet recorded.
+
 ## 4. Forms (design API)
 
 - `POST DAPI EntityType/SaveEntityType` → create/update a form (top-level or child). Body = the designer's full form definition (`AllFields` in design format, `EntityTypeID`, `GlobalTypeID`, `Tittle` [sic], `IsEdit`, `Version` (string), `Client`, `ParentSchemas`, `ChildSchemas`, `CustomActionsConfiguration`, settings). New form: `IsEdit:false`, `Version:"0"`, your own GUID as EntityTypeID. Update: `IsEdit:true` + live Version.
