@@ -60,7 +60,8 @@ const body = JSON.stringify({ ...w, Version: '__VER__' }).replace('"Version":"__
 ### WP-030 Give every API-built expression an `ExpressionText`
 **Rule:** For each `{Expression, Arguments}` you write, add `ExpressionText`: the expression with each `__argN__` replaced by `[<FormTitle> (<NodeName>) . <FieldLabel>]` (e.g. `[Workflow Variables (Trigger) . dateIndex] + 1`), and `NodeDisplayText: ""`.
 **Why:** The run uses `Expression` and `Arguments`, so the node works. The Expression Editor builds its field chips from `ExpressionText`; without it the editor shows raw `__argN__` names and "Unknown identifier".
-**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: unknown-identifier errors on API-built expressions; after adding the text the same expression showed field chips.
+**Caveats:** Required for an expression with operators or functions. The designer itself saves a single picked field (`Expression` = one `__argN__`) and the left-hand `Field` side without `ExpressionText`, so those are not errors.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: unknown-identifier errors on API-built expressions; after adding the text the same expression showed field chips. Designer-built workflows had text on every expression with operators and none on many single-field ones.
 
 ### WP-031 Declare expression arguments as text, number or date
 **Rule:** For an argument from a lookup-display (ControlType 38) or time-choice (33/34) field, write `ControlType: 4, DataType: 1` (text). Use standard types (4, 3, 11, 1) for arguments; don't copy the field's own control type blindly.
@@ -93,6 +94,12 @@ const body = JSON.stringify({ ...w, Version: '__VER__' }).replace('"Version":"__
 **Rule:** For an exact text match use the `=` operator on the full value; don't use `contains` to match part of a path or phrase. Store literal filter values as plain strings (e.g. `"False"`), as existing nodes do, not as an expression of a quoted string. Before building a lookup, try its filter with `POST API v3/Records/fetch` (`FilterConfigurations:[{Condition:"AND",Rules:[{Field,Operator,Value}]}]`, read-only) and compare the count with what you expect.
 **Why:** `contains` behaved as a word match: "Back of House" matched every record, and values containing `/` matched all of them, while `=` returned exactly the expected set. A node with a `contains` filter on such text failed at run time with "Query syntax error".
 **Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: records-API tests of single filters (contains returned all 136; `=` returned exactly 119; the full set of `=`, date and flag filters returned the expected 3 rows); the lookup rebuilt with `=` then ran.
+
+### WP-038 Validate workflow nodes without opening the builder
+**Rule:** Before asking anyone to open or run a workflow you built or changed through the API, run `scripts/validate-workflows.js` in a signed-in App Studio page of the app (read-only; pass `workflows: [obj]` to check a builder's output before the PUT). Fix every `error` finding, then open the changed nodes once in the editor.
+**Why:** The builder has no Validate button. Its only server check, `POST API v3/Workflows/validate-expression` with `{"Value": <expression>}` (one per call, sent by the Expression Editor on every edit), catches syntax, undeclared arguments, functions (method style, `x.Trim()`) and types. It passes a missing `ExpressionText`, unknown nodes, fields or TypeIds. The editor resolves those in the browser from `GET API v3/forms` and `forms/forms-relation/apps/{appId}`, and the script checks them the same way (WP-030 to WP-036).
+**Caveats:** Send only top-level expressions: an argument whose `Field` is `{Expression, Arguments}` is a reference or aggregate descriptor and fails alone. Connector outputs (`connectorSpec.CustomSchema[].Id`) are valid types. A node's children run in order; only a Router's children are alternatives. Findings are not yet confirmed in the editor one by one.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: endpoint found in the Studio bundle and probed with good and broken copies of expressions (nothing saved). The script ran on 31 workflows (205 nodes, 331 expressions, about 25 s with the API check) with no false positives on designer-built workflows. It found deleted forms and fields in older nodes, missing text in API-built ones and an unknown identifier, and caught each of nine breakages seeded into an in-memory copy.
 
 ## 4. Forms (design API)
 

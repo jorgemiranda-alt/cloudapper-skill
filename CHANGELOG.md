@@ -4,6 +4,7 @@ One line per merged change: date, what changed, entry IDs, PR link. Newest first
 
 ## 2026-11
 
+- 2026-11-02: Added WP-038 (validate nodes without the builder: the `validate-expression` endpoint and what it misses) and `scripts/validate-workflows.js`, in `api-reference.md`, status Observed. Added a WP-030 caveat (single-field and left-hand expressions need no `ExpressionText`), pointers in `SKILL.md`, the node-building procedure and `README.md`.
 - 2026-11-02: Added WP-035 (iterator node type), WP-036 (`=` not `contains`; test filters through the records API) and WP-037 (set a reference through the records API) in `api-reference.md`; corrected WP-033 (two-layer argument for a field inside a referenced record; an empty filter value returns the first record); updated the node-building procedure; broadened WP-032 (child-record nodes need parent form and subform field, not the standalone form); status Observed.
 - 2026-11-02: Added WP-030 to WP-034 in `api-reference.md` (API-built nodes that run but the editor cannot read: expression text, argument types, cloned lookup parent settings, argument path formats, update/create node format; status Observed), a pointer in `SKILL.md`, and cross-references in the node-building procedure of `workflow-patterns.md`.
 - 2026-11-01: Promoted the link-references inbox draft as WP-029 (After Create workflow that fills reference fields on bulk-saved records) in `workflow-patterns.md`, status Observed.
