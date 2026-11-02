@@ -42,6 +42,7 @@ Optionally, create `.leak-denylist` in the repo root with the customer, app and 
 | `CONTRIBUTING.md` | How to add, review, verify and retire patterns | No |
 | `evals/` | Test prompts to compare skill versions | No |
 | `scripts/check_skill.py` | Leak and structure checks (pre-commit hook and CI) | No |
+| `scripts/validate-workflows.js` | Read-only workflow node validator, run in a signed-in App Studio page (WP-038) | When a task runs it |
 
 ## Contributing
 
