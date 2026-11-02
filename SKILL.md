@@ -60,6 +60,7 @@ Learned the hard way; details and evidence in `references/workflow-patterns.md`.
 - Before editing a workflow, **read its node tree** (names, action types, forms) from the API instead of opening the designer.
 - After every change, **verify by reading back** (API) and, for workflows, open the builder once to check it renders.
 - Large or repeated tasks: write a small builder script (Python) that produces the JSON from templates taken from existing nodes, then a guarded apply script. Keep both in the project so the change is repeatable and reviewable.
+- Nodes built through the API run but may not open in the editor (WP-030 to WP-034 in `references/api-reference.md`). Copy a node the designer itself saved, and open every new node in the editor and clear its errors before asking the user to run the workflow.
 
 ## Documentation defaults
 
