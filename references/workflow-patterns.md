@@ -14,7 +14,7 @@ IDs (`WP-001`) are stable and shared across reference files (WP-027, WP-028, WP-
 3. Routers: WP-009
 4. Performance: WP-010
 5. Errors, logging and validation: WP-011 to WP-015
-6. Integrations and sync: WP-016 to WP-019, WP-029
+6. Integrations and sync: WP-016 to WP-019, WP-029, WP-042
 7. Data, setup and expressions: WP-020 to WP-026, WP-041
 8. Procedures: debugging, readable workflows, node JSON, safe-change checklist, review scan
 
@@ -135,6 +135,13 @@ IDs (`WP-001`) are stable and shared across reference files (WP-027, WP-028, WP-
 **Why:** A bulk save has no loop record to take a parent from. `ParentId` is only set by a `CREATE_RECORD` inside a loop over the parent.
 **Caveats:** The form does not need to be a child form; plain reference fields are enough, so don't use `ParentId` here. The workflow needs a higher Sequence than the one that saves the rows (WP-001). Add the reference fields to the form and reload the app first. Keep it off until the loading workflow (WP-016) is tested.
 **Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: structure of a corrected workflow read back from a test app; no run result recorded yet, so whether Save Records fires After Create once per saved row is unconfirmed.
+
+### WP-042 Remove records a sync no longer returns: stamp each sync, then delete what the stamp missed
+**Rule:** In a sync that saves records from an external source on a unique key (an upsert), add a date-time field (the sync stamp). Set a variable to the current time before fetching, and write it to every saved record. After the last batch, if no batch failed, delete the synced scope's records whose stamp is empty or older than that variable; if any batch failed, mark the job Failed and skip the delete.
+**Why:** The source returns only what exists now, so a record it dropped or replaced stays in the app. An upsert refreshes the stamp on every record it saves, so a stale record is one this run did not touch. Deleting by stamp, not purge-and-reload, means a failed call never empties the range.
+**Example:** After the batches, loop over the synced owners (one delete each) with `DELETE_RECORDS`: owner key `=` the loop's owner, date `>=` range start, date `<` range end + 1 day, and an OR group of `<stamp> isEmpty` and `<stamp> < <start variable>` (`isEmpty` works inside a delete filter).
+**Caveats:** Scope the delete per synced owner (an employee) when the source returns that owner's records from every location, so a transfer record is not removed by another location's run. This costs one delete call per owner. For a text prefix in a lookup filter, `startswith` works through `Records/fetch` (`contains` matches words, WP-036); confirm the editor shows it. Related: WP-005, WP-029, WP-040, WP-041.
+**Status:** Hypothesis · checked 2026-11 · Studio 8.2.0.25 · Evidence: built as saved nodes and every expression passed the editor's check; the delete and the stamp have not been run yet. The shape follows an exported sync workflow that deletes by a sync date-time.
 
 ## 7. Data, setup and expressions
 
