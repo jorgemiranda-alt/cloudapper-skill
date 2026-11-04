@@ -1,6 +1,6 @@
 ---
 name: cloudapper
-description: CloudApper no-code platform (web.cloudapper.com, m2sys.cloudapper.com, other tenants), including App Studio, Solution Builder and AI Agents & Automation: forms, menus, roles and privileges, UI and backend workflows, DevExpress reports, records, UKG connectors and integrations. Use whenever the user builds, changes, debugs, speeds up, reviews, copies (UAT/Production), designs or documents a CloudApper app or anything in it, or edits this skill, even if they only name the app.
+description: CloudApper no-code platform (web.cloudapper.com, m2sys.cloudapper.com, other tenants), including App Studio, Solution Builder and AI Agents & Automation - forms, menus, roles and privileges, UI and backend workflows, DevExpress reports, records, UKG connectors and integrations. Use whenever the user builds, changes, debugs, speeds up, reviews, copies (UAT/Production), designs or documents a CloudApper app or anything in it, or edits this skill, even if they only name the app.
 ---
 
 # CloudApper
