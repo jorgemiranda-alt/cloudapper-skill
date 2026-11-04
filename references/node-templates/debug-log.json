@@ -1,0 +1,35 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ACTION",
+  "data": {
+   "actionType": "DEBUG_LOG",
+   "name": "Debug Log",
+   "icon": "debug-log.png",
+   "value": "<p>﻿__exp730864__﻿</p>",
+   "variables": [
+    {
+     "Name": "__exp730864__",
+     "Expression": "__arg259921__",
+     "Arguments": [
+      {
+       "Name": "__arg259921__",
+       "Field": "Count",
+       "FieldNodeId": "<NODE_2>.Count",
+       "NodeId": "<NODE_2>",
+       "TypeId": "<ID_1>",
+       "ControlType": 4,
+       "DataType": 6,
+       "Label": "Count",
+       "ReplaceExpString": "Timecard (Fetch Records) . Count"
+      }
+     ],
+     "ExpressionText": "[Timecard (Fetch Records) . Count]",
+     "NodeDisplayText": ""
+    }
+   ],
+   "editorType": 1
+  }
+ }
+}

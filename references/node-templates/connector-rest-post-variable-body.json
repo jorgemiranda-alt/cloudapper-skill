@@ -1,0 +1,215 @@
+{
+ "origin": "api-built, validated (0 errors); the same nodes ran in another workflow; this copy not run",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ACTION",
+  "data": {
+   "name": "Sync Timecards",
+   "actionType": "CONNECTOR",
+   "icon": "workflow-connector.png",
+   "connectorLogo": "<COPY FROM AN EXISTING NODE>",
+   "connectorId": "<ID_1>",
+   "connectorFilePath": "connectors/integration",
+   "connectorFileName": "Connector.REST_v2.0.38.dll",
+   "connectorVersion": "0.0.0.16",
+   "supportsStreaming": false,
+   "connectorType": 16,
+   "connectorSpec": {
+    "ActionConfiguration": [
+     {
+      "ActionId": "REST_CONNECTOR",
+      "ButtonCaption": "",
+      "DefaultAction": true,
+      "Hidden": true
+     }
+    ],
+    "Properties": [
+     {
+      "Name": "restapicontrol",
+      "Label": "REST Api Spec",
+      "Hint": "Give postman spec",
+      "ControlType": 111,
+      "DataType": 8,
+      "Mandatory": true,
+      "Disabled": false,
+      "Hidden": false,
+      "Value": {
+       "Request": "{\n \"name\": \"https://<HOST>/api/v1/timekeeping/employee_timecard/multi_read\",\n \"request\": {\n  \"auth\": {\n   \"type\": \"bearer\",\n   \"bearer\": [\n    {\n     \"key\": \"token\",\n     \"value\": \"__exp914445__\",\n     \"type\": \"string\"\n    }\n   ]\n  },\n  \"method\": \"POST\",\n  \"header\": [\n   {\n    \"key\": \"Content-Type\",\n    \"value\": \"application/json\",\n    \"type\": \"text\"\n   }\n  ],\n  \"url\": {\n   \"raw\": \"https://<HOST>/api/v1/timekeeping/employee_timecard/multi_read\",\n   \"protocol\": \"https\",\n   \"host\": [\n    \"<HOST>\"\n   ],\n   \"path\": [\n    \"api\",\n    \"v1\",\n    \"timekeeping\",\n    \"employee_timecard\",\n    \"multi_read\"\n   ],\n   \"query\": []\n  },\n  \"body\": {\n   \"mode\": \"raw\",\n   \"raw\": \"{\\\"select\\\":[\\\"WORKED_SHIFTS\\\"],\\\"where\\\":{\\\"dateRange\\\":{\\\"startDate\\\":\\\"2026-09-01\\\",\\\"endDate\\\":\\\"2026-11-01\\\"},\\\"employees\\\":{\\\"qualifiers\\\":[__exp900001__]}},\\\"multiReadOptions\\\":{\\\"includePhantomPunches\\\":true,\\\"breakSpanAtMidnight\\\":false}}\",\n   \"options\": {\n    \"raw\": {\n     \"language\": \"json\"\n    }\n   }\n  }\n },\n \"response\": []\n}"
+      },
+      "Variables": [
+       {
+        "Name": "__exp914445__",
+        "Expression": "__arg983763__",
+        "Arguments": [
+         {
+          "Name": "__arg983763__",
+          "Field": "$.access_token",
+          "FieldNodeId": "<NODE_2>.<ID_2>.$.access_token",
+          "NodeId": "<NODE_2>",
+          "TypeId": "<ID_2>",
+          "ControlType": 4,
+          "DataType": 1,
+          "Label": "Access Token"
+         }
+        ],
+        "ExpressionText": "[Token  Response (Get Authorization) . Access Token]",
+        "NodeDisplayText": ""
+       },
+       {
+        "Name": "__exp900001__",
+        "Expression": "__arg910015__",
+        "Arguments": [
+         {
+          "Name": "__arg910015__",
+          "Field": "batchList",
+          "FieldNodeId": "__GLOBALVARIABLES.batchList",
+          "NodeId": "__GLOBALVARIABLES",
+          "TypeId": "<ID_3>",
+          "ControlType": 4,
+          "DataType": 1,
+          "Label": "batchList"
+         }
+        ],
+        "ExpressionText": "[Workflow Variables (Trigger) . batchList]",
+        "NodeDisplayText": ""
+       }
+      ],
+      "ResponseNode": "root",
+      "IsInvalid": false
+     },
+     {
+      "Name": "skipHtmlSanitization",
+      "Label": "Skip HTML sanitization?",
+      "Hint": "Check this box if you want to allow raw HTML content without sanitization in the output.",
+      "Placeholder": "",
+      "ControlType": 1,
+      "DataType": 2,
+      "DefaultItems": {},
+      "Mandatory": false,
+      "Disabled": false,
+      "Hidden": false,
+      "CredentialGroup": "",
+      "DisableExpressionEditor": false,
+      "Value": false,
+      "IsInvalid": false
+     },
+     {
+      "Name": "ignoreSSLValidation",
+      "Label": "Allow insecure connections (ignore certificate errors)",
+      "Hint": "When enabled, the Http call will connect even if the server’s SSL/TLS certificate is invalid or self-signed.",
+      "Placeholder": "",
+      "ControlType": 1,
+      "DataType": 2,
+      "DefaultItems": {},
+      "Mandatory": false,
+      "Disabled": false,
+      "Hidden": false,
+      "CredentialGroup": "",
+      "DisableExpressionEditor": false,
+      "Value": false,
+      "IsInvalid": false
+     }
+    ],
+    "CustomSchema": [
+     {
+      "AppId": "<ID_4>",
+      "ClientId": "<CLIENT_ID>",
+      "Fields": [
+       {
+        "Name": "$..workedSpans[*].startDateTime",
+        "Label": "Start Date Time",
+        "ControlType": 3,
+        "DataType": 0,
+        "SchemaId": "<ID_5>"
+       },
+       {
+        "Name": "$..workedSpans[*].endDateTime",
+        "Label": "End Date Time",
+        "ControlType": 3,
+        "DataType": 0,
+        "SchemaId": "<ID_5>"
+       },
+       {
+        "Name": "$..workedSpans[*].roundedStartDateTime",
+        "Label": "Rounded Start Date Time",
+        "ControlType": 3,
+        "DataType": 0,
+        "SchemaId": "<ID_5>"
+       },
+       {
+        "Name": "$..workedSpans[*].roundedEndDateTime",
+        "Label": "Rounded End Date Time",
+        "ControlType": 3,
+        "DataType": 0,
+        "SchemaId": "<ID_5>"
+       },
+       {
+        "Name": "$..workedSpans[*].primaryOrgJob.qualifier",
+        "Label": "Org Job Qualifier",
+        "ControlType": 4,
+        "DataType": 1,
+        "SchemaId": "<ID_5>"
+       },
+       {
+        "Name": "$..workedSpans[*].primaryOrgJob.name",
+        "Label": "Org Job Name",
+        "ControlType": 4,
+        "DataType": 1,
+        "SchemaId": "<ID_5>"
+       },
+       {
+        "Name": "$..workedSpans[*].startPunch.isPhantom",
+        "Label": "Start Punch Is Phantom",
+        "ControlType": 1,
+        "DataType": 2,
+        "SchemaId": "<ID_5>"
+       },
+       {
+        "Name": "$..workedSpans[*].endPunch.isPhantom",
+        "Label": "End Punch Is Phantom",
+        "ControlType": 1,
+        "DataType": 2,
+        "SchemaId": "<ID_5>"
+       },
+       {
+        "Name": "$..workedSpans[*].startPunch.employee.id",
+        "Label": "Employee Id",
+        "ControlType": 4,
+        "DataType": 6,
+        "SchemaId": "<ID_5>"
+       },
+       {
+        "Name": "$..workedSpans[*].startPunch.employee.name",
+        "Label": "Employee Name",
+        "ControlType": 4,
+        "DataType": 1,
+        "SchemaId": "<ID_5>"
+       },
+       {
+        "Name": "$.[*].employee.qualifier",
+        "Label": "Resp Employee",
+        "ControlType": 4,
+        "DataType": 1,
+        "SchemaId": "<ID_5>"
+       },
+       {
+        "Name": "$..workedSpans[*].spanId",
+        "Label": "Work Span Id",
+        "ControlType": 4,
+        "DataType": 1,
+        "SchemaId": "<ID_5>"
+       }
+      ],
+      "Id": "<ID_5>",
+      "Title": "Timecard Schema",
+      "WorkflowActionType": "LOOKUP_RECORDS",
+      "CustomSchemaSource": "Body",
+      "WorkflowJsonPath": "$..workedSpans[*]"
+     }
+    ],
+    "CustomSchemaAddingDisabled": false,
+    "CustomSchemaDataSourceType": 8
+   }
+  }
+ }
+}

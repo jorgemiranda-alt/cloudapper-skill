@@ -1,0 +1,45 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "__TRIGGERRECORD",
+  "type": "TRIGGER",
+  "data": {
+   "name": "Trigger",
+   "icon": "workflow-trigger.png",
+   "actionType": "TRIGGER",
+   "automationType": 0,
+   "triggerType": 2,
+   "typeId": "<ID_1>",
+   "triggeredOn": 1,
+   "globalVariables": {
+    "AppId": "<ID_2>",
+    "ClientId": "<CLIENT_ID>",
+    "Fields": [
+     {
+      "Name": "dayDifference",
+      "Label": "dayDifference",
+      "ControlType": 4,
+      "DataType": 6,
+      "SchemaId": "<ID_3>"
+     },
+     {
+      "Name": "currentDate",
+      "Label": "currentDate",
+      "ControlType": 11,
+      "DataType": 0,
+      "SchemaId": "<ID_3>"
+     },
+     {
+      "Name": "dateIndex",
+      "Label": "dateIndex",
+      "ControlType": 4,
+      "DataType": 6,
+      "SchemaId": "<ID_3>"
+     }
+    ],
+    "Id": "<ID_3>",
+    "Title": "Workflow Variables"
+   }
+  }
+ }
+}

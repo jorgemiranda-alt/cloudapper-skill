@@ -22,6 +22,12 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 **Caveats:** Send from a page without your hook (WP-028). The captured headers hold the bearer token: keep them in memory or session storage only, never print them, delete them afterwards. A capture that is aborted leaves the live `Version` unchanged, a sent one raises it.
 **Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: two forms (9 and 6 fields, with two dropdowns, form references and date-times) saved with `IsSaved: true`, reopened in the designer with every field, required flag and dropdown choice intact.
 
+### WP-055 Hide, make read-only or require a field depending on other fields of the same record
+**Rule:** Add an `AdvancedSettings` item to the field in the form body (WP-028): `{Id:<new GUID>, Title, Permissions:[{PermissionType:2, PermittedId:""}], FilterConfiguration:{Condition:"OR"|"AND", Rules:[{Field:<internal name of the controlling field>, Operator:"=", Value:<stored value>}]}, Properties:[{PropertyName:"HiddenInUI", Value:"Create,Edit,View"}]}`. The properties apply while the filter matches; other properties seen: `ReadOnly` (modes, empty = editable) and `ShowException` (error text for a mandatory-when-visible rule). Rules can nest (`{Condition, Rules}`). To hide a field for some values, list those values with OR.
+**Why:** The runtime evaluates the filter against the record's own field values, so one field can drive what applies on each record (for example a track code deciding which rule fields show).
+**Caveats:** Operators seen: `=`, `isEmpty`, `isNotEmpty`, `contains`; no "not equal" was seen. A dropdown stores its label, so compare labels. Open browsers show the old form until **Reload App** (platform fact 5).
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: three fields on one form hidden by a code field; after Reload App a record with another code no longer showed them, a matching record still showed its field; the same shape exists in a shared form.
+
   - Design-format fields for child forms are also in `GET DAPI user-management/get-app-data-for-design/{client}/{app}/{userId}` → `Result.EventTypes[].AllFields` (top-level in `EntityTypes`).
 - `POST DAPI EntityType/DeleteEntityType` body `{entityType:<full design object>, LiAnalyticsSetting:null}`; simplest is the designer's **Delete This Form** menu, guarded by a route that checks the form ID.
 

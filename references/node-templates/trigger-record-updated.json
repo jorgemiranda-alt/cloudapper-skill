@@ -1,0 +1,55 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "__TRIGGERRECORD",
+  "type": "TRIGGER",
+  "data": {
+   "name": "Trigger",
+   "icon": "workflow-trigger.png",
+   "actionType": "TRIGGER",
+   "automationType": 0,
+   "triggerType": 8,
+   "typeId": "<ID_1>",
+   "triggeredOn": 4,
+   "globalVariables": {
+    "AppId": "<ID_2>",
+    "ClientId": "<CLIENT_ID>",
+    "Fields": [
+     {
+      "Name": "servicePeriodTotal",
+      "Label": "servicePeriodTotal",
+      "ControlType": 4,
+      "DataType": 3,
+      "SchemaId": "<ID_3>"
+     },
+     {
+      "Name": "servicePeriodChargeTotal",
+      "Label": "servicePeriodChargeTotal",
+      "ControlType": 4,
+      "DataType": 3,
+      "SchemaId": "<ID_3>"
+     }
+    ],
+    "Id": "<ID_3>",
+    "Title": "Workflow Variables"
+   },
+   "triggerRuleset": {
+    "Condition": "AND",
+    "Rules": [
+     {
+      "Field": "integerField0",
+      "FieldNodeId": "__TRIGGERRECORD.integerField0",
+      "FieldAliasName": "",
+      "Label": "Resync Counter",
+      "Permission": 0,
+      "Operator": "=",
+      "Value": "_IsUpdated",
+      "TypeId": "<ID_1>",
+      "ControlType": 4,
+      "DataType": 6
+     }
+    ]
+   }
+  }
+ }
+}

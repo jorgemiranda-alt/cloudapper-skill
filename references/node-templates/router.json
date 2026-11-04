@@ -1,0 +1,12 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ROUTER",
+  "data": {
+   "name": "Logic Path",
+   "icon": "worklfow-router.png",
+   "actionType": "ROUTER"
+  }
+ }
+}

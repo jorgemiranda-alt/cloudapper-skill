@@ -1,0 +1,94 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ACTION",
+  "data": {
+   "name": "Get Authorization",
+   "actionType": "CONNECTOR",
+   "icon": "workflow-connector.png",
+   "connectorLogo": "<COPY FROM AN EXISTING NODE>",
+   "connectorId": "<ID_1>",
+   "connectorFilePath": "connectors/integration",
+   "connectorFileName": "Connector.TokenGenerator_v1.3.1.dll",
+   "connectorVersion": "0.0.0.2",
+   "supportsStreaming": false,
+   "connectorType": 16,
+   "connectorSpec": {
+    "ActionConfiguration": [
+     {
+      "ActionId": "TokenGeneration",
+      "ButtonCaption": "Token Generation",
+      "DefaultAction": true,
+      "Hidden": true
+     }
+    ],
+    "Properties": [
+     {
+      "Name": "restapicontrol",
+      "Label": "REST Api Spec",
+      "Hint": "Give postman spec",
+      "ControlType": 111,
+      "DataType": 8,
+      "Mandatory": true,
+      "Disabled": false,
+      "Hidden": false,
+      "Value": {
+       "Request": "{\n \"name\": \"Get token\",\n \"event\": [\n  {\n   \"listen\": \"test\",\n   \"script\": {\n    \"type\": \"text/javascript\",\n    \"exec\": [\n     \"var jsonData = pm.response.json();\",\n     \"var t = jsonData.access_token;\",\n     \"pm.environment.set(\\\"access_token\\\", t);\",\n     \"pm.collectionVariables.set(\\\"access_token\\\", t);\"\n    ]\n   }\n  }\n ],\n \"request\": {\n  \"method\": \"POST\",\n  \"header\": [\n   {\n    \"key\": \"appkey\",\n    \"value\": \"{{appKey}}\",\n    \"disabled\": true\n   }\n  ],\n  \"body\": {\n   \"mode\": \"urlencoded\",\n   \"urlencoded\": [\n    {\n     \"key\": \"username\",\n     \"value\": \"<USERNAME>\",\n     \"disabled\": true\n    },\n    {\n     \"key\": \"password\",\n     \"value\": \"<PASSWORD>\",\n     \"disabled\": true\n    },\n    {\n     \"key\": \"client_id\",\n     \"value\": \"<CLIENT_ID>\"\n    },\n    {\n     \"key\": \"client_secret\",\n     \"value\": \"<CLIENT_SECRET>\"\n    },\n    {\n     \"key\": \"grant_type\",\n     \"value\": \"client_credentials\"\n    },\n    {\n     \"key\": \"auth_chain\",\n     \"value\": \"<AUTH_CHAIN>\",\n     \"disabled\": true\n    },\n    {\n     \"key\": \"audience\",\n     \"value\": \"<AUDIENCE>\"\n    },\n    {\n     \"key\": \"organization\",\n     \"value\": \"<ORGANIZATION>\"\n    }\n   ]\n  },\n  \"url\": {\n   \"raw\": \"https://<HOST>/oauth/token\",\n   \"protocol\": \"https\",\n   \"host\": [\n    \"<HOST>\"\n   ],\n   \"path\": [\n    \"oauth\",\n    \"token\"\n   ]\n  },\n  \"description\": \"\"\n },\n \"response\": []\n}"
+      },
+      "Variables": [],
+      "ResponseNode": "root",
+      "IsInvalid": false
+     },
+     {
+      "Name": "expiresIn",
+      "Label": "Token Lifespan Route (Ex:'$.expires_in') Or Value (Ex: 3600)",
+      "Hint": "Provide a token lifespan route",
+      "ControlType": 4,
+      "DataType": 1,
+      "DisableExpressionEditor": true,
+      "Mandatory": true,
+      "Disabled": false,
+      "Hidden": false,
+      "Value": "$.expires_in",
+      "IsInvalid": false
+     },
+     {
+      "Name": "expiresInUnit",
+      "Label": "Token Lifespan Unit (Ex:'milliseconds','seconds','minutes','hours','days','months','years')",
+      "Hint": "Provide the token lifespan unit",
+      "ControlType": 4,
+      "DataType": 1,
+      "DisableExpressionEditor": true,
+      "Mandatory": true,
+      "Disabled": false,
+      "Hidden": false,
+      "Value": "seconds",
+      "IsInvalid": false
+     }
+    ],
+    "CustomSchema": [
+     {
+      "AppId": "<ID_2>",
+      "ClientId": "<CLIENT_ID>",
+      "Fields": [
+       {
+        "Name": "$.access_token",
+        "Label": "Access Token",
+        "ControlType": 4,
+        "DataType": 1,
+        "SchemaId": "<ID_3>"
+       }
+      ],
+      "Id": "<ID_3>",
+      "Title": "Token  Response",
+      "WorkflowJsonPath": "",
+      "WorkflowActionType": "LOOKUP_RECORD"
+     }
+    ],
+    "CustomSchemaAddingDisabled": true,
+    "CustomSchemaDataSourceType": 8
+   }
+  }
+ }
+}

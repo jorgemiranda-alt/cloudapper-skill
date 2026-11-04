@@ -1,0 +1,127 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ACTION",
+  "data": {
+   "actionType": "TRANSFORM_RECORDS",
+   "name": "Transform",
+   "icon": "transformer.png",
+   "sourceNodeId": "<NODE_2>",
+   "sourceNodeTypeId": "<ID_1>",
+   "typeId": "<ID_2>",
+   "entityFieldAssignment": [
+    {
+     "Field": "stringField0",
+     "FieldNodeId": "<NODE_1>.stringField0",
+     "FieldAliasName": "",
+     "Label": "Node ID",
+     "Permission": 0,
+     "Operator": "=",
+     "Value": {
+      "Name": "__exp145923__",
+      "Expression": "__arg524521__",
+      "Arguments": [
+       {
+        "Name": "__arg524521__",
+        "Field": "integerField0",
+        "FieldNodeId": "<NODE_2>.integerField0",
+        "NodeId": "<NODE_2>",
+        "TypeId": "<ID_1>",
+        "ControlType": 4,
+        "DataType": 6,
+        "Label": "Node Id"
+       }
+      ],
+      "ExpressionText": "[Business Structure (Fetch Records) . Node Id]",
+      "NodeDisplayText": ""
+     },
+     "TypeId": "<ID_2>",
+     "ControlType": 4,
+     "DataType": 1
+    },
+    {
+     "Field": "stringField1",
+     "FieldNodeId": "<NODE_1>.stringField1",
+     "FieldAliasName": "",
+     "Label": "Node Name",
+     "Permission": 0,
+     "Operator": "=",
+     "Value": {
+      "Expression": "__arg781291__",
+      "Arguments": [
+       {
+        "Name": "__arg781291__",
+        "Field": "stringField3",
+        "FieldNodeId": "<NODE_2>.stringField3",
+        "NodeId": "<NODE_2>",
+        "TypeId": "<ID_1>",
+        "ControlType": 4,
+        "DataType": 1,
+        "Label": "Node Name"
+       }
+      ]
+     },
+     "TypeId": "<ID_2>",
+     "ControlType": 4,
+     "DataType": 1
+    },
+    {
+     "Field": "stringField3",
+     "FieldNodeId": "<NODE_1>.stringField3",
+     "FieldAliasName": "",
+     "Label": "Org Path",
+     "Permission": 0,
+     "Operator": "=",
+     "Value": {
+      "Expression": "__arg363432__",
+      "Arguments": [
+       {
+        "Name": "__arg363432__",
+        "Field": "stringField6",
+        "FieldNodeId": "<NODE_2>.stringField6",
+        "NodeId": "<NODE_2>",
+        "TypeId": "<ID_1>",
+        "ControlType": 4,
+        "DataType": 1,
+        "Label": "Org Path"
+       }
+      ]
+     },
+     "TypeId": "<ID_2>",
+     "ControlType": 4,
+     "DataType": 1
+    },
+    {
+     "Field": "stringField2",
+     "FieldNodeId": "<NODE_1>.stringField2",
+     "FieldAliasName": "",
+     "Label": "Node Full Name",
+     "Permission": 0,
+     "Operator": "=",
+     "Value": {
+      "Name": "__exp882169__",
+      "Expression": "Regex.Replace( __arg577426__,\"^0+(?=\\\\d)\", \"\")",
+      "Arguments": [
+       {
+        "Name": "__arg577426__",
+        "Field": "stringField4",
+        "FieldNodeId": "<NODE_2>.stringField4",
+        "NodeId": "<NODE_2>",
+        "TypeId": "<ID_1>",
+        "ControlType": 4,
+        "DataType": 1,
+        "Label": "Node Full Name"
+       }
+      ],
+      "ExpressionText": "Regex.Replace( [Business Structure (Fetch Records) . Node Full Name],\"^0+(?=\\\\d)\", \"\")",
+      "NodeDisplayText": ""
+     },
+     "TypeId": "<ID_2>",
+     "ControlType": 4,
+     "DataType": 1
+    }
+   ]
+  }
+ }
+}

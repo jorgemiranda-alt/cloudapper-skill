@@ -1,0 +1,103 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ACTION",
+  "data": {
+   "actionType": "ASSIGN_VARIABLES",
+   "name": "Update Index",
+   "icon": "variable-assignment.png",
+   "typeId": "<ID_1>",
+   "entityFieldAssignment": [
+    {
+     "Field": {
+      "Expression": "__arg578129__",
+      "Arguments": [
+       {
+        "Name": "__arg578129__",
+        "Field": "dateIndex",
+        "FieldNodeId": "<NODE_1>.dateIndex",
+        "NodeId": "<NODE_1>",
+        "TypeId": "<ID_1>",
+        "ControlType": 4,
+        "DataType": 6,
+        "Label": "dateIndex"
+       }
+      ]
+     },
+     "FieldNodeId": "<NODE_1>.dateIndex",
+     "FieldAliasName": "",
+     "Permission": 0,
+     "Operator": "=",
+     "Value": {
+      "Name": "__exp557147__",
+      "Expression": "__arg386628__ + 1",
+      "Arguments": [
+       {
+        "Name": "__arg386628__",
+        "Field": "dateIndex",
+        "FieldNodeId": "__GLOBALVARIABLES.dateIndex",
+        "NodeId": "__GLOBALVARIABLES",
+        "TypeId": "<ID_1>",
+        "ControlType": 4,
+        "DataType": 6,
+        "Label": "dateIndex"
+       }
+      ],
+      "ExpressionText": "[Workflow Variables (Trigger) . dateIndex] + 1",
+      "NodeDisplayText": ""
+     }
+    },
+    {
+     "Field": {
+      "Expression": "__arg140183__",
+      "Arguments": [
+       {
+        "Name": "__arg140183__",
+        "Field": "currentDate",
+        "FieldNodeId": "<NODE_1>.currentDate",
+        "NodeId": "<NODE_1>",
+        "TypeId": "<ID_1>",
+        "ControlType": 11,
+        "DataType": 0,
+        "Label": "currentDate"
+       }
+      ]
+     },
+     "FieldNodeId": "<NODE_1>.currentDate",
+     "FieldAliasName": "",
+     "Permission": 0,
+     "Operator": "=",
+     "Value": {
+      "Name": "__exp117779__",
+      "Expression": "AddDays(__arg976509__, __arg647547__)",
+      "Arguments": [
+       {
+        "Name": "__arg976509__",
+        "Field": "dateField0",
+        "FieldNodeId": "__TRIGGERRECORD.dateField0",
+        "NodeId": "__TRIGGERRECORD",
+        "TypeId": "<ID_2>",
+        "ControlType": 11,
+        "DataType": 0,
+        "Label": "Start Date"
+       },
+       {
+        "Name": "__arg647547__",
+        "Field": "dateIndex",
+        "FieldNodeId": "__GLOBALVARIABLES.dateIndex",
+        "NodeId": "__GLOBALVARIABLES",
+        "TypeId": "<ID_1>",
+        "ControlType": 4,
+        "DataType": 6,
+        "Label": "dateIndex"
+       }
+      ],
+      "ExpressionText": "AddDays([Calculation Run (Trigger) . Start Date], [Workflow Variables (Trigger) . dateIndex])",
+      "NodeDisplayText": ""
+     }
+    }
+   ]
+  }
+ }
+}

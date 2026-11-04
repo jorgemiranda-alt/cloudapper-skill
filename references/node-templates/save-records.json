@@ -1,0 +1,14 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ACTION",
+  "data": {
+   "actionType": "SAVE_RECORDS",
+   "name": "Save Records",
+   "icon": "save-records.png",
+   "sourceNodeId": "<NODE_2>",
+   "createUser": false
+  }
+ }
+}

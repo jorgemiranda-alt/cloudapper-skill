@@ -56,3 +56,6 @@ One line per entry: ID, file, title. Grep this for an ID or a keyword, then read
 - WP-052 `wp-data-expressions.md` Use the Expression Editor's built-in time zone functions, and skip conversion when both sides are already local
 - WP-053 `api-workflows.md` Copy a designer-saved node whole and change only the values; don't rewrite ids or paths
 - WP-054 `wp-data-expressions.md` Before adding an update path after a lookup, make sure the lookup can only match the right record
+- WP-055 `api-forms-menus.md` Hide, make read-only or require a field depending on other fields of the same record
+- WP-056 `wp-integrations.md` Detect "batch full or last item" with counters, and build the list in a text variable
+- WP-057 `wp-integrations.md` Put a variable in a REST connector by an `__expN__` placeholder plus a `Variables` entry

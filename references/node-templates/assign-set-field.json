@@ -1,0 +1,64 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ACTION",
+  "data": {
+   "actionType": "ASSIGN_VARIABLES",
+   "name": "Update Variable",
+   "icon": "variable-assignment.png",
+   "typeId": "<ID_1>",
+   "entityFieldAssignment": [
+    {
+     "Field": {
+      "Expression": "__arg461316__",
+      "Arguments": [
+       {
+        "Name": "__arg461316__",
+        "Field": "Hours",
+        "FieldNodeId": "<NODE_1>.Hours",
+        "NodeId": "<NODE_1>",
+        "TypeId": "<ID_1>",
+        "ControlType": 33,
+        "DataType": 0,
+        "Label": "Hours"
+       }
+      ]
+     },
+     "FieldNodeId": "<NODE_1>.Hours",
+     "FieldAliasName": "",
+     "Permission": 0,
+     "Operator": "=",
+     "Value": {
+      "Name": "__exp156170__",
+      "Expression": "(__arg576918__  >=  __arg520645__  ? ( __arg576918__ - __arg520645__ ) : (__arg576918__.AddDays( 1 ) - __arg520645__)).TotalHours",
+      "Arguments": [
+       {
+        "Name": "__arg576918__",
+        "Field": "dateField1",
+        "FieldNodeId": "<NODE_2>.dateField1",
+        "NodeId": "<NODE_2>",
+        "TypeId": "<ID_2>",
+        "ControlType": 3,
+        "DataType": 0,
+        "Label": "End Date Time"
+       },
+       {
+        "Name": "__arg520645__",
+        "Field": "dateField0",
+        "FieldNodeId": "<NODE_2>.dateField0",
+        "NodeId": "<NODE_2>",
+        "TypeId": "<ID_2>",
+        "ControlType": 3,
+        "DataType": 0,
+        "Label": "Start Date Time"
+       }
+      ],
+      "ExpressionText": "([Timecard (Iterator) . End Date Time]  >=  [Timecard (Iterator) . Start Date Time]  ? ( [Timecard (Iterator) . End Date Time] - [Timecard (Iterator) . Start Date Time] ) : ([Timecard (Iterator) . End Date Time].AddDays( 1 ) - [Timecard (Iterator) . Start Date Time])).TotalHours",
+      "NodeDisplayText": ""
+     }
+    }
+   ]
+  }
+ }
+}

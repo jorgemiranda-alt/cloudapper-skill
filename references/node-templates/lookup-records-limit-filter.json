@@ -1,0 +1,87 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ACTION",
+  "data": {
+   "name": "Fetch Tips",
+   "icon": "record-fetch-action.png",
+   "actionType": "LOOKUP_RECORDS",
+   "typeId": "<ID_1>",
+   "fetchRecordOutput": 0,
+   "filterMaxRowCount": 20,
+   "ruleSet": {
+    "Condition": "AND",
+    "Rules": [
+     {
+      "Field": "stringField1",
+      "FieldNodeId": "<NODE_1>.stringField1",
+      "FieldAliasName": "",
+      "Label": "Store No",
+      "Permission": 0,
+      "Operator": "=",
+      "Value": {
+       "Expression": "__arg745234__",
+       "Arguments": [
+        {
+         "Name": "__arg745234__",
+         "Field": {
+          "Expression": "__arg306983__",
+          "Arguments": [
+           {
+            "Name": "__arg306983__",
+            "Field": "stringField2",
+            "FieldNodeId": "__TRIGGERRECORD.<ID_2>.stringField0.stringField2",
+            "NodeId": "stringField0",
+            "TypeId": "<ID_2>",
+            "ControlType": 4,
+            "DataType": 1,
+            "Label": "Full Name"
+           }
+          ]
+         },
+         "FieldNodeId": "__TRIGGERRECORD.<ID_2>.stringField0",
+         "NodeId": "__TRIGGERRECORD",
+         "TypeId": "<ID_3>",
+         "ControlType": 12,
+         "DataType": 0,
+         "Label": "Location"
+        }
+       ]
+      },
+      "TypeId": "<ID_1>",
+      "ControlType": 4,
+      "DataType": 1
+     },
+     {
+      "Field": "dateField2",
+      "FieldNodeId": "<NODE_1>.dateField2",
+      "FieldAliasName": "",
+      "Label": "Report Date",
+      "Permission": 0,
+      "Operator": "=",
+      "Value": {
+       "Expression": "__arg806876__",
+       "Arguments": [
+        {
+         "Name": "__arg806876__",
+         "Field": "dateField0",
+         "FieldNodeId": "__TRIGGERRECORD.dateField0",
+         "NodeId": "__TRIGGERRECORD",
+         "TypeId": "<ID_3>",
+         "ControlType": 11,
+         "DataType": 0,
+         "Label": "Service Date"
+        }
+       ]
+      },
+      "TypeId": "<ID_1>",
+      "ControlType": 11,
+      "DataType": 0
+     }
+    ]
+   },
+   "filterSorting": []
+  }
+ }
+}

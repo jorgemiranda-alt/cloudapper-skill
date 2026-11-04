@@ -1,0 +1,77 @@
+{
+ "origin": "api-built, validated (0 errors); the same nodes ran in another workflow; this copy not run",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ACTION",
+  "data": {
+   "name": "02 Add Employee To Batch",
+   "icon": "variable-assignment.png",
+   "actionType": "ASSIGN_VARIABLES",
+   "typeId": "<ID_1>",
+   "entityFieldAssignment": [
+    {
+     "Field": {
+      "Expression": "__arg910007__",
+      "Arguments": [
+       {
+        "Name": "__arg910007__",
+        "Field": "batchList",
+        "FieldNodeId": "<NODE_1>.batchList",
+        "NodeId": "<NODE_1>",
+        "TypeId": "<ID_1>",
+        "ControlType": 4,
+        "DataType": 1,
+        "Label": "batchList"
+       }
+      ]
+     },
+     "FieldNodeId": "<NODE_1>.batchList",
+     "FieldAliasName": "",
+     "Label": "batchList",
+     "Permission": 0,
+     "Operator": "=",
+     "Value": {
+      "Expression": "__arg910004__ + (__arg910005__ == 0 ? \"\" : \",\") + \"\\\\\\\"\" + __arg910006__ + \"\\\\\\\"\"",
+      "Arguments": [
+       {
+        "Name": "__arg910004__",
+        "Field": "batchList",
+        "FieldNodeId": "__GLOBALVARIABLES.batchList",
+        "NodeId": "__GLOBALVARIABLES",
+        "TypeId": "<ID_1>",
+        "ControlType": 4,
+        "DataType": 1,
+        "Label": "batchList"
+       },
+       {
+        "Name": "__arg910005__",
+        "Field": "batchCount",
+        "FieldNodeId": "__GLOBALVARIABLES.batchCount",
+        "NodeId": "__GLOBALVARIABLES",
+        "TypeId": "<ID_1>",
+        "ControlType": 4,
+        "DataType": 6,
+        "Label": "batchCount"
+       },
+       {
+        "Name": "__arg910006__",
+        "Field": "stringField2",
+        "FieldNodeId": "<NODE_2>.stringField2",
+        "NodeId": "<NODE_2>",
+        "TypeId": "<ID_2>",
+        "ControlType": 4,
+        "DataType": 1,
+        "Label": "Person Number"
+       }
+      ],
+      "ExpressionText": "[Workflow Variables (Trigger) . batchList] + ([Workflow Variables (Trigger) . batchCount] == 0 ? \"\" : \",\") + \"\\\\\\\"\" + [Employee (Iterator) . Person Number] + \"\\\\\\\"\"",
+      "NodeDisplayText": ""
+     },
+     "TypeId": "<ID_1>",
+     "ControlType": 4,
+     "DataType": 1
+    }
+   ]
+  }
+ }
+}

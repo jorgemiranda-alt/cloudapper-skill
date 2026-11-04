@@ -1,0 +1,14 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "__TRIGGERRECORD",
+  "type": "TRIGGER",
+  "data": {
+   "name": "Trigger",
+   "icon": "workflow-trigger.png",
+   "actionType": "TRIGGER",
+   "automationType": 0,
+   "triggerType": 4
+  }
+ }
+}

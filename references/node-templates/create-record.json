@@ -1,0 +1,92 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ACTION",
+  "data": {
+   "actionType": "CREATE_RECORD",
+   "name": "Create Sync Request (On Demand)",
+   "icon": "record-add-action.png",
+   "typeId": "<ID_1>",
+   "entityFieldAssignment": [
+    {
+     "Field": "stringField0",
+     "FieldNodeId": "<NODE_1>.stringField0",
+     "FieldAliasName": "",
+     "Label": "Workflow Type",
+     "Permission": 0,
+     "Operator": "=",
+     "Value": "Sync Time Entries",
+     "TypeId": "<ID_1>",
+     "ControlType": 2,
+     "DataType": 0
+    },
+    {
+     "Field": "stringField2",
+     "FieldNodeId": "<NODE_1>.stringField2",
+     "FieldAliasName": "",
+     "Label": "Status",
+     "Permission": 0,
+     "Operator": "=",
+     "Value": "In Progress",
+     "TypeId": "<ID_1>",
+     "ControlType": 2,
+     "DataType": 0
+    },
+    {
+     "Field": "dateField0",
+     "FieldNodeId": "<NODE_1>.dateField0",
+     "FieldAliasName": "",
+     "Label": "Start Date",
+     "Permission": 0,
+     "Operator": "=",
+     "Value": {
+      "Expression": "__arg960010__",
+      "Arguments": [
+       {
+        "Name": "__arg960010__",
+        "Field": "dateField0",
+        "FieldNodeId": "__TRIGGERRECORD.dateField0",
+        "NodeId": "__TRIGGERRECORD",
+        "TypeId": "<ID_2>",
+        "ControlType": 11,
+        "DataType": 0,
+        "Label": "Start Date"
+       }
+      ]
+     },
+     "TypeId": "<ID_1>",
+     "ControlType": 11,
+     "DataType": 0
+    },
+    {
+     "Field": "dateField1",
+     "FieldNodeId": "<NODE_1>.dateField1",
+     "FieldAliasName": "",
+     "Label": "End Date",
+     "Permission": 0,
+     "Operator": "=",
+     "Value": {
+      "Expression": "__arg435914__",
+      "Arguments": [
+       {
+        "Name": "__arg435914__",
+        "Field": "dateField1",
+        "FieldNodeId": "__TRIGGERRECORD.dateField1",
+        "NodeId": "__TRIGGERRECORD",
+        "TypeId": "<ID_2>",
+        "ControlType": 11,
+        "DataType": 0,
+        "Label": "End Date"
+       }
+      ]
+     },
+     "TypeId": "<ID_1>",
+     "ControlType": 11,
+     "DataType": 0
+    }
+   ],
+   "createUser": false
+  }
+ }
+}

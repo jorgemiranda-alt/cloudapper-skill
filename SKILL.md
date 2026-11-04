@@ -15,6 +15,7 @@ This file holds the rules that apply to every task. Read the reference that matc
 | Find a WP-0xx rule by ID or keyword: grep, then read only that entry | `references/wp-index.md` |
 | APIs: auth `references/api-reference.md`, records `references/api-records.md`, workflow JSON `references/api-workflows.md`, forms/menus/roles/UI workflows `references/api-forms-menus.md`, reports `references/api-reports.md` | one file |
 | Workflows: triggers/loops `references/wp-triggers-loops.md`, routers/errors `references/wp-routers-errors.md`, sync `references/wp-integrations.md`, data/expressions `references/wp-data-expressions.md`, debugging/safe change `references/wp-procedures.md`, entry format `references/workflow-patterns.md` | one file |
+| Build or change workflow nodes through the API (JSON shape per actionType, trigger codes, id rewriting) | `references/node-templates.md` |
 | Drive the browser with the Playwright MCP | `references/playwright-efficiency.md` |
 | Copy features or a whole app from one app/account to another | `references/copy-between-apps.md` |
 | Build a new app or form in the designer | `references/building-apps.md` |

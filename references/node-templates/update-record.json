@@ -1,0 +1,73 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ACTION",
+  "data": {
+   "actionType": "UPDATE_RECORD",
+   "name": "Update Record",
+   "icon": "record-update-action.png",
+   "typeId": "<ID_1>",
+   "entityFieldAssignment": [
+    {
+     "Field": "stringField5",
+     "FieldNodeId": "<NODE_1>.<ID_2>.stringField5",
+     "FieldAliasName": "",
+     "Label": "Location",
+     "Permission": 0,
+     "Operator": "=",
+     "Value": {
+      "Expression": "__arg962317__",
+      "Arguments": [
+       {
+        "Name": "__arg962317__",
+        "Field": "id",
+        "FieldNodeId": "<NODE_2>",
+        "NodeId": "<NODE_2>",
+        "TypeId": "<ID_2>",
+        "ControlType": 4,
+        "DataType": 1,
+        "Label": "Location"
+       }
+      ]
+     },
+     "TypeId": "<ID_1>",
+     "ControlType": 12,
+     "DataType": 0
+    }
+   ],
+   "ruleSet": {
+    "Condition": "AND",
+    "Rules": [
+     {
+      "Field": "id",
+      "FieldNodeId": "<NODE_1>",
+      "FieldAliasName": "",
+      "Label": "Tip Data",
+      "Permission": 0,
+      "Operator": "=",
+      "Value": {
+       "Expression": "__arg198079__",
+       "Arguments": [
+        {
+         "Name": "__arg198079__",
+         "Field": "id",
+         "FieldNodeId": "<NODE_3>",
+         "NodeId": "<NODE_3>",
+         "TypeId": "<ID_1>",
+         "ControlType": 4,
+         "DataType": 1,
+         "Label": "Tip Data"
+        }
+       ]
+      },
+      "TypeId": "<ID_1>",
+      "ControlType": 4,
+      "DataType": 1
+     }
+    ]
+   },
+   "createUser": false
+  }
+ }
+}

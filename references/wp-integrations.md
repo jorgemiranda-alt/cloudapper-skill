@@ -7,6 +7,7 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 ### WP-016 Batched external sync with one token
 **Rule:** One token per run or batch. Counter vars → Iterator appends IDs → route "batch full OR last item" → build the batch payload (e.g. `multi_read`) → POST → `200` route → Transform → Save Records → reset vars.
 **Why:** A token per item wastes calls; one token for a very long run can expire → late 401s.
+**Caveats:** Node shapes for every step: `node-templates.md`; the last-item test and the list format: WP-056; variables in the request: WP-057.
 **Status:** Observed · baseline
 
 ### WP-017 Scheduled syncs must upsert
@@ -58,4 +59,16 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 **Why:** The per-employee GET costs one call per person; the list form fits the batching in WP-016.
 **Example:** worked time is at `workedShifts[*].workedSpans[*]`, each span with `startPunch` / `endPunch` (each has `isPhantom`), `primaryOrgJob` (path in `qualifier`) and `transferOrgJob`.
 **Caveats:** `isPhantom = true` marks a punch UKG created (a missing punch, or a midnight split); with `breakSpanAtMidnight` off, it should mean a missing punch only (untested). The `select` list is also optional on the per-employee GET.
-**Status:** Hypothesis · checked 2026-11 · Studio 8.2.0.25 · Evidence: body and response shape read from the vendor's published API spec and a sample response; the batched call was not yet confirmed end to end.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: body and response shape from the vendor's API spec; a UAT workflow posting batches of 50 person numbers logged five successful runs with every step OK (written values not re-checked).
+
+### WP-056 Detect "batch full or last item" with counters, and build the list in a text variable
+**Rule:** Keep three variables: `batchList` (text), `batchCount` and `index` (numbers). Inside the FOREACH: set `batchList = batchList + (batchCount == 0 ? "" : ",") + "\\\"" + <item field> + "\\\""`, then `batchCount + 1` and `index + 1`; then a ROUTE with `Condition: "OR"`: `batchCount >= <size>` OR `index >= <lookup>.Count`. Inside the route: call, log, then reset `batchList = ""` and `batchCount = 0`.
+**Why:** A FOREACH exposes only the current item: there is no index or last-item flag, so the last partial batch is caught by comparing the counter with the lookup's `Count` output.
+**Caveats:** Use `>=`, not `=`. Reset `index` before the loop. The escaped quotes make each item a JSON string, so `[__expN__]` in the request body becomes `["a","b"]`. Shapes: `node-templates/assign-append-text.json`, `route-batch-full-or-last.json`.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: two UAT workflows with this loop logged successful runs (all steps OK); a copy rebuilt from templates passed `validate-workflows.js` with 0 errors, opened in the editor without errors, and ran 1,000 records in batches of 50 in 23 s with every step OK.
+
+### WP-057 Put a variable in a REST connector by an `__expN__` placeholder plus a `Variables` entry
+**Rule:** In the REST connector's `Properties[0].Value.Request` (a Postman request as a JSON string), write `__expN__` where the value goes (URL, query, raw body, or the bearer token value), and add `{Name: "__expN__", Expression, Arguments, ExpressionText, NodeDisplayText: ""}` to `Properties[0].Variables`. Use the token generator's output `<tokenNode>.<schemaId>.$.access_token` for the bearer value.
+**Why:** The connector substitutes each placeholder from `Variables` at run time; a placeholder without an entry is sent as literal text.
+**Caveats:** Format dates in the variable expression (`[...].ToString( "yyyy-MM-dd" )`). Response fields must come from the designer (WP-046). Template: `node-templates/connector-rest-post-variable-body.json`.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: read from designer-saved REST nodes (GET with query placeholders) and a POST body edited through the API that logged successful runs.

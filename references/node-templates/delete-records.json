@@ -1,0 +1,33 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ACTION",
+  "data": {
+   "name": "Delete Records",
+   "icon": "record-delete-action.png",
+   "actionType": "DELETE_RECORDS",
+   "typeId": "<ID_1>",
+   "filterMaxRowCount": 4400,
+   "ruleSet": {
+    "Condition": "AND",
+    "Rules": [
+     {
+      "Field": "integerField0",
+      "FieldNodeId": "<NODE_1>.integerField0",
+      "FieldAliasName": "",
+      "Label": "Person Id",
+      "Permission": 0,
+      "Operator": "isNotEmpty",
+      "Value": null,
+      "TypeId": "<ID_1>",
+      "ControlType": 4,
+      "DataType": 6,
+      "Pattern": ""
+     }
+    ]
+   },
+   "filterSorting": []
+  }
+ }
+}

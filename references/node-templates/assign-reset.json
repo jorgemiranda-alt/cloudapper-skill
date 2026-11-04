@@ -1,0 +1,77 @@
+{
+ "origin": "api-built, validated (0 errors); the same nodes ran in another workflow; this copy not run",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ACTION",
+  "data": {
+   "name": "04 Reset Batch",
+   "icon": "variable-assignment.png",
+   "actionType": "ASSIGN_VARIABLES",
+   "typeId": "<ID_1>",
+   "entityFieldAssignment": [
+    {
+     "Field": {
+      "Expression": "__arg910035__",
+      "Arguments": [
+       {
+        "Name": "__arg910035__",
+        "Field": "batchList",
+        "FieldNodeId": "<NODE_1>.batchList",
+        "NodeId": "<NODE_1>",
+        "TypeId": "<ID_1>",
+        "ControlType": 4,
+        "DataType": 1,
+        "Label": "batchList"
+       }
+      ]
+     },
+     "FieldNodeId": "<NODE_1>.batchList",
+     "FieldAliasName": "",
+     "Label": "batchList",
+     "Permission": 0,
+     "Operator": "=",
+     "Value": {
+      "Expression": "\"\"",
+      "Arguments": [],
+      "ExpressionText": "",
+      "NodeDisplayText": ""
+     },
+     "TypeId": "<ID_1>",
+     "ControlType": 4,
+     "DataType": 1
+    },
+    {
+     "Field": {
+      "Expression": "__arg910036__",
+      "Arguments": [
+       {
+        "Name": "__arg910036__",
+        "Field": "batchCount",
+        "FieldNodeId": "<NODE_1>.batchCount",
+        "NodeId": "<NODE_1>",
+        "TypeId": "<ID_1>",
+        "ControlType": 4,
+        "DataType": 6,
+        "Label": "batchCount"
+       }
+      ]
+     },
+     "FieldNodeId": "<NODE_1>.batchCount",
+     "FieldAliasName": "",
+     "Label": "batchCount",
+     "Permission": 0,
+     "Operator": "=",
+     "Value": {
+      "Expression": "0",
+      "Arguments": [],
+      "ExpressionText": "",
+      "NodeDisplayText": ""
+     },
+     "TypeId": "<ID_1>",
+     "ControlType": 4,
+     "DataType": 6
+    }
+   ]
+  }
+ }
+}

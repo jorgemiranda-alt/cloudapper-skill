@@ -1,0 +1,67 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "FOREACH",
+  "data": {
+   "name": "Iterate Days",
+   "icon": "workflow-iterator.png",
+   "actionType": "FOREACH",
+   "iterationMode": "WHILE",
+   "typeId": "",
+   "sourceNodeId": "",
+   "loopCondition": "__exp144444__",
+   "maxIteration": "__exp545515__",
+   "maxIterationVariables": [
+    {
+     "Name": "__exp545515__",
+     "Expression": "__arg644520__ + 1",
+     "Arguments": [
+      {
+       "Name": "__arg644520__",
+       "Field": "dayDifference",
+       "FieldNodeId": "__GLOBALVARIABLES.dayDifference",
+       "NodeId": "__GLOBALVARIABLES",
+       "TypeId": "<ID_1>",
+       "ControlType": 4,
+       "DataType": 6,
+       "Label": "dayDifference"
+      }
+     ],
+     "ExpressionText": "[Workflow Variables (Trigger) . dayDifference] + 1",
+     "NodeDisplayText": ""
+    }
+   ],
+   "loopConditionVariables": [
+    {
+     "Name": "__exp144444__",
+     "Expression": "__arg263257__ <= __arg590133__",
+     "Arguments": [
+      {
+       "Name": "__arg263257__",
+       "Field": "dateIndex",
+       "FieldNodeId": "__GLOBALVARIABLES.dateIndex",
+       "NodeId": "__GLOBALVARIABLES",
+       "TypeId": "<ID_1>",
+       "ControlType": 4,
+       "DataType": 6,
+       "Label": "dateIndex"
+      },
+      {
+       "Name": "__arg590133__",
+       "Field": "dayDifference",
+       "FieldNodeId": "__GLOBALVARIABLES.dayDifference",
+       "NodeId": "__GLOBALVARIABLES",
+       "TypeId": "<ID_1>",
+       "ControlType": 4,
+       "DataType": 6,
+       "Label": "dayDifference"
+      }
+     ],
+     "ExpressionText": "[Workflow Variables (Trigger) . dateIndex] <= [Workflow Variables (Trigger) . dayDifference]",
+     "NodeDisplayText": ""
+    }
+   ]
+  }
+ }
+}

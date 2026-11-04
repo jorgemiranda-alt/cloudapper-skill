@@ -46,6 +46,16 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 - Before saving, run `scripts/validate-workflows.js` with `workflows: [<built JSON>]`; after saving, run it on the workflow again (WP-038).
 - After saving, open **every** new node in the editor and clear its errors before asking the user to run anything: a clean run log does not show that the editor can read the node. Then check the first run's records, not only its status: a filter that resolves to empty can run cleanly and link every row to the same record (WP-033).
 
+### Build a workflow from scratch
+
+1. Confirm UAT and the client id in the URL. Create the empty workflow **off**: `POST v3/Workflows` with `Status: 2`, the trigger node from `node-templates/trigger-*.json` and the global variables it needs (`node-templates.md` §2).
+2. Build each node from `node-templates/` (or a designer node in the same app, WP-053): new ids, real form/field ids from `GET v3/forms`, ids rewritten across the subtree (`node-templates.md` §1). Batch loops: WP-016, WP-056; REST variables: WP-057.
+3. Run `scripts/validate-workflows.js` on the built JSON, save with `PUT`, run it again; fix every error.
+4. Read the workflow back and compare each node with its template (type, keys, operators, `ExpressionText`).
+5. Open every new node in the builder once and clear its errors; close with Close, not Done. Connector response fields need a designer Validate (WP-046).
+6. The user runs it on test records; check with `scripts/verify-workflow-run.js` and the written records (WP-039).
+7. Only then, and only when the user asks, turn it on.
+
 ### Safe-change checklist
 
 1. Environment confirmed (UAT unless told otherwise). 2. Backup of every workflow touched. 3. Change through a template-based builder. 4. Verify: read-back, builder renders, order and on/off unchanged unless intended. 5. The user runs the test on a test record. Read the execution logs and records with `scripts/verify-workflow-run.js` and business checks (WP-039), and report timings and results.

@@ -1,0 +1,17 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "FOREACH",
+  "data": {
+   "name": "Iterator",
+   "icon": "workflow-iterator.png",
+   "actionType": "FOREACH",
+   "iterationMode": "FOREACH",
+   "typeId": "<ID_1>",
+   "sourceNodeId": "<NODE_2>",
+   "loopCondition": "",
+   "maxIteration": ""
+  }
+ }
+}

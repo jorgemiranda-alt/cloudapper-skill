@@ -1,0 +1,53 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ROUTE",
+  "data": {
+   "name": "If Employee ID Same",
+   "icon": "workflow-logic-path.png",
+   "actionType": "ROUTE",
+   "ruleSet": {
+    "Condition": "AND",
+    "Rules": [
+     {
+      "Field": {
+       "Expression": "__arg875535__",
+       "Arguments": [
+        {
+         "Name": "__arg875535__",
+         "Field": "integerField0",
+         "FieldNodeId": "<NODE_2>.integerField0",
+         "NodeId": "<NODE_2>",
+         "TypeId": "<ID_1>",
+         "ControlType": 4,
+         "DataType": 6,
+         "Label": "Person Id"
+        }
+       ]
+      },
+      "FieldNodeId": "<NODE_2>.integerField0",
+      "FieldAliasName": "",
+      "Permission": 0,
+      "Operator": "=",
+      "Value": {
+       "Expression": "__arg497510__",
+       "Arguments": [
+        {
+         "Name": "__arg497510__",
+         "Field": "integerField0",
+         "FieldNodeId": "<NODE_3>.integerField0",
+         "NodeId": "<NODE_3>",
+         "TypeId": "<ID_2>",
+         "ControlType": 4,
+         "DataType": 6,
+         "Label": "Employee ID"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ }
+}

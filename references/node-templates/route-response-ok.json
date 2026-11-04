@@ -1,0 +1,39 @@
+{
+ "origin": "designer",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ROUTE",
+  "data": {
+   "name": "If OK",
+   "icon": "workflow-logic-path.png",
+   "actionType": "ROUTE",
+   "ruleSet": {
+    "Condition": "AND",
+    "Rules": [
+     {
+      "Field": {
+       "Expression": "__arg721008__",
+       "Arguments": [
+        {
+         "Name": "__arg721008__",
+         "Field": "ResponseCode",
+         "FieldNodeId": "<NODE_2>.<ID_1>.ResponseCode",
+         "NodeId": "<NODE_2>",
+         "TypeId": "<ID_1>",
+         "ControlType": 4,
+         "DataType": 6,
+         "Label": "Response Code"
+        }
+       ]
+      },
+      "FieldNodeId": "<NODE_2>.<ID_1>.ResponseCode",
+      "FieldAliasName": "",
+      "Permission": 0,
+      "Operator": "=",
+      "Value": 200
+     }
+    ]
+   }
+  }
+ }
+}

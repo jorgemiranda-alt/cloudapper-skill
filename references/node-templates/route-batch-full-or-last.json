@@ -1,0 +1,77 @@
+{
+ "origin": "api-built, validated (0 errors); the same nodes ran in another workflow; this copy not run",
+ "node": {
+  "id": "<NODE_1>",
+  "type": "ROUTE",
+  "data": {
+   "name": "Batch Full Or Last Employee",
+   "icon": "workflow-logic-path.png",
+   "actionType": "ROUTE",
+   "ruleSet": {
+    "Condition": "OR",
+    "Rules": [
+     {
+      "Field": {
+       "Expression": "__arg910012__",
+       "Arguments": [
+        {
+         "Name": "__arg910012__",
+         "Field": "batchCount",
+         "FieldNodeId": "__GLOBALVARIABLES.batchCount",
+         "NodeId": "__GLOBALVARIABLES",
+         "TypeId": "<ID_1>",
+         "ControlType": 4,
+         "DataType": 6,
+         "Label": "batchCount"
+        }
+       ]
+      },
+      "FieldNodeId": "__GLOBALVARIABLES.batchCount",
+      "FieldAliasName": "",
+      "Permission": 0,
+      "Operator": ">=",
+      "Value": 50,
+      "Pattern": ""
+     },
+     {
+      "Field": {
+       "Expression": "__arg910013__",
+       "Arguments": [
+        {
+         "Name": "__arg910013__",
+         "Field": "empIndex",
+         "FieldNodeId": "__GLOBALVARIABLES.empIndex",
+         "NodeId": "__GLOBALVARIABLES",
+         "TypeId": "<ID_1>",
+         "ControlType": 4,
+         "DataType": 6,
+         "Label": "empIndex"
+        }
+       ]
+      },
+      "FieldNodeId": "__GLOBALVARIABLES.empIndex",
+      "FieldAliasName": "",
+      "Permission": 0,
+      "Operator": ">=",
+      "Value": {
+       "Expression": "__arg910014__",
+       "Arguments": [
+        {
+         "Name": "__arg910014__",
+         "Field": "Count",
+         "FieldNodeId": "<NODE_2>.Count",
+         "NodeId": "<NODE_2>",
+         "TypeId": "<ID_2>",
+         "ControlType": 4,
+         "DataType": 6,
+         "Label": "Count"
+        }
+       ]
+      },
+      "Pattern": ""
+     }
+    ]
+   }
+  }
+ }
+}

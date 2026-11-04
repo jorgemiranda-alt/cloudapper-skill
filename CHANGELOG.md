@@ -4,6 +4,9 @@ One line per change: date, what changed, entry IDs. Newest first.
 
 ## 2026-11
 
+- 2026-11-04: Added `references/node-templates.md` and `references/node-templates/` (24 node templates, one or more per actionType, read back from a UAT app and generalized; origin marked designer or API-built-and-ran), WP-056 (batch-full-or-last loop with counters and a text list) and WP-057 (REST connector variables), status Observed; WP-050 to Observed from run logs; a WP-016 caveat; a "Build a workflow from scratch" procedure in `wp-procedures.md`; a row in `SKILL.md`.
+
+- 2026-11-04: Added WP-055 (field-level `AdvancedSettings` rules: hide, read-only or mandatory-when-visible from other fields of the same record, with the JSON shape, operators seen and the Reload App caveat) in `api-forms-menus.md`; status Observed.
 - 2026-11-04: Merged PR #10 and applied its drafts as WP-052 (built-in time zone functions), WP-053 (copy a designer-saved node whole) and WP-054 (narrow a lookup before an update path); status Hypothesis. Fixed the SKILL.md description YAML.
 - 2026-11-04: Skill optimization: `validate-workflows.js` and `verify-workflow-run.js` run through the Playwright loader (function options as source strings); description cut from 987 to 479 characters; `platform-model.md` split into `platform-data.md` and `platform-workflows.md`; inbox drafts applied as WP-046 to WP-051 (Hypothesis) and `inbox/` removed; eval 10 updated to the direct-edit flow. Re-checked WP-001 and WP-005 from execution logs; WP-005 gains a caveat: async-triggered runs overlap.
 - 2026-11-04: WP-045 freshness check (`since` fingerprint of form/workflow versions and a sorted hash of menus, roles, privileges, relations; menus come back in random order), `save_server.py` serves `app.json`, and `scripts/app_change_hook.py` PostToolUse hook that reminds Claude to re-export after a design write.
