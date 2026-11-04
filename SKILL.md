@@ -12,8 +12,9 @@ This file holds the rules that apply to every task. Read the reference that matc
 | Task | Read |
 |---|---|
 | Understand how the platform works (forms, fields, workflows, reports, caching) | `references/platform-model.md` |
-| Call the APIs (records, workflows, forms, menus, roles, UI workflows, reports) | `references/api-reference.md` |
-| Build or change a workflow; debug one that "doesn't fire" or is slow | `references/workflow-patterns.md` |
+| Find a WP-0xx rule by ID or keyword: grep, then read only that entry | `references/wp-index.md` |
+| APIs: auth `references/api-reference.md`, records `references/api-records.md`, workflow JSON `references/api-workflows.md`, forms/menus/roles/UI workflows `references/api-forms-menus.md`, reports `references/api-reports.md` | one file |
+| Workflows: triggers/loops `references/wp-triggers-loops.md`, routers/errors `references/wp-routers-errors.md`, sync `references/wp-integrations.md`, data/expressions `references/wp-data-expressions.md`, debugging/safe change `references/wp-procedures.md`, entry format `references/workflow-patterns.md` | one file |
 | Drive the browser with the Playwright MCP | `references/playwright-efficiency.md` |
 | Copy features or a whole app from one app/account to another | `references/copy-between-apps.md` |
 | Build a new app or form in the designer | `references/building-apps.md` |
@@ -44,7 +45,7 @@ Most CloudApper customers have a **Production** app and a **UAT** (test) app, of
 
 ## The six platform facts that cause most surprises
 
-Learned the hard way; details and evidence in `references/workflow-patterns.md`.
+Learned the hard way; details and evidence via `references/wp-index.md`.
 
 1. **Workflow order matters (WP-001).** A record created/updated by a workflow only triggers workflows that sit **later in the workflow list** (higher Sequence). A workflow placed after its target fires nothing. Keep the list order identical between environments.
 2. **The designer does hidden side work that the API does not.** Creating a form in the designer also grants the admin role access (privilege 32655). Saving a form body through the API creates the form and its default menus but **not** the privilege, so the menus stay hidden in the runtime. Child forms also need their own parent-child relation call.
@@ -55,24 +56,15 @@ Learned the hard way; details and evidence in `references/workflow-patterns.md`.
 
 ## How to work efficiently
 
-- **Building or changing an app: export it first** (`scripts/export-app.js`, WP-045) and answer "what uses/triggers/writes X" from the export or `graphify query` on its `graph.json`, not from the designer. Re-export after each saved change.
-- Prefer the **APIs** over clicking: they are faster, exact and cheap. Use the UI only for what has no API you know, and to confirm what the user will see.
-- In Playwright, run code from **files** (`browser_run_code_unsafe` with `filename`), serve big payloads from a **localhost** helper, and return **compact summaries** (counts, names, statuses), never whole JSON. See `references/playwright-efficiency.md`.
-- Before editing a workflow, **read its node tree** (names, action types, forms) from the API instead of opening the designer.
-- After every change, **verify by reading back** (API) and, for workflows, open the builder once to check it renders.
-- Large or repeated tasks: write a small builder script (Python) that produces the JSON from templates taken from existing nodes, then a guarded apply script. Keep both in the project so the change is repeatable and reviewable.
-- Nodes built through the API run but may not open in the editor (WP-030 to WP-038 in `references/api-reference.md`). Copy a node the designer itself saved, run `scripts/validate-workflows.js` (read-only, WP-038) and fix its errors, then open every new node in the editor and clear its errors before asking the user to run the workflow, then check the first run's records (a filter that resolves to empty runs cleanly and links every row to the same record).
-- **Testing a workflow means a real run: there is no dry-run mode.** The user runs it on a marked UAT test record. Then check the output with `scripts/verify-workflow-run.js` (read-only, WP-039): it follows a chain of workflows through their execution logs and compares the written records with values calculated from the business rule. A run logged as successful can still have written wrong values.
+- **Start from `app-export/<app>/SUMMARY.md`** in the project. If missing, export the app (WP-045) and write it. Answer "what uses/triggers/writes X" and read node trees from the export or `graphify query --graph`, not the designer. Re-export after each saved change.
+- **Hard rule: no `browser_snapshot` in App Studio; screenshots only to confirm visuals, at half scale.** Prefer the APIs; return counts, names and statuses, never whole JSON. Run skill scripts with the loader in `references/playwright-efficiency.md` §3 (`find-field.js`, `record-count.js`).
+- **Large reads go to a subagent** (execution logs, validator output, many records): it returns a short summary, and the raw output never enters the main conversation.
+- After every change, **read it back** (API); for workflows, open the builder once to check it renders.
+- Large or repeated changes: a Python builder that fills templates from existing nodes, then a guarded apply script, both kept in the project.
+- API-built nodes run but may not open in the editor (WP-030 to WP-038): copy a designer-saved node, fix what `scripts/validate-workflows.js` reports, open each new node and clear its errors before the user runs it.
+- **Testing means a real run (no dry-run).** The user runs it on a marked UAT record; then check the written values with `scripts/verify-workflow-run.js` (WP-039), since a successful log can still hide wrong values.
 
-## Documentation defaults
+## Documentation and skill updates
 
-Markdown only (PDF only on request), internal audience only (no customer emails), open questions inside the doc with why/what-for, diagrams show only the running app and its users/external systems. Full method: `references/documentation.md`. When an app already has documentation or project notes, read them before exploring the app again.
-
-## Adding knowledge to this skill
-
-When the user asks to add something to this skill ("add this to the cloudapper skill"), or a session finds reusable knowledge and the user agrees, **apply it directly in this skill's local folder, in the same session**. There is no inbox, pull request, review or approval step, and nothing is pushed.
-
-1. Write it generically: no customer, app, form, workflow or person names, IDs, real hosts or credentials.
-2. Search `references/` for entries it confirms or contradicts. Update or correct the existing entry instead of adding a duplicate; move a wrong entry to `retired.md` with the reason.
-3. Add a new entry to the right reference file in the entry format (`CONTRIBUTING.md`). Give it the next free `WP-` number across all reference files and update the Contents and ID ranges. Set `Status` to what the evidence supports: `Observed` when seen on a live app, `Hypothesis` when reasoned out or seen once without a confirmed cause. Add scripts to `scripts/` and pointers here or in `README.md` when a task needs them.
-4. Add a `CHANGELOG.md` line, run `python scripts/check_skill.py`, fix what it reports, and commit on the local `main` branch. Don't create branches, open pull requests or push unless the user asks.
+- Writing docs: follow `references/documentation.md` (Markdown, internal audience). Read an app's existing docs or notes before exploring it again.
+- "Add this to the cloudapper skill", or reusable knowledge the user agrees to keep: apply it in this folder in the same session, generically (no customer names, IDs or hosts), following `CONTRIBUTING.md`.

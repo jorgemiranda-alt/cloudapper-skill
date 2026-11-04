@@ -3,10 +3,12 @@
 Usage: python -I save_server.py <output_dir> [port]   (default port 8766)
 Binds to 127.0.0.1 only and keeps the basename of each path, so a request can't write outside
 <output_dir>. Allows CORS so a script on the CloudApper page can PUT to it. Stop it when done.
+GET /<name>.js returns that script from this folder, so a Playwright call can load export-app.js
+without pasting (and echoing) its source.
 """
 import os
 import sys
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer as HTTPServer
 from urllib.parse import unquote
 
 OUT = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else ".")
@@ -25,6 +27,20 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(204)
         self._cors()
         self.end_headers()
+
+    def do_GET(self):
+        name = os.path.basename(unquote(self.path.split("?")[0]))
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+        if not name.endswith(".js") or not os.path.isfile(path):
+            self.send_response(404)
+            self.end_headers()
+            return
+        body = open(path, "rb").read()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/javascript")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
 
     def do_PUT(self):
         name = os.path.basename(unquote(self.path.split("?")[0]))

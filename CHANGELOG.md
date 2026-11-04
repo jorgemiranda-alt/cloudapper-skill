@@ -4,6 +4,7 @@ One line per change: date, what changed, entry IDs. Newest first.
 
 ## 2026-11
 
+- 2026-11-04: WP-045 to Observed after a run on a UAT app; export labels menus/roles, counts Transform forms of saving workflows as writes, documents `--graph` and the `SUMMARY.md` step. Playwright loader that runs skill scripts from `save_server.py` without echoing them, `find-field.js`, `record-count.js`, no-snapshot hard rule and `PLAYWRIGHT_MCP_SNAPSHOT_MODE`. Split `api-reference.md` into `api-*.md` and `workflow-patterns.md` into `wp-*.md`, added `wp-index.md`; shortened `SKILL.md` (docs and skill-update sections now point to `documentation.md` and `CONTRIBUTING.md`); subagent rule for large reads.
 - 2026-11-04: Added WP-045 (export the app to small files and a graphify graph, query it before the designer; WP-001 order warnings) in `building-apps.md`, `scripts/export-app.js`, `scripts/save_server.py` and a pointer in `SKILL.md`; status Hypothesis.
 - 2026-11-02: Added WP-043 (build a whole form through the design API from templates captured in the designer: abort-capture, clone fields per control type, counters, dropdown and reference settings, safety checks) in `api-reference.md`, WP-044 (real-mouse drag-and-drop rules and app-context check for the designer) in `building-apps.md`, and a pointer from WP-028; status Observed.
 - 2026-11-02: Added WP-042 (remove records a sync no longer returns: stamp each sync with a date-time, then delete the synced scope's records with an empty or older stamp, only when no batch failed) in `workflow-patterns.md`, status Hypothesis.

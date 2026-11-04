@@ -16,7 +16,7 @@ Use this when documenting or auditing an app, to write the "Findings and recomme
 - Stale field references after form changes.
 - Logic or lists copied into N workflows; thresholds and dates that disagree between copies.
 - Business rules keyed on a person's name.
-- Workflow writes the status that triggers itself; order wrong for the chain it needs (see workflow-patterns.md §1).
+- Workflow writes the status that triggers itself; order wrong for the chain it needs (see WP-001, `wp-triggers-loops.md`).
 - Pairing records by "newest by CreateDate"; durations truncated by `DateDiffHour`.
 - Before-save workflows with side effects on other records.
 

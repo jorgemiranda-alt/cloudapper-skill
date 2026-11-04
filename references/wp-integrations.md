@@ -1,0 +1,41 @@
+# Workflow patterns: integrations and sync
+
+Entries headed `WP-0xx` use the format and statuses explained at the top of `workflow-patterns.md`; `wp-index.md` lists every entry.
+
+## 6. Integrations and sync
+
+### WP-016 Batched external sync with one token
+**Rule:** One token per run or batch. Counter vars → Iterator appends IDs → route "batch full OR last item" → build the batch payload (e.g. `multi_read`) → POST → `200` route → Transform → Save Records → reset vars.
+**Why:** A token per item wastes calls; one token for a very long run can expire → late 401s.
+**Status:** Observed · baseline
+
+### WP-017 Scheduled syncs must upsert
+**Rule:** Use SAVE_RECORDS keyed on the external ID (or delete-then-rebuild), not CREATE_RECORD. Add a sync-log record per run (start, end, counts, errors).
+**Why:** CREATE_RECORD in a scheduled sync duplicates rows every run; re-running a "create child rows" step duplicates children too.
+**Status:** Observed · baseline
+
+### WP-018 Approval chain
+**Rule:** On create, build one approver row per step (first **Pending**, the rest blank, final approver last), each with a GUID carried in the email link. The approval page posts to an Incoming Webhook that acts **only if the row is Pending** (a second click does nothing) and writes Approved/Rejected; an After-edit workflow on that status makes the next row Pending. Find the next row by sequence, not by name.
+**Why:** Reference data changing between runs stalls a name-based chain silently.
+**Caveats:** A GUID-only public link is a risk: accept it explicitly or add expiry / sign-in.
+**Status:** Observed · baseline
+
+### WP-019 Notification queue
+**Rule:** Workflows create Notification records; one "Send Notification" workflow (After Create) sends them using the record's To field, with one test-redirect switch for non-production instead of duplicate test rows.
+**Status:** Observed · baseline
+
+### WP-029 Bulk-saved records have no references; link them in an After Create workflow
+**Rule:** When rows are written by `TRANSFORM_RECORDS` → `SAVE_RECORDS` (or any bulk write), add an After Create workflow on the loaded form that fills its reference fields from values the new record already carries:
+1. One `LOOKUP_RECORD` per target, filtered on a field of the trigger record (e.g. `<Target>.<Key> = trigger.<KeyCopy>`), not on a loop item or the parent's primary value. Use the record's own source value (e.g. a transfer's own org path), so each row links to the node it belongs to.
+2. A ROUTER with one route "Found" = `id isNotEmpty` on every lookup (AND). No halt: an unmatched row is still saved and stays unlinked.
+3. `UPDATE_RECORD` on the same form, matched with `id = trigger record id` (WP-024), assigning each reference field (ControlType 12) from its lookup node (`Field "id"`, `NodeId` = the lookup node).
+**Why:** A bulk save has no loop record to take a parent from. `ParentId` is only set by a `CREATE_RECORD` inside a loop over the parent.
+**Caveats:** The form does not need to be a child form; plain reference fields are enough, so don't use `ParentId` here. The workflow needs a higher Sequence than the one that saves the rows (WP-001). Add the reference fields to the form and reload the app first. Keep it off until the loading workflow (WP-016) is tested.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: structure of a corrected workflow read back from a test app; no run result recorded yet, so whether Save Records fires After Create once per saved row is unconfirmed.
+
+### WP-042 Remove records a sync no longer returns: stamp each sync, then delete what the stamp missed
+**Rule:** In a sync that saves records from an external source on a unique key (an upsert), add a date-time field (the sync stamp). Set a variable to the current time before fetching, and write it to every saved record. After the last batch, if no batch failed, delete the synced scope's records whose stamp is empty or older than that variable; if any batch failed, mark the job Failed and skip the delete.
+**Why:** The source returns only what exists now, so a record it dropped or replaced stays in the app. An upsert refreshes the stamp on every record it saves, so a stale record is one this run did not touch. Deleting by stamp, not purge-and-reload, means a failed call never empties the range.
+**Example:** After the batches, loop over the synced owners (one delete each) with `DELETE_RECORDS`: owner key `=` the loop's owner, date `>=` range start, date `<` range end + 1 day, and an OR group of `<stamp> isEmpty` and `<stamp> < <start variable>` (`isEmpty` works inside a delete filter).
+**Caveats:** Scope the delete per synced owner (an employee) when the source returns that owner's records from every location, so a transfer record is not removed by another location's run. This costs one delete call per owner. For a text prefix in a lookup filter, `startswith` works through `Records/fetch` (`contains` matches words, WP-036); confirm the editor shows it. Related: WP-005, WP-029, WP-040, WP-041.
+**Status:** Hypothesis · checked 2026-11 · Studio 8.2.0.25 · Evidence: built as saved nodes and every expression passed the editor's check; the delete and the stamp have not been run yet. The shape follows an exported sync workflow that deletes by a sync date-time.

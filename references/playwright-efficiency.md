@@ -11,7 +11,8 @@
 ## 1. Principles
 
 - The browser is only a **logged-in context**. Do the work with `fetch` inside `page.evaluate` against the APIs; click only when no API is known or to show the user something.
-- Every tool result is paid for twice (it lands in context and stays there). Return **counts, names, statuses and timestamps**, never full JSON, HTML or snapshots. Avoid `browser_snapshot` on big pages; use `get_page_text`-style targeted reads or `page.evaluate` that returns a few fields.
+- Every tool result is paid for twice (it lands in context and stays there). Return **counts, names, statuses and timestamps**, never full JSON, HTML or snapshots. **No `browser_snapshot` in App Studio**; read with `page.evaluate` that returns a few fields. Screenshots only to confirm visuals, at half scale (`browser_take_screenshot` of an element or clip, or `page.screenshot({ scale: 'css' })` after `setViewportSize` at half size).
+- Turn off the automatic snapshot after each action: set `PLAYWRIGHT_MCP_SNAPSHOT_MODE=none` in the `env` block of the user's `~/.claude/settings.json` (Playwright MCP 0.0.84+ reads it; `--snapshot-mode none` is the flag form). Takes effect when the MCP server restarts.
 - Check the client ID in `page.url()` at the top of every write script and refuse to run on the wrong environment.
 
 ## 2. Run code from files, return summaries
@@ -26,6 +27,23 @@
 - **Serve** payload files to the browser: `python -I -m http.server 8765 --bind 127.0.0.1` in the folder, then `await (await page.request.get('http://127.0.0.1:8765/body.json')).json()` (Node side, so no CORS).
 - **Save** from the browser to disk: a tiny Python `do_PUT` server bound to 127.0.0.1 that writes `<dir>/<basename>`; `await page.request.put('http://127.0.0.1:8766/name.json', { data: buffer })`. Use it for backups and report packages.
 - Bind to 127.0.0.1 only, run in the background, stop both when done, and delete folders holding secrets at the end (tell the user what remains).
+- **Run the skill's page scripts without echoing them.** `scripts/save_server.py` also serves the skill's `scripts/*.js` by GET. Start it (`python -I scripts/save_server.py <project>/app-export/<app> 8766`, Windows path) and use this loader as `browser_run_code` code; the chrome page's own fetch to localhost fails, so everything local goes through `page.request`:
+  ```js
+  async (page) => { const S = 'http://127.0.0.1:8766/';
+    const run = async (file, opts) => { const src = await (await page.request.get(S + file)).text();
+      return page.evaluate(([s, o]) => { globalThis.CAE_OPTIONS = o; return (0, eval)('(async () => {' + s.replace(/await (\w+)\(globalThis\.CAE_OPTIONS \|\| \{\}\);\s*$/, 'return await $1(globalThis.CAE_OPTIONS);') + '})()'); }, [src, opts]); };
+    return await run('record-count.js', {}); }
+  ```
+  For `export-app.js`, after `run` add `for (const [n, d] of Object.entries(await page.evaluate(() => globalThis.__caeFiles))) await page.request.put(S + encodeURIComponent(n), { data: JSON.stringify(d, null, 1) });`.
+- **Read-only question scripts** (run with the loader, return names and counts only):
+
+  | Question | Script / file |
+  |---|---|
+  | Which forms and workflow nodes use field X | `find-field.js` with `{ field: '<label or internal name>' }` |
+  | One workflow's steps | the export's `wf__<seq>__<name>.json` (WP-045); no browser call |
+  | Records per form | `record-count.js` with `{}` or `{ forms: ['<title>'] }` |
+  | What triggers or writes form X | `graphify query` on the export's `graph.json` |
+  | Broken nodes in the builder | `validate-workflows.js` (WP-038) |
 
 ## 4. Capture a designer save (read-only) and save-swap (write)
 

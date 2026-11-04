@@ -35,7 +35,7 @@ Optionally, create `.leak-denylist` in the repo root with the customer, app and 
 | Path | What it is | Loaded by Claude? |
 |---|---|---|
 | `SKILL.md` | Rules for every task + routing table | When the skill triggers |
-| `references/` | Topic guides; `workflow-patterns.md` holds the numbered patterns (WP-001 …) | When a task needs that topic |
+| `references/` | Topic guides; `wp-index.md` lists every numbered pattern (WP-001 …) with its file | When a task needs that topic |
 | `inbox/` | Older drafts from the former review flow; apply and delete when relevant | No |
 | `retired.md` | Patterns removed as wrong or outdated | No |
 | `CHANGELOG.md` | One line per change | No |
@@ -44,7 +44,9 @@ Optionally, create `.leak-denylist` in the repo root with the customer, app and 
 | `scripts/check_skill.py` | Leak and structure checks (pre-commit hook and CI) | No |
 | `scripts/validate-workflows.js` | Read-only workflow node validator, run in a signed-in App Studio page (WP-038) | When a task runs it |
 | `scripts/export-app.js` | Read-only export of an app to small files plus a graphify `graph.json`, with WP-001 order warnings (WP-045) | When a task runs it |
-| `scripts/save_server.py` | Localhost PUT server that saves files for `export-app.js` | When a task runs it |
+| `scripts/save_server.py` | Localhost server: saves PUT files for `export-app.js` and serves the skill's `scripts/*.js` to the Playwright loader | When a task runs it |
+| `scripts/find-field.js` | Read-only: forms with field X and the workflow nodes that use it | When a task runs it |
+| `scripts/record-count.js` | Read-only: record count per form | When a task runs it |
 | `scripts/verify-workflow-run.js` | Read-only verifier of a real run or chain: execution logs + business checks on the written records (WP-039) | When a task runs it |
 
 ## Contributing

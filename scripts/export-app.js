@@ -5,7 +5,9 @@
 // Run inside a signed-in App Studio or runtime page of the app (URL with /<clientId>/app/<appId>),
 // the same way as validate-workflows.js. Start scripts/save_server.py first and pass its URL:
 //   globalThis.CAE_OPTIONS = { saveUrl: 'http://127.0.0.1:8766/' };
-// Playwright: run from a file and fetch through page.request, or wrap the body in async () => {...}.
+// Playwright: the page's own PUT to localhost fails ("Failed to fetch"), and pasting this file into
+// browser_run_code echoes all of it back. Use the loader in references/playwright-efficiency.md §3,
+// which loads it from save_server.py and saves globalThis.__caeFiles from Node.
 // Options:
 //   saveUrl: '<save_server URL>'  write files there (default: none, only return the summary)
 //   apiBase: '<cluster API base ending in /api/>'  when it can't be read from the page
@@ -83,14 +85,15 @@ async function exportApp(opts = {}) {
   const menus = (details.AllMenus || details.Menus || []).map(mn => {
     const id = 'menu:' + (mn.MenuID || mn.Id || mn.Name);
     const label = mn.Name || mn.Title || mn.DisplayName || id;
-    addNode(id, label, 'menu', 'app.json');
+    // Prefixed so a menu named like its form doesn't make graphify lookups ambiguous.
+    addNode(id, 'menu: ' + label, 'menu', 'app.json');
     const targets = formRefs(mn);
     targets.forEach(t => addEdge(id, 'form:' + t, 'opens', 'app.json'));
     return { label, forms: targets.map(formTitle) };
   });
   const roles = (details.Roles || []).map(rl => {
     const rid = rl.Id || rl.RoleID || rl.RoleId;
-    addNode('role:' + rid, rl.Name || rl.Title || rid, 'role', 'app.json');
+    addNode('role:' + rid, 'role: ' + (rl.Name || rl.Title || rid), 'role', 'app.json');
     return { id: rid, name: rl.Name || rl.Title };
   });
   for (const p of details.RecordRolePrivileges || []) {
@@ -108,11 +111,16 @@ async function exportApp(opts = {}) {
     // Keep only scalar trigger settings (trigger type, event, schedule), never nested config.
     const trigger = Object.fromEntries(Object.entries(w).filter(([k, v]) => /trigger|event|schedule/i.test(k) && (v === null || typeof v !== 'object')));
     const writes = new Set();
+    // SAVE_RECORDS has no form of its own: it saves what a Transform node built.
+    const transforms = [];
+    let saves = false;
     const tree = n => {
       nodeCount++;
       const d = n.data || {};
       const out = { id: n.id, name: d.name, type: d.actionType, form: d.typeId ? formTitle(d.typeId) : undefined };
       const nid = 'node:' + w.AutomationId + ':' + n.id;
+      if (d.actionType === 'SAVE_RECORDS') saves = true;
+      if (/^TRANSFORM_RECORDS?$/.test(d.actionType) && formIds.has(d.typeId)) transforms.push([nid, d.typeId]);
       addNode(nid, `${w.Name} / ${d.name || n.id}`, 'node:' + (d.actionType || 'UNKNOWN'), file);
       if (d.typeId && formIds.has(d.typeId)) {
         if (WRITES.has(d.actionType)) { addEdge(nid, 'form:' + d.typeId, 'writes', file); writes.add(d.typeId); }
@@ -128,6 +136,9 @@ async function exportApp(opts = {}) {
     if (root) addEdge(wid, 'node:' + w.AutomationId + ':' + root.id, 'starts', file);
     files[file] = { id: w.AutomationId, name: w.Name, sequence: w.Sequence, status: w.Status,
       triggerForm: w.TypeId ? formTitle(w.TypeId) : null, trigger, tree: root ? tree(root) : null };
+    // ponytail: every Transform form in a workflow that saves counts as written; trace the saved
+    // variable back to its Transform if a workflow transforms one form and saves another.
+    if (saves) for (const [nid, fid] of transforms) { addEdge(nid, 'form:' + fid, 'writes', file); writes.add(fid); }
     wfInfo.push({ id: w.AutomationId, name: w.Name, seq: w.Sequence ?? 0, triggerForm: w.TypeId, writes, file });
   }
 
@@ -148,6 +159,7 @@ async function exportApp(opts = {}) {
 
   // ---- write
   let written = 0;
+  globalThis.__caeFiles = files; // read by the Playwright wrapper
   if (o.saveUrl) {
     for (const [name, data] of Object.entries(files)) {
       const r = await fetch(o.saveUrl.replace(/\/?$/, '/') + encodeURIComponent(name), { method: 'PUT', body: JSON.stringify(data, null, 1) });

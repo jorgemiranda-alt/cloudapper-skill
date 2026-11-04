@@ -1,0 +1,49 @@
+# WP index
+
+One line per entry: ID, file, title. Grep this for an ID or a keyword, then read only that entry (`grep -A6 '### WP-0xx' references/<file>`).
+
+- WP-001 `wp-triggers-loops.md` A workflow's record change only triggers workflows later in the list
+- WP-002 `wp-triggers-loops.md` Setting a status to its current value triggers nothing
+- WP-003 `wp-triggers-loops.md` Status-driven pipeline
+- WP-004 `wp-triggers-loops.md` Re-creating a record re-runs its On Create chain
+- WP-005 `wp-triggers-loops.md` Triggered runs of one workflow are serial, and the caller doesn't always wait
+- WP-006 `wp-triggers-loops.md` A FOREACH iterates its list as fetched
+- WP-007 `wp-triggers-loops.md` Batch rerun from a parent record
+- WP-008 `wp-triggers-loops.md` Run stamp + bulk cleanup for safe reruns
+- WP-009 `wp-routers-errors.md` A Router runs every route whose condition is true
+- WP-010 `wp-routers-errors.md` Reuse a recent sync instead of pulling the same data again
+- WP-011 `wp-routers-errors.md` Every external call needs a real failure route
+- WP-012 `wp-routers-errors.md` "Could not prepare values for the fields: X" in the log
+- WP-013 `wp-routers-errors.md` A DEBUG_LOG inside a FOREACH keeps one pass only
+- WP-014 `wp-routers-errors.md` Workflow Description is limited to 1,000 characters
+- WP-015 `wp-routers-errors.md` Before-save validation with Halt Operation
+- WP-016 `wp-integrations.md` Batched external sync with one token
+- WP-017 `wp-integrations.md` Scheduled syncs must upsert
+- WP-018 `wp-integrations.md` Approval chain
+- WP-019 `wp-integrations.md` Notification queue
+- WP-020 `wp-data-expressions.md` Workflows depend on setup records
+- WP-021 `wp-data-expressions.md` Node names lie
+- WP-022 `wp-data-expressions.md` Copying workflow definitions copies the pipeline split
+- WP-023 `wp-data-expressions.md` Workflows keep stale field references after a form rebuild
+- WP-024 `wp-data-expressions.md` Pair records by an ID, not by "newest"
+- WP-025 `wp-data-expressions.md` Durations
+- WP-026 `wp-data-expressions.md` Workflow expressions are not report expressions
+- WP-027 `api-records.md` Update many records in one API call
+- WP-028 `api-forms-menus.md` Add a field to a form by replaying the designer's save
+- WP-029 `wp-integrations.md` Bulk-saved records have no references; link them in an After Create workflow
+- WP-030 `api-workflows.md` Give every API-built expression an `ExpressionText`
+- WP-031 `api-workflows.md` Declare expression arguments as text, number or date
+- WP-032 `api-workflows.md` A node on a child record needs its parent settings (and a cloned lookup keeps the old ones)
+- WP-033 `api-workflows.md` Write argument paths in the designer's formats
+- WP-034 `api-workflows.md` Write update and create nodes the way the designer saves them
+- WP-035 `api-workflows.md` An iterator node needs node type `FOREACH`
+- WP-036 `api-workflows.md` Filter with `=`, not `contains`, and test a filter through the records API first
+- WP-037 `api-records.md` Set a reference field through the records API
+- WP-038 `api-workflows.md` Validate workflow nodes without opening the builder
+- WP-039 `api-workflows.md` Test a workflow by a real run on a test record, then verify its output with a script
+- WP-040 `api-workflows.md` A filter rule whose operator is a space is ignored
+- WP-041 `wp-data-expressions.md` A create on a unique field is skipped without a message when the value exists
+- WP-042 `wp-integrations.md` Remove records a sync no longer returns: stamp each sync, then delete what the stamp missed
+- WP-043 `api-forms-menus.md` Build a whole form through the API from templates captured in the designer
+- WP-044 `building-apps.md` Dragging controls with real mouse events (browser extension, not Playwright)
+- WP-045 `building-apps.md` Export the app to local files and a graph, and query the graph before opening the designer
