@@ -55,6 +55,7 @@ Learned the hard way; details and evidence in `references/workflow-patterns.md`.
 
 ## How to work efficiently
 
+- **Building or changing an app: export it first** (`scripts/export-app.js`, WP-045) and answer "what uses/triggers/writes X" from the export or `graphify query` on its `graph.json`, not from the designer. Re-export after each saved change.
 - Prefer the **APIs** over clicking: they are faster, exact and cheap. Use the UI only for what has no API you know, and to confirm what the user will see.
 - In Playwright, run code from **files** (`browser_run_code_unsafe` with `filename`), serve big payloads from a **localhost** helper, and return **compact summaries** (counts, names, statuses), never whole JSON. See `references/playwright-efficiency.md`.
 - Before editing a workflow, **read its node tree** (names, action types, forms) from the API instead of opening the designer.

@@ -43,6 +43,8 @@ Optionally, create `.leak-denylist` in the repo root with the customer, app and 
 | `evals/` | Test prompts to compare skill versions | No |
 | `scripts/check_skill.py` | Leak and structure checks (pre-commit hook and CI) | No |
 | `scripts/validate-workflows.js` | Read-only workflow node validator, run in a signed-in App Studio page (WP-038) | When a task runs it |
+| `scripts/export-app.js` | Read-only export of an app to small files plus a graphify `graph.json`, with WP-001 order warnings (WP-045) | When a task runs it |
+| `scripts/save_server.py` | Localhost PUT server that saves files for `export-app.js` | When a task runs it |
 | `scripts/verify-workflow-run.js` | Read-only verifier of a real run or chain: execution logs + business checks on the written records (WP-039) | When a task runs it |
 
 ## Contributing

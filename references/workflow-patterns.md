@@ -6,7 +6,7 @@ Each entry's heading names the situation. **Rule** says what to do, **Why** says
 - `Observed`: seen on a live app by one person. Fine to follow; for a risky change, say you're relying on an Observed entry and test in UAT first.
 - `baseline` instead of a date: imported when the skill moved to its repo (2026-11) and not re-checked since.
 
-IDs (`WP-001`) are stable and shared across reference files (WP-027, WP-028, WP-030 to WP-040, WP-043 are API techniques in `api-reference.md`; WP-044 is a designer technique in `building-apps.md`; WP-029 sits in section 6, WP-041 in section 7); cite them in reviews and docs. Drafts in `inbox/` and anything in `retired.md` are not guidance; don't read them as rules.
+IDs (`WP-001`) are stable and shared across reference files (WP-027, WP-028, WP-030 to WP-040, WP-043 are API techniques in `api-reference.md`; WP-044 and WP-045 are designer and build techniques in `building-apps.md`; WP-029 sits in section 6, WP-041 in section 7); cite them in reviews and docs. Drafts in `inbox/` and anything in `retired.md` are not guidance; don't read them as rules.
 
 ## Contents
 1. Triggers and order: WP-001 to WP-004
