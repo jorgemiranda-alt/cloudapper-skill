@@ -53,3 +53,6 @@ One line per entry: ID, file, title. Grep this for an ID or a keyword, then read
 - WP-049 `wp-routers-errors.md` A route condition on a field that comes back empty fails with "Expression expected"
 - WP-050 `wp-integrations.md` Read many employees' timecards in one call with employee_timecard/multi_read
 - WP-051 `wp-data-expressions.md` Read a referenced record's fields straight from the trigger; don't fetch it again
+- WP-052 `wp-data-expressions.md` Use the Expression Editor's built-in time zone functions, and skip conversion when both sides are already local
+- WP-053 `api-workflows.md` Copy a designer-saved node whole and change only the values; don't rewrite ids or paths
+- WP-054 `wp-data-expressions.md` Before adding an update path after a lookup, make sure the lookup can only match the right record
