@@ -48,3 +48,4 @@
 `SAVE_RECORDS` nodes carry no form, so the export counts the Transform forms of a workflow that saves as written. Menu and role nodes are labelled `menu: <name>` and `role: <name>` so they don't collide with a form of the same name. A query budget under ~2k tokens truncates on a busy form; narrow the question instead of raising it.
 **Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: run on a web.cloudapper.com UAT app (19 forms, 33 workflows, 259 nodes, 62 menus) on 2026-11-04: 54 files, 375-node graph, two real order warnings; `graphify query` and `path` answered from the file. Menu and role edges not yet checked against the designer.
 
+- Dropdown choices (designer dialog "Add Edit Drop down Choice Key and Display Text"): type the same text in Key as in Display Text for every new choice, so workflows and filters use the visible word. Leave the key of an existing choice alone (WP-061).

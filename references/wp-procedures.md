@@ -12,6 +12,9 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 3. Does the trigger rule match? For `_IsUpdated`, did the value really change (WP-002)?
 4. Read both workflows' execution logs (API) around that time; no entry = never triggered.
 
+**Reading an execution log**
+- The `Nodes` list shows every route of a router, taken or not, and in no run order: judge which branch ran by whether the route's children appear. A LOOKUP_RECORD that finds nothing still reports `Count 1`; check that the nodes that need its result (an update, a create) are absent. A per-node value in a loop is the last pass, so an empty last pass can hide earlier ones. "No records found to iterate." is a warning, not a failure.
+
 **"It runs but the numbers are wrong"**
 1. Run `scripts/verify-workflow-run.js` on the run with business checks (WP-039): it shows which record and which value are off.
 2. Check lookups for a filter that doesn't filter: a space operator (WP-040), `contains` (WP-036), an empty value (WP-033). Compare a lookup's count through `Records/fetch` with the count you expect.
@@ -49,11 +52,15 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 ### Build a workflow from scratch
 
 1. Confirm UAT and the client id in the URL. Create the empty workflow **off**: `POST v3/Workflows` with `Status: 2`, the trigger node from `node-templates/trigger-*.json` and the global variables it needs (`node-templates.md` §2).
-2. Build each node from `node-templates/` (or a designer node in the same app, WP-053): new ids, real form/field ids from `GET v3/forms`, ids rewritten across the subtree (`node-templates.md` §1). Batch loops: WP-016, WP-056; REST variables: WP-057.
+2. Build each node from `node-templates/` (or a designer node in the same app, WP-053): new ids, real form/field ids from `GET v3/forms`, ids rewritten across the subtree (`node-templates.md` §1). Batch loops: WP-016, WP-056; REST variables: WP-057; a REST response that is a list: WP-058. Use the template of each node's own type; a node copied from another workflow brings that workflow's settings (for example a one-record response schema).
 3. Run `scripts/validate-workflows.js` on the built JSON, save with `PUT`, run it again; fix every error.
 4. Read the workflow back and compare each node with its template (type, keys, operators, `ExpressionText`).
 5. Open every new node in the builder once and clear its errors; close with Close, not Done. Connector response fields need a designer Validate (WP-046).
-6. The user runs it on test records; check with `scripts/verify-workflow-run.js` and the written records (WP-039).
+5a. In a builder script, pass real node ids (never your local keys) to every helper that writes an argument or a `NodeId`; `validate-workflows.js` reports a key as `BAD_NODEID`. Keep a workflow `Description` under 1,000 characters (WP-065).
+5b. Before writing values: read each dropdown's choice keys and the stored values of existing rows and use the keys (WP-061); build any day or batch counter in the first node of the loop body and never after an iterator that may find no rows (WP-062); build each expression argument once and reuse the object (WP-060 caveat).
+5c. When a step reverses an earlier one (reopen, supersede, reset, undo), first list every field the forward step wrote and reverse each one (status, reference, date, counters, flags); filter the rows to reverse by the status the forward step set, so rows that are already reversed or superseded are not touched; clear fields as in WP-066.
+6. Limit the source for the first run (a low fetch limit). The user runs it on test records; check the execution log `Message` ("One or more fields could not be populated" means a schema or path problem, WP-058), then the written records for empty key fields and duplicates, with `scripts/verify-workflow-run.js` (WP-039). The validator does not catch run-time behavior.
+6b. Test the forward path and then the reverse path on marked test records, and compare the records field by field after each (a reverse that leaves a stale reference or date shows only in the read-back, not in the run status).
 7. Only then, and only when the user asks, turn it on.
 
 ### Safe-change checklist

@@ -59,3 +59,12 @@ One line per entry: ID, file, title. Grep this for an ID or a keyword, then read
 - WP-055 `api-forms-menus.md` Hide, make read-only or require a field depending on other fields of the same record
 - WP-056 `wp-integrations.md` Detect "batch full or last item" with counters, and build the list in a text variable
 - WP-057 `wp-integrations.md` Put a variable in a REST connector by an `__expN__` placeholder plus a `Variables` entry
+- WP-058 `wp-integrations.md` A REST response that returns a list needs its schema declared as a list
+- WP-059 `wp-integrations.md` Read a schedule or any data element set with commons/data/multi_read
+- WP-060 `wp-triggers-loops.md` Process records in date order without a sorted lookup: a WHILE day loop
+- WP-061 `wp-data-expressions.md` A dropdown is written and filtered by its choice key, not its label
+- WP-062 `wp-triggers-loops.md` Mark each source row processed, filter by reference fields, and count the loop at its start
+- WP-063 `wp-triggers-loops.md` Rolling-window rule engine from child rows: day loop, pool sum, create-or-update state, consume
+- WP-064 `wp-triggers-loops.md` One recompute workflow fed by a queue: phases inside a WHILE loop, enqueue workflows that only add rows
+- WP-065 `wp-triggers-loops.md` A workflow description holds at most 1,000 characters
+- WP-066 `wp-triggers-loops.md` Clear a field in an update node: `null` for plain fields, an empty lookup's id for a reference

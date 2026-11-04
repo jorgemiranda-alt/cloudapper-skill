@@ -15,7 +15,8 @@ Read this before building any workflow node through the API. The JSON files in `
 - `<ID_n>`: a GUID (form, global-variable schema, connector schema, connector id). Within one file the same number is the same GUID. A node's own `typeId` is the form it works on; the GUID in `TypeId` of `__GLOBALVARIABLES` arguments is the workflow's `GlobalVariables.Id`.
 - `<HOST>`, `<CLIENT_ID>` (the tenant's client id), `<CLIENT_SECRET>` and similar upper-case names in a token request: fill from the target app's own existing connector, or have the owner enter them in the designer.
 - To clone a node into a new tree: copy it whole, give it a new id, then replace the old id string everywhere in the copied subtree (`FieldNodeId`, `NodeId`, `sourceNodeId`, route rules that read `<fetchNode>.Count`). Replace only whole ids; never shorten or retype GUIDs (WP-053).
-- Tree: `children` run in order. A node's first child runs after it; several children of one node run one after another (an iterator's body is its children). Only a ROUTER's children (ROUTE nodes) are alternatives, and every true route runs (WP-009).
+- Use the template of the node's own type. Take another workflow's node only for what no template covers (a lookup of a settings record, a login call that reads credentials from it), and compare every key of the copy (`CustomSchema` metadata, not just its fields) with the template.
+- Tree: `children` run in order. A loop body written as one chain (assign, assign, router, each the child of the one before) ran; the owner's edit saved the router as a second child of the iterator instead (unconfirmed whether that was needed). A node's first child runs after it; several children of one node run one after another (an iterator's body is its children). Only a ROUTER's children (ROUTE nodes) are alternatives, and every true route runs (WP-009).
 
 ## 2. Workflow object and trigger codes
 
@@ -50,7 +51,7 @@ Node `type` is `TRIGGER`, `ACTION`, `FOREACH`, `ROUTER` or `ROUTE` (WP-035).
 | SAVE_RECORDS | ACTION | `save-records.json` | writes the transform's output (`sourceNodeId` = transform). Upsert uses the target form's unique field, not a node setting; a create on an existing unique value is skipped (WP-041) |
 | DELETE_RECORDS | ACTION | `delete-records.json` | `ruleSet` + `filterMaxRowCount`; real operator in every rule (WP-040) |
 | CONNECTOR (token generator) | ACTION | `connector-token-generator.json` | `connectorType: 16`, token-generator dll; output `<node>.<schemaId>.$.access_token`; `expiresIn`, `expiresInUnit` properties |
-| CONNECTOR (REST) | ACTION | `connector-rest-post-variable-body.json` | Postman request in `Properties[0].Value.Request`; variables (WP-057) |
+| CONNECTOR (REST) | ACTION | `connector-rest-post-variable-body.json` | Postman request in `Properties[0].Value.Request`; variables (WP-057). Response schema for a list: `WorkflowActionType: "LOOKUP_RECORDS"` + `WorkflowJsonPath` = the array (WP-058); a one-object response is `LOOKUP_RECORD` with an empty path. Build from this file, not from another workflow's connector |
 | DEBUG_LOG | ACTION | `debug-log.json` | `value` HTML with `﻿__expN__﻿`, `variables[]` (each argument also has `ReplaceExpString`), `editorType: 1` |
 
 ## 4. Expression rules seen in saved nodes
@@ -59,6 +60,7 @@ Node `type` is `TRIGGER`, `ACTION`, `FOREACH`, `ROUTER` or `ROUTE` (WP-035).
 - `ExpressionText` replaces each argument with `[<Form or "Workflow Variables"> (<node name or "Trigger">) . <Label>]` (WP-030).
 - Functions seen: `AddDays(date, n)`, `.ToString( "yyyy-MM-dd" )`, ternary `a == 0 ? "" : ","`, `+` on text and numbers.
 - Index and "last item": there is no built-in index or last-item flag in a FOREACH. Count with a number variable and compare it to the lookup's `Count` (WP-056).
+- A Debug Log can print a connector's system outputs `Response Code`, `Request` (the request sent) and `Count` (rows parsed): add all three after a new REST call, so the first run shows what was sent and how many rows came back.
 - A quote inside a REST raw body built from a variable: the variable text carries escaped quotes (`"\\\""` in the expression), so `[__expN__]` in the body becomes `["a","b"]` (WP-056).
 
 ## 5. Not captured (needs the designer)
