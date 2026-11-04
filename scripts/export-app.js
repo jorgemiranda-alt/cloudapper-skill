@@ -11,6 +11,8 @@
 // Options:
 //   saveUrl: '<save_server URL>'  write files there (default: none, only return the summary)
 //   apiBase: '<cluster API base ending in /api/>'  when it can't be read from the page
+//   since: <fingerprint from a previous app.json>  only export when something changed: returns
+//          { fresh: true } and writes nothing if all form/workflow versions and menus/roles match
 // Files written (flat names, the save server keeps basenames only):
 //   app.json            forms, relations, menus, roles, workflow list in Sequence order
 //   form__<title>.json  fields (name, label, type, reference target)
@@ -59,6 +61,25 @@ async function exportApp(opts = {}) {
     walk(obj);
     return [...out];
   };
+
+  // ---- freshness: forms and workflows carry a Version that changes on every save; menus, roles,
+  // privileges and relations have none, so they share one hash.
+  const hash = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = (h * 33 ^ s.charCodeAt(i)) >>> 0; return h.toString(36); };
+  const fingerprint = {
+    forms: Object.fromEntries(schemas.map(f => [f.Title, String(f.Version)])),
+    workflows: Object.fromEntries(workflows.map(w => [`#${w.Sequence} ${w.Name}`, String(w.Version)])),
+    // The API returns menus in a different order on each call, so sort each list before hashing.
+    other: hash(JSON.stringify([details.AllMenus || details.Menus, details.Roles, details.RecordRolePrivileges, details.ParentChildRelations]
+      .map(l => (l || []).map(e => JSON.stringify(e)).sort()))),
+  };
+  let changed = null;
+  if (o.since) {
+    const diff = (a = {}, b = {}) => [...new Set([...Object.keys(a), ...Object.keys(b)])].filter(k => a[k] !== b[k]);
+    changed = [...diff(o.since.forms, fingerprint.forms).map(k => 'form ' + k),
+      ...diff(o.since.workflows, fingerprint.workflows).map(k => 'workflow ' + k),
+      ...(o.since.other !== fingerprint.other ? ['menus, roles or relations'] : [])];
+    if (!changed.length) { globalThis.__caeFiles = {}; return { fresh: true }; }
+  }
 
   // ---- graph
   const nodes = [], edges = [];
@@ -152,7 +173,7 @@ async function exportApp(opts = {}) {
     if (!ok) orderWarnings.push(`#${a.seq} ${a.name} writes ${formTitle(b.triggerForm)} but #${b.seq} ${b.name} sits earlier`);
   }
 
-  files['app.json'] = { clientId, appId, exportedAt: new Date().toISOString(),
+  files['app.json'] = { clientId, appId, exportedAt: new Date().toISOString(), fingerprint,
     forms: schemas.map(f => f.Title), menus, roles,
     workflows: wfInfo.map(w => ({ seq: w.seq, name: w.name, triggerForm: w.triggerForm ? formTitle(w.triggerForm) : null, file: w.file })) };
   files['graph.json'] = { directed: true, multigraph: false, graph: {}, nodes, links: edges, hyperedges: [] };
@@ -169,7 +190,7 @@ async function exportApp(opts = {}) {
   }
   return { summary: { clientId, appId, forms: schemas.length, workflows: workflows.length, workflowNodes: nodeCount,
     menus: menus.length, roles: roles.length, graphNodes: nodes.length, graphEdges: edges.length, filesWritten: written },
-    orderWarnings };
+    orderWarnings, ...(changed ? { changed } : {}) };
 }
 
 await exportApp(globalThis.CAE_OPTIONS || {});

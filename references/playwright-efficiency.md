@@ -34,7 +34,7 @@
       return page.evaluate(([s, o]) => { globalThis.CAE_OPTIONS = o; return (0, eval)('(async () => {' + s.replace(/await (\w+)\(globalThis\.CAE_OPTIONS \|\| \{\}\);\s*$/, 'return await $1(globalThis.CAE_OPTIONS);') + '})()'); }, [src, opts]); };
     return await run('record-count.js', {}); }
   ```
-  For `export-app.js`, after `run` add `for (const [n, d] of Object.entries(await page.evaluate(() => globalThis.__caeFiles))) await page.request.put(S + encodeURIComponent(n), { data: JSON.stringify(d, null, 1) });`.
+  Freshness check first: `run('export-app.js', { since: (await (await page.request.get(S + 'app.json')).json()).fingerprint })` (the save server serves the export's `app.json`). For `export-app.js`, after `run` add `for (const [n, d] of Object.entries(await page.evaluate(() => globalThis.__caeFiles))) await page.request.put(S + encodeURIComponent(n), { data: JSON.stringify(d, null, 1) });`.
 - **Read-only question scripts** (run with the loader, return names and counts only):
 
   | Question | Script / file |

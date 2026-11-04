@@ -4,7 +4,7 @@ Usage: python -I save_server.py <output_dir> [port]   (default port 8766)
 Binds to 127.0.0.1 only and keeps the basename of each path, so a request can't write outside
 <output_dir>. Allows CORS so a script on the CloudApper page can PUT to it. Stop it when done.
 GET /<name>.js returns that script from this folder, so a Playwright call can load export-app.js
-without pasting (and echoing) its source.
+without pasting (and echoing) its source. GET /app.json returns the last export's app.json.
 """
 import os
 import sys
@@ -30,8 +30,10 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         name = os.path.basename(unquote(self.path.split("?")[0]))
-        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
-        if not name.endswith(".js") or not os.path.isfile(path):
+        # .js from this folder (skill scripts), app.json from the export folder (freshness check).
+        folder = os.path.dirname(os.path.abspath(__file__)) if name.endswith(".js") else OUT
+        path = os.path.join(folder, name)
+        if not (name.endswith(".js") or name == "app.json") or not os.path.isfile(path):
             self.send_response(404)
             self.end_headers()
             return

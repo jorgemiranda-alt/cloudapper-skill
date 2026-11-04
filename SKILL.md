@@ -56,7 +56,7 @@ Learned the hard way; details and evidence via `references/wp-index.md`.
 
 ## How to work efficiently
 
-- **Start from `app-export/<app>/SUMMARY.md`** in the project. If missing, export the app (WP-045) and write it. Answer "what uses/triggers/writes X" and read node trees from the export or `graphify query --graph`, not the designer. Re-export after each saved change.
+- **Start from `app-export/<app>/SUMMARY.md`** in the project. If missing, export the app (WP-045) and write it; if present, run the export's freshness check (`since`) when you first open the app. Answer "what uses/triggers/writes X" and read node trees from the export or `graphify query --graph`, not the designer. Re-export after each saved change.
 - **Hard rule: no `browser_snapshot` in App Studio; screenshots only to confirm visuals, at half scale.** Prefer the APIs; return counts, names and statuses, never whole JSON. Run skill scripts with the loader in `references/playwright-efficiency.md` §3 (`find-field.js`, `record-count.js`).
 - **Large reads go to a subagent** (execution logs, validator output, many records): it returns a short summary, and the raw output never enters the main conversation.
 - After every change, **read it back** (API); for workflows, open the builder once to check it renders.

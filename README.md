@@ -45,6 +45,7 @@ Optionally, create `.leak-denylist` in the repo root with the customer, app and 
 | `scripts/validate-workflows.js` | Read-only workflow node validator, run in a signed-in App Studio page (WP-038) | When a task runs it |
 | `scripts/export-app.js` | Read-only export of an app to small files plus a graphify `graph.json`, with WP-001 order warnings (WP-045) | When a task runs it |
 | `scripts/save_server.py` | Localhost server: saves PUT files for `export-app.js` and serves the skill's `scripts/*.js` to the Playwright loader | When a task runs it |
+| `scripts/app_change_hook.py` | PostToolUse hook for the Playwright code tools: reminds Claude to refresh the export after a design write (WP-045). Register it in `~/.claude/settings.json` | On every matching tool call, once registered |
 | `scripts/find-field.js` | Read-only: forms with field X and the workflow nodes that use it | When a task runs it |
 | `scripts/record-count.js` | Read-only: record count per form | When a task runs it |
 | `scripts/verify-workflow-run.js` | Read-only verifier of a real run or chain: execution logs + business checks on the written records (WP-039) | When a task runs it |
