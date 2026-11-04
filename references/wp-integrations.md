@@ -39,3 +39,23 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 **Example:** After the batches, loop over the synced owners (one delete each) with `DELETE_RECORDS`: owner key `=` the loop's owner, date `>=` range start, date `<` range end + 1 day, and an OR group of `<stamp> isEmpty` and `<stamp> < <start variable>` (`isEmpty` works inside a delete filter).
 **Caveats:** Scope the delete per synced owner (an employee) when the source returns that owner's records from every location, so a transfer record is not removed by another location's run. This costs one delete call per owner. For a text prefix in a lookup filter, `startswith` works through `Records/fetch` (`contains` matches words, WP-036); confirm the editor shows it. Related: WP-005, WP-029, WP-040, WP-041.
 **Status:** Hypothesis · checked 2026-11 · Studio 8.2.0.25 · Evidence: built as saved nodes and every expression passed the editor's check; the delete and the stamp have not been run yet. The shape follows an exported sync workflow that deletes by a sync date-time.
+
+### WP-047 A list inserted into a REST connector's JSON body needs escaped quotes
+**Rule:** When a workflow variable is placed inside the `raw` body of a REST connector (Postman-style spec), build string items with escaped quotes (`\"A\",\"B\"`), not plain ones. In an expression, one escaped quote is written `"\\\""`.
+**Why:** The placeholder is replaced as text inside a JSON string. Plain quotes end that string early and the connector fails with "After parsing a value an unexpected character was encountered ... Path 'request.body.raw'".
+**Example:** `<list> + (<count> == 0 ? "" : ",") + "\\\"" + <item> + "\\\""`
+**Caveats:** Applies to values inserted inside `raw`. Query-string and header placeholders are inserted as plain values (not tested with quotes).
+**Status:** Hypothesis · checked 2026-11 · Studio 8.2.0.25 · Evidence: batched read failed with the error above using plain quotes; the escaped form was saved but its run result is not yet recorded.
+
+### WP-048 Transform or Create over nested arrays can produce zero rows without an error
+**Rule:** After a first test of a Transform (or an Iterator + Create) that reads a nested array (`$.[*].a[*].b[*].field`), check the saved record count, not only the run status. If nothing was written, try a flat path (`$..b[*].field`) for every field of the mapping.
+**Why:** The run finished with status OK, the Transform and Save steps took about 0 ms, and no records appeared. The same mapping over a single array level works.
+**Caveats:** Unconfirmed: whether the flat path fixes it. Also unconfirmed: whether the cause was the nested path or an empty response; read the response first when the connector allows it (see WP-046).
+**Status:** Hypothesis · checked 2026-11 · Studio 8.2.0.25 · Evidence: one UAT run with a nested path wrote nothing; the flat-path rerun is not yet recorded.
+
+### WP-050 Read many employees' timecards in one call with employee_timecard/multi_read
+**Rule:** For a batched timecard read, POST `/v1/timekeeping/employee_timecard/multi_read` instead of one GET per employee. Body: `select` (e.g. `["WORKED_SHIFTS"]`), `where.dateRange {startDate, endDate}` (end date exclusive), `where.employees.qualifiers [<person numbers>]` (or `ids`), `multiReadOptions` (e.g. `includePhantomPunches`, `breakSpanAtMidnight`). The response is a list, one timecard per employee.
+**Why:** The per-employee GET costs one call per person; the list form fits the batching in WP-016.
+**Example:** worked time is at `workedShifts[*].workedSpans[*]`, each span with `startPunch` / `endPunch` (each has `isPhantom`), `primaryOrgJob` (path in `qualifier`) and `transferOrgJob`.
+**Caveats:** `isPhantom = true` marks a punch UKG created (a missing punch, or a midnight split); with `breakSpanAtMidnight` off, it should mean a missing punch only (untested). The `select` list is also optional on the per-employee GET.
+**Status:** Hypothesis · checked 2026-11 · Studio 8.2.0.25 · Evidence: body and response shape read from the vendor's published API spec and a sample response; the batched call was not yet confirmed end to end.

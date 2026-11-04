@@ -17,7 +17,7 @@ Two test sets show whether a change to the skill helps or hurts:
 3. Paste the pass rate per eval for old and new into the pull request. Look at failing expectations, not just the total.
 4. For description changes, ask `skill-creator` to check triggering with `trigger-queries.json`.
 
-Run evals 9 and 10 in a scratch copy of the skill, not your linked clone: eval 10 writes a draft into `inbox/`.
+Run evals 9 and 10 in a scratch copy of the skill, not your linked clone: eval 10 edits `references/` and commits.
 
 Results go to `evals/results/` or a `*-workspace/` folder. Both are git-ignored, because outputs can contain session details. Don't commit them.
 

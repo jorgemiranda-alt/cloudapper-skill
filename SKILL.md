@@ -1,6 +1,6 @@
 ---
 name: cloudapper
-description: Working knowledge for the CloudApper no-code platform (web.cloudapper.com, m2sys.cloudapper.com and other tenants) - forms and child forms, menus, roles, UI workflows, backend workflows (triggers, nodes, order, expressions), reports, the app/design/report APIs, building, reviewing and documenting apps (technical and PM handover guides), UKG connector integrations, copying features between apps, and driving the app designer with the Playwright MCP without wasting tokens. Use this skill whenever the user mentions CloudApper, App Studio, Solution Builder, AI Agents & Automation, a CloudApper app or tenant, workflows/forms/menus/reports in such an app, Production vs UAT CloudApper environments, or wants to build, change, copy, debug, speed up or document anything on CloudApper - even if they only name a CloudApper app and not the platform. Also use it to design new CloudApper solutions of any kind (architecture, conventions, integrations with UKG, REST APIs, webhooks or SFTP).
+description: CloudApper no-code platform (web.cloudapper.com, m2sys.cloudapper.com, other tenants), including App Studio, Solution Builder and AI Agents & Automation: forms, menus, roles and privileges, UI and backend workflows, DevExpress reports, records, UKG connectors and integrations. Use whenever the user builds, changes, debugs, speeds up, reviews, copies (UAT/Production), designs or documents a CloudApper app or anything in it, or edits this skill, even if they only name the app.
 ---
 
 # CloudApper
@@ -11,7 +11,7 @@ This file holds the rules that apply to every task. Read the reference that matc
 
 | Task | Read |
 |---|---|
-| Understand how the platform works (forms, fields, workflows, reports, caching) | `references/platform-model.md` |
+| How the platform works: tenants, IDs, caching `references/platform-model.md`; forms, fields, menus, roles, reports `references/platform-data.md`; workflows `references/platform-workflows.md` | one file |
 | Find a WP-0xx rule by ID or keyword: grep, then read only that entry | `references/wp-index.md` |
 | APIs: auth `references/api-reference.md`, records `references/api-records.md`, workflow JSON `references/api-workflows.md`, forms/menus/roles/UI workflows `references/api-forms-menus.md`, reports `references/api-reports.md` | one file |
 | Workflows: triggers/loops `references/wp-triggers-loops.md`, routers/errors `references/wp-routers-errors.md`, sync `references/wp-integrations.md`, data/expressions `references/wp-data-expressions.md`, debugging/safe change `references/wp-procedures.md`, entry format `references/workflow-patterns.md` | one file |
@@ -50,7 +50,7 @@ Learned the hard way; details and evidence via `references/wp-index.md`.
 1. **Workflow order matters (WP-001).** A record created/updated by a workflow only triggers workflows that sit **later in the workflow list** (higher Sequence). A workflow placed after its target fires nothing. Keep the list order identical between environments.
 2. **The designer does hidden side work that the API does not.** Creating a form in the designer also grants the admin role access (privilege 32655). Saving a form body through the API creates the form and its default menus but **not** the privilege, so the menus stay hidden in the runtime. Child forms also need their own parent-child relation call.
 3. **A status trigger needs an actual change (WP-002).** Workflows triggered on `Status _IsUpdated` don't start if the new value equals the old one (records stuck at "Running" can't be rerun by setting "Running" again).
-4. **Triggered runs of one workflow go one at a time, and a loop does not always wait for them (WP-005).** A loop that updated 24 records finished in seconds while the 24 workflow runs it triggered executed over the next hour; a second batch started meanwhile lost its triggered runs. Run one batch at a time.
+4. **Triggered runs of one workflow go one at a time (async triggers can overlap), and a loop does not always wait for them (WP-005).** A loop that updated 24 records finished in seconds while the 24 workflow runs it triggered executed over the next hour; a second batch started meanwhile lost its triggered runs. Run one batch at a time.
 5. **The runtime caches the app.** After design changes, click the refresh icon next to the app name (or sign in again); menus for forms the role cannot access are hidden, so new forms need role privileges (see copy checklist).
 6. **A Router runs every route whose condition is true (WP-009)**, not just the first. Make route conditions exclusive when only one outcome is wanted.
 

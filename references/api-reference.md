@@ -7,7 +7,7 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 ## Contents
 1. Auth headers and big-int versions (below)
 2. App details and records: `api-records.md` (WP-027, WP-037)
-3. Workflows: `api-workflows.md` (WP-030 to WP-036, WP-038 to WP-040)
+3. Workflows: `api-workflows.md` (WP-030 to WP-036, WP-038 to WP-040, WP-046)
 4. Forms (design API), 5. Relations, privileges, menus, 6. UI workflows: `api-forms-menus.md` (WP-028, WP-043)
 7. Reports: `api-reports.md`
 

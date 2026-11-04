@@ -47,3 +47,9 @@ One line per entry: ID, file, title. Grep this for an ID or a keyword, then read
 - WP-043 `api-forms-menus.md` Build a whole form through the API from templates captured in the designer
 - WP-044 `building-apps.md` Dragging controls with real mouse events (browser extension, not Playwright)
 - WP-045 `building-apps.md` Export the app to local files and a graph, and query the graph before opening the designer
+- WP-046 `api-workflows.md` Response fields written into a REST connector through the API are not registered
+- WP-047 `wp-integrations.md` A list inserted into a REST connector's JSON body needs escaped quotes
+- WP-048 `wp-integrations.md` Transform or Create over nested arrays can produce zero rows without an error
+- WP-049 `wp-routers-errors.md` A route condition on a field that comes back empty fails with "Expression expected"
+- WP-050 `wp-integrations.md` Read many employees' timecards in one call with employee_timecard/multi_read
+- WP-051 `wp-data-expressions.md` Read a referenced record's fields straight from the trigger; don't fetch it again

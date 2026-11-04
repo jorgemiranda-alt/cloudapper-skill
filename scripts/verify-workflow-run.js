@@ -4,9 +4,10 @@
 // It never runs, triggers or writes anything.
 //
 // Run inside a signed-in runtime or App Studio page of the app (URL with /<clientId>/app/<appId>), as
-// one script: set globalThis.CAV_VERIFY, then paste this file (Claude in Chrome javascript_tool or the
-// DevTools console). For Playwright browser_evaluate, wrap the body in `async () => { ... }` and change
-// the last line to `return await ...`. One javascript_tool call times out after 45 s.
+// one script. Playwright: use the loader in references/playwright-efficiency.md §3 with the options
+// below as its second argument and `checks` as a source string; never paste this file into a tool call.
+// Claude in Chrome javascript_tool or the DevTools console: set globalThis.CAV_VERIFY, then paste the
+// file. One javascript_tool call times out after 45 s.
 // Options in globalThis.CAV_VERIFY:
 //   chain:  [{ name, automationId }]  workflows in the order they should run
 //   since:  ISO time just before the user started the run

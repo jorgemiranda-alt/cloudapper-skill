@@ -44,3 +44,9 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 **Rule:** Use a Before-create/edit workflow + Halt Operation with a message to block bad data.
 **Caveats:** Side effects done before the halt stay: avoid them or document a manual reset.
 **Status:** Observed · baseline
+
+### WP-049 A route condition on a field that comes back empty fails with "Expression expected"
+**Rule:** Don't compare a connector or iterator field with `=` / `!=` in a route when the field may be empty. Use `isEmpty` / `isNotEmpty` first, or store the value on a record and filter later.
+**Why:** The condition is evaluated as an expression with the value pasted in; an empty value leaves `<x> ==` or `&& ==`, and the route fails with a parser error ("Expression expected (at index N)"), which stops the run at that route.
+**Caveats:** A route with a single, always-present field (such as a response code) is fine. The cause of the empty values (unregistered response fields, a path that yields nothing) is a separate problem: see WP-046 and WP-048.
+**Status:** Hypothesis · checked 2026-11 · Studio 8.2.0.25 · Evidence: one run failed at a route holding two boolean comparisons on iterator fields; removing them let the run finish.

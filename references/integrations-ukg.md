@@ -35,6 +35,7 @@ Hosts and tenants differ per customer and per environment (check whether a UAT a
 ## Advice
 
 - Avoid one API call per employee: batch (`multi_read`) and pull incrementally (`dateTimeChanged`, `updated_after`).
+- Batched timecard reads: `employee_timecard/multi_read` (WP-050, `wp-integrations.md`).
 - Every call needs a failure route that writes status and reason; keep failed payloads for resend (WP-011, `wp-routers-errors.md`).
 - Put the tenant/base URL in one setting so promotion between UAT and Production is one change (architecture.md §5).
 - For other vendors, follow the same shape: token per run, batch, incremental, upsert, failure route.

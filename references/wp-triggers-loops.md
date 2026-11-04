@@ -7,7 +7,7 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 ### WP-001 A workflow's record change only triggers workflows later in the list
 **Rule:** Place a workflow that creates or updates records **before** every workflow it should trigger (lower Sequence). Keep the list order identical between environments.
 **Why:** A change made by a workflow only triggers workflows with a higher Sequence. A workflow cannot retrigger itself.
-**Status:** Observed · baseline · Evidence: a batch workflow placed after the workflow it should trigger fired nothing; moved before it, everything fired.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: a batch workflow placed after the workflow it should trigger fired nothing; moved before it, everything fired. Re-check from another app's execution logs: each forward link of a three-step chain fired within seconds (21, 20, then 54 and 54 runs), and a later workflow's updates to a form added no runs to an earlier workflow triggered on that form (54 runs each).
 
 ### WP-002 Setting a status to its current value triggers nothing
 **Rule:** To rerun a record that already has the trigger value, set an intermediate value first ("Pending"), or route: "Pending" if currently "Running", else "Running".
@@ -28,7 +28,8 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 ### WP-005 Triggered runs of one workflow are serial, and the caller doesn't always wait
 **Rule:** Run one batch at a time; check the triggered records' statuses before starting another batch.
 **Why:** Triggered runs of one workflow execute one at a time. Some CREATE/UPDATE steps wait for the workflows they trigger (the parent lasts exactly as long as its child); others only queue them.
-**Status:** Observed · baseline · Evidence: a loop that updated 24 records finished in seconds while the 24 triggered runs executed one by one over the next hour; a second batch started meanwhile lost its triggered runs.
+**Caveats:** Not every trigger is serial: runs of a workflow on an "After Async … On Create Or Update" trigger overlapped (a second run started while the first was still running). Don't rely on one-at-a-time order for async triggers; make each run safe to run alongside another.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: a loop that updated 24 records finished in seconds while the 24 triggered runs executed one by one over the next hour; a second batch started meanwhile lost its triggered runs. Re-check from another app's execution logs: 25 of 54 runs of an async-triggered workflow started before the previous run ended (runs of 1.6–22 s); 408 runs of a non-async After Create workflow never overlapped.
 
 ### WP-006 A FOREACH iterates its list as fetched
 **Rule:** Delete in one bulk step first, then fetch and loop. Never delete records inside the loop that iterates them.

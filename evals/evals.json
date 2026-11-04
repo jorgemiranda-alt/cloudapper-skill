@@ -104,14 +104,14 @@
     {
       "id": 10,
       "prompt": "Add this to the cloudapper skill: the Delay node seems to stop at 60 minutes even when set to 90. We saw it once in the Acme Foods UAT app, in the 'Acme Payroll Export' workflow.",
-      "expected_output": "Drafts a generic pattern into inbox/ from inbox/TEMPLATE.md with status Hypothesis, without the customer or workflow names, and does not edit references/ or SKILL.md.",
+      "expected_output": "Adds a generic entry directly to the right references/wp-*.md file with the next free WP number and status Hypothesis, without the customer or workflow names, adds its wp-index.md and CHANGELOG.md lines, runs check_skill.py and commits on local main.",
       "files": [],
       "expectations": [
-        "Writes or proposes a draft file under inbox/ rather than editing references/workflow-patterns.md or SKILL.md",
-        "Uses the template fields (Rule, Status line with Evidence, how to reproduce)",
+        "Edits the matching references/wp-*.md file in the same session instead of writing a draft or asking for review",
+        "Uses the next free WP number (from references/wp-index.md) and the entry format (Rule, Why, Caveats, Status with Evidence)",
         "Sets the status to Hypothesis",
         "Leaves out 'Acme Foods' and 'Acme Payroll Export' (uses generic wording)",
-        "Asks for or includes reproduction steps, including what result would prove it wrong"
+        "Adds the wp-index.md and CHANGELOG.md lines and runs scripts/check_skill.py"
       ]
     }
   ]

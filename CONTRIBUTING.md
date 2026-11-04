@@ -10,9 +10,7 @@ The skill holds reusable CloudApper knowledge that Claude loads on every CloudAp
    - **Adds** a new entry in the right `references/wp-*.md` group file, or in the matching `api-*.md` or other reference file for an API or designer technique. It uses the next free `WP-` number (see `references/wp-index.md`), adds a line to `wp-index.md`, and updates the ID range in the Contents of `workflow-patterns.md` or `api-reference.md`.
    - **Retires** a wrong entry: it moves the entry to `retired.md` with a `**Retired:**` line (reason, replacement ID) and removes every mention of its ID from `SKILL.md` and `references/`. Don't keep wrong patterns in `references/` with a "deprecated" note, because Claude may still follow them.
 3. If the entry is one of the platform facts listed in `SKILL.md`, Claude updates that list too. Scripts go in `scripts/`, with a line in `README.md`.
-4. Claude adds a `CHANGELOG.md` line, runs `python scripts/check_skill.py`, fixes what it reports and commits on the local `main` branch.
-
-The files in `inbox/` are older drafts from the former review flow. Apply one the same way when it becomes relevant, and delete it once applied.
+4. Claude adds the entry's line to `references/wp-index.md` and a `CHANGELOG.md` line, runs `python scripts/check_skill.py`, fixes what it reports and commits on the local `main` branch.
 
 ## Entry format
 

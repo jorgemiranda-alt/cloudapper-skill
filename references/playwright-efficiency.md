@@ -31,9 +31,11 @@
   ```js
   async (page) => { const S = 'http://127.0.0.1:8766/';
     const run = async (file, opts) => { const src = await (await page.request.get(S + file)).text();
-      return page.evaluate(([s, o]) => { globalThis.CAE_OPTIONS = o; return (0, eval)('(async () => {' + s.replace(/await (\w+)\(globalThis\.CAE_OPTIONS \|\| \{\}\);\s*$/, 'return await $1(globalThis.CAE_OPTIONS);') + '})()'); }, [src, opts]); };
+      return page.evaluate(([s, o]) => { if (typeof o.checks === 'string') o.checks = (0, eval)(o.checks);
+        globalThis.CAE_OPTIONS = o; return (0, eval)('(async () => {' + s.replace(/await (\w+)\(globalThis\.\w+( \|\| \{\})?\);\s*$/, 'return await $1(globalThis.CAE_OPTIONS);') + '})()'); }, [src, opts]); };
     return await run('record-count.js', {}); }
   ```
+  Options travel as JSON, so pass a function option (the verifier's `checks`) as a source string: `checks: 'async ({ records, eq, check }) => { ... }'`.
   Freshness check first: `run('export-app.js', { since: (await (await page.request.get(S + 'app.json')).json()).fingerprint })` (the save server serves the export's `app.json`). For `export-app.js`, after `run` add `for (const [n, d] of Object.entries(await page.evaluate(() => globalThis.__caeFiles))) await page.request.put(S + encodeURIComponent(n), { data: JSON.stringify(d, null, 1) });`.
 - **Read-only question scripts** (run with the loader, return names and counts only):
 
@@ -43,7 +45,8 @@
   | One workflow's steps | the export's `wf__<seq>__<name>.json` (WP-045); no browser call |
   | Records per form | `record-count.js` with `{}` or `{ forms: ['<title>'] }` |
   | What triggers or writes form X | `graphify query` on the export's `graph.json` |
-  | Broken nodes in the builder | `validate-workflows.js` (WP-038) |
+  | Broken nodes in the builder | `validate-workflows.js` (WP-038) with `{ sequences: [..] }` or `{ names: [..] }` |
+  | Did a run do the right thing | `verify-workflow-run.js` (WP-039) with `{ chain, since, checks: '<source>' }` |
 
 ## 4. Capture a designer save (read-only) and save-swap (write)
 

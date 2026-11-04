@@ -4,9 +4,9 @@
 // side-effect-free expression check (POST v3/Workflows/validate-expression).
 //
 // Run inside a signed-in App Studio page of the target app (any /studio/<clientId>/app/<appId>/...
-// page), as one script: Claude in Chrome javascript_tool (paste the whole file) or the DevTools
-// console (both allow the top-level await on the last line). For Playwright browser_evaluate,
-// wrap the body in `async () => { ... }` and change the last line to `return await ...`.
+// page). Playwright: use the loader in references/playwright-efficiency.md §3 (options as its
+// second argument); never paste this file into a tool call, the result echoes all of it back.
+// Claude in Chrome javascript_tool or the DevTools console: paste the file (top-level await works).
 // One javascript_tool call times out after 45 s: on a large app, filter with sequences or
 // automationIds, or run once with apiCheck: false. Options go in globalThis.CAV_OPTIONS before it:
 //   workflows: [..]      workflow objects to check instead of fetching (e.g. a builder's output before PUT)

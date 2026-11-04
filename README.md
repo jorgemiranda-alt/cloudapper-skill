@@ -36,7 +36,6 @@ Optionally, create `.leak-denylist` in the repo root with the customer, app and 
 |---|---|---|
 | `SKILL.md` | Rules for every task + routing table | When the skill triggers |
 | `references/` | Topic guides; `wp-index.md` lists every numbered pattern (WP-001 …) with its file | When a task needs that topic |
-| `inbox/` | Older drafts from the former review flow; apply and delete when relevant | No |
 | `retired.md` | Patterns removed as wrong or outdated | No |
 | `CHANGELOG.md` | One line per change | No |
 | `CONTRIBUTING.md` | How Claude adds, changes and retires entries (direct local edits) | When updating the skill |

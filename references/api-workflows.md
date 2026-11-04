@@ -78,3 +78,9 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 **Why:** Through `Records/fetch`, a `ParentId` rule with operator `" "` returned every record of the form, while `=` returned only the parent's children. A lookup built with `" "` fetched other parents' rows at run time, and the run then rewrote them, with no error in the log.
 **Caveats:** The editor shows a space as equals, so the node looks right. Designer-saved `ParentId` filters use `=`. Whether update and create id filters ignore a space is untested (WP-034).
 **Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: `Records/fetch` counts were 5 vs 3 rows and 2 vs 1 records for `" "` vs `=`. After a run, another parent's rows had the triggering parent's rate and percentages, modified in the same minute as the run.
+
+### WP-046 Response fields written into a REST connector through the API are not registered
+**Rule:** Don't build a connector's expected response fields by editing its JSON through the API and then mapping them. Open the node in the designer, click Validate, then Done, and Save the workflow, and check that the expression editor lists the response fields before wiring mappings, routes or debug logs to them.
+**Why:** With API-written fields, the expression editor listed only the system fields (Count, Request, Response Code), and anything pointing at the others failed with "Unknown identifier" or "Unable to extract value".
+**Caveats:** Validate calls the external service with the node's credentials: let the owner run it, with test values and a non-production tenant. Unconfirmed: after one Validate the saved field list had not changed, so check whether Validate really generates the list from a response or only checks the request.
+**Status:** Hypothesis · checked 2026-11 · Studio 8.2.0.25 · Evidence: one UAT workflow; editor showed system fields only; effect of Validate on the saved list not confirmed.
