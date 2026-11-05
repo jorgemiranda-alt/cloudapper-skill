@@ -39,6 +39,7 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 
 ### Building node JSON from templates
 
+- Before adding a lookup, list the trigger form's fields: if the trigger already holds the value or a reference to the record, use it and skip the lookup. Filter and assign by reference fields rather than their plain-text copies (WP-067).
 - Never hand-invent node shapes: copy a working node of the same type (lookup with rules, router/route, create with `ParentId`, update by id, foreach, debug log) and change IDs, forms and fields.
 - Node IDs `s` + 13 digits, unique per workflow; `__argN__` / `__expN__` names unique per workflow.
 - Generate the JSON with a small builder script from a backup file; apply with a guarded script; read back and open the builder once to confirm it renders.

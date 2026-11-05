@@ -68,3 +68,4 @@ One line per entry: ID, file, title. Grep this for an ID or a keyword, then read
 - WP-064 `wp-triggers-loops.md` One recompute workflow fed by a queue: phases inside a WHILE loop, enqueue workflows that only add rows
 - WP-065 `wp-triggers-loops.md` A workflow description holds at most 1,000 characters
 - WP-066 `wp-triggers-loops.md` Clear a field in an update node: `null` for plain fields, an empty lookup's id for a reference
+- WP-067 `wp-triggers-loops.md` Use the trigger record's fields before adding a lookup, and match and copy by reference
