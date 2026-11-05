@@ -4,6 +4,8 @@ One line per change: date, what changed, entry IDs. Newest first.
 
 ## 2026-11
 
+- 2026-11-05: Added WP-068 (guard an update-triggered workflow in its body; the trigger rules `_IsUpdated` AND `= true` fired on a bulk API update that changed another field). Cause: an excuse workflow superseded an occurrence when exceptions were bulk-marked processed.
+
 - 2026-11-05: Added WP-067 (use the trigger record before adding a lookup; filter and assign by reference, not plain copies) and a matching line in the template procedure. Cause: an enqueue workflow looked up a record the trigger already referenced, and matched rows by code instead of reference; corrected by the product owner.
 - 2026-11-04: Added WP-066 (clear a field in an update node: `null`, and an empty lookup's id for a reference) and two procedure lines (a reversal checklist, and testing the reverse path field by field); WP-064 defects marked fixed. Cause: a reopen step left a stale consumed-by reference and the reset left the old date; both passed the validator and a run with status OK.
 - 2026-11-04: WP-063 and WP-064 to Observed after a run on test data (escalation, supersede, lower level, both enqueue triggers); a created record's id works as a reference for later nodes; reopen lookups must filter the consumed status; two known defects noted in WP-064.
