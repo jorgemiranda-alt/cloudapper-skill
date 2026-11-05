@@ -4,6 +4,10 @@ One line per change: date, what changed, entry IDs. Newest first.
 
 ## 2026-11
 
+- 2026-11-05: WP-061: procedure to convert existing dropdown keys to labels (inventory, designer change, migrate stored values, map every workflow use, dedupe OR groups, verify); never add the label as an extra OR rule. WP-063 caveat changed to match. Cause: covered checks carried `= dro_choice_1 OR = dro_choice_2 OR = Open` and 28 uses had to be converted.
+
+- 2026-11-05: WP-060 caveat: change a WHILE loop's condition and max iterations together. Cause: a widened 100-day window kept max 30 and stopped silently after 30 days.
+
 - 2026-11-05: `validate-workflows.js` now reports `BAD_NODE_TYPE` (outer node type not matching TRIGGER/FOREACH/ROUTER/ROUTE). Procedure line: copy the outer node `type` (FOREACH, ROUTER, ROUTE) with the data. Cause: an Iterator built with `type: ACTION` failed a sync run with "Requested value 'FOREACH' was not found".
 
 - 2026-11-05: Added WP-068 (guard an update-triggered workflow in its body; the trigger rules `_IsUpdated` AND `= true` fired on a bulk API update that changed another field). Cause: an excuse workflow superseded an occurrence when exceptions were bulk-marked processed.
