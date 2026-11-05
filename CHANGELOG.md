@@ -4,6 +4,8 @@ One line per change: date, what changed, entry IDs. Newest first.
 
 ## 2026-11
 
+- 2026-11-05: `validate-workflows.js` now reports `BAD_NODE_TYPE` (outer node type not matching TRIGGER/FOREACH/ROUTER/ROUTE). Procedure line: copy the outer node `type` (FOREACH, ROUTER, ROUTE) with the data. Cause: an Iterator built with `type: ACTION` failed a sync run with "Requested value 'FOREACH' was not found".
+
 - 2026-11-05: Added WP-068 (guard an update-triggered workflow in its body; the trigger rules `_IsUpdated` AND `= true` fired on a bulk API update that changed another field). Cause: an excuse workflow superseded an occurrence when exceptions were bulk-marked processed.
 
 - 2026-11-05: Added WP-067 (use the trigger record before adding a lookup; filter and assign by reference, not plain copies) and a matching line in the template procedure. Cause: an enqueue workflow looked up a record the trigger already referenced, and matched rows by code instead of reference; corrected by the product owner.

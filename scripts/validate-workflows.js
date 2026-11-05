@@ -97,6 +97,12 @@ async function validateWorkflows(opts = {}) {
     const index = (n, parent, anc) => {
       if (info.has(n.id)) add('error', 'DUP_NODE_ID', 'Node id used twice', n);
       info.set(n.id, { n, parent, anc, order: order++, type: n.data && n.data.actionType });
+      // The outer node type must match the action: an Iterator saved as type ACTION passes the API,
+      // then fails at run time with "Requested value 'FOREACH' was not found" (HTTP 500).
+      const at = n.data && n.data.actionType, structural = ['TRIGGER', 'FOREACH', 'ROUTER', 'ROUTE'];
+      const want = structural.includes(at) ? at : 'ACTION';
+      if (at && n.type !== want && (structural.includes(at) || structural.includes(n.type)))
+        add('error', 'BAD_NODE_TYPE', 'Node type "' + n.type + '" does not match actionType ' + at + ' (expected "' + want + '")', n);
       const spec = n.data && n.data.connectorSpec;
       for (const s of (spec && spec.CustomSchema) || []) if (s && s.Id) types.add(s.Id);
       (n.children || []).forEach(c => index(c, n, [...anc, n.id]));

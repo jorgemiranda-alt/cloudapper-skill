@@ -41,6 +41,7 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 
 - Before adding a lookup, list the trigger form's fields: if the trigger already holds the value or a reference to the record, use it and skip the lookup. Filter and assign by reference fields rather than their plain-text copies (WP-067).
 - Never hand-invent node shapes: copy a working node of the same type (lookup with rules, router/route, create with `ParentId`, update by id, foreach, debug log) and change IDs, forms and fields.
+- Copy the whole node, not only `data`: the outer `type` must match the action (`FOREACH` for an Iterator, `ROUTER`/`ROUTE` for logic paths, `ACTION` for the rest). An Iterator saved with `type: "ACTION"` passes the API and the expression check, then fails at run time on its parent node with "Requested value 'FOREACH' was not found" (HTTP 500). `validate-workflows.js` reports it as `BAD_NODE_TYPE`; run it on the builder output before every PUT (WP-038).
 - Node IDs `s` + 13 digits, unique per workflow; `__argN__` / `__expN__` names unique per workflow.
 - Generate the JSON with a small builder script from a backup file; apply with a guarded script; read back and open the builder once to confirm it renders.
 - Prefer a node the **designer itself saved** for the same action and field type (ask the user to build one by hand if none exists) over a node you built, and copy its exact shape: rule `Label`, `Operator`, `FieldNodeId` and `ControlType`/`DataType`. The API accepts shapes the editor then can't read.
