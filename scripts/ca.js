@@ -12,7 +12,10 @@ async function installCa(opts = {}) {
   if (!m) throw new Error('Open a page of the app first (URL with /<clientId>/app/<appId>).');
   const [, clientId, appId] = m;
   const hosts = performance.getEntriesByType('resource').map(e => e.name);
-  const apiBase = opts.apiBase || (hosts.find(u => /^https:\/\/[^/]*api[^/]*\.cloudapper\.com\/api\/v3\//i.test(u) && !/marketplace|design|report/.test(u)) || '').replace(/(\/api\/).*/, '$1');
+  // Prefer the page's own cluster (m2sys.cloudapper.com -> m2sys-api); pages also call other hosts (api-nova) that answer 403.
+  const cluster = location.hostname.split('.')[0];
+  const apiBase = opts.apiBase || (hosts.find(u => u.startsWith(`https://${cluster}-api.cloudapper.com/api/`)) && `https://${cluster}-api.cloudapper.com/api/`)
+    || (hosts.find(u => /^https:\/\/[^/]*api[^/]*\.cloudapper\.com\/api\/v3\//i.test(u) && !/marketplace|design|report|nova/.test(u)) || '').replace(/(\/api\/).*/, '$1');
   if (!apiBase) throw new Error('Could not find the API host in the page; pass apiBase.');
   const designBase = opts.designBase || apiBase.replace(/-api\./, '-designapi.');
   const H = () => ({ authorization: 'Bearer ' + (localStorage.getItem('accessToken') || '').replace(/"/g, ''),
@@ -64,17 +67,20 @@ async function installCa(opts = {}) {
       return out;
     },
     forms: async () => { details = details || (await call('GET', apiBase + `v3/Apps/${appId}/details`)).Result; return details.Schemas.map(s => ({ id: s.Id, title: s.Title })); },
-    fields: async form => { await formId(form); return details.Schemas.find(s => s.Id === (form.length === 36 ? form : details.Schemas.find(x => x.Title === form).Id)).Fields.map(f => ({ name: f.Name, label: f.Title || f.Label, type: f.Type })); },
+    fields: async form => { const id = await formId(form); return details.Schemas.find(s => s.Id === id).Fields
+      .filter(f => /Field\d+$/.test(f.Name || '')).map(f => ({ name: f.Name, label: f.Title || f.Label, type: f.Type })); },
     // Workflows: list (summary), get one (full object, keep it in a variable, don't return it), put back.
     wfList: async () => (await call('GET', apiBase + 'v3/Workflows')).Result.map(w => ({ id: w.AutomationId, name: w.Name, seq: w.Sequence, on: w.IsActive })),
     wfGet: async name => (await call('GET', apiBase + 'v3/Workflows')).Result.find(w => w.Name === name || w.AutomationId === name),
     async wfPut(wf) { guard(); return (await call('PUT', apiBase + 'v3/Workflows/' + wf.AutomationId, wf)) ? 'saved' : 'empty response'; },
     // Step outline of a workflow: [{path, id, name, type}] without configs.
     wfSteps(wf) {
+      // Nodes only: walk root -> children; a node's name/type live in node.data.
       const out = []; const walk = (n, p) => { if (!n || typeof n !== 'object') return;
-        if (n.NodeId || n.Id) out.push({ path: p, id: n.NodeId || n.Id, name: n.Name || n.Title, type: n.Type || n.NodeType });
-        for (const [k, v] of Object.entries(n)) if (v && typeof v === 'object' && !/Config|Request|Response/i.test(k)) walk(v, p + '.' + k); };
-      walk(typeof wf.AutomationConfiguration === 'string' ? JSON.parse(wf.AutomationConfiguration) : wf.AutomationConfiguration, '$');
+        const d = n.data || {}; out.push({ path: p, id: n.id, name: d.name || d.label || n.name, type: n.type });
+        (n.children || []).forEach((c, i) => walk(c, p + '.' + i)); };
+      const cfg = typeof wf.AutomationConfiguration === 'string' ? JSON.parse(wf.AutomationConfiguration) : wf.AutomationConfiguration;
+      walk(cfg.root || cfg, 'root');
       return out;
     },
     validate: async (expression, extra = {}) => (await call('POST', apiBase + 'v3/Workflows/validate-expression', { Expression: expression, ...extra })),
