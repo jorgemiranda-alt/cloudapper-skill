@@ -74,4 +74,4 @@ One line per entry: ID, file, title. Grep this for an ID or a keyword, then read
 - WP-070 `api-records.md` A duplicate in a unique field is rejected silently
 - WP-071 `api-forms-menus.md` Edit or create a form through the design API alone, without the designer
 - WP-072 `building-apps.md` A button that asks the user for input: button → UI workflow → pre-filled child record → After Create workflow
-- WP-073 `api-forms-menus.md` Create a saved list view through the API
+- WP-073 `api-forms-menus.md` Create a saved list view through the API (and menu items that own views)
