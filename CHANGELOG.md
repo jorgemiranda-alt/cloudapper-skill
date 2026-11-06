@@ -4,6 +4,8 @@ One line per change: date, what changed, entry IDs. Newest first.
 
 ## 2026-11
 
+- 2026-11-06: Added WP-070 (unique-field duplicates return HTTP 200 with item Status 2 and are not saved; guarantee free values in the workflow) and WP-071 (edit or create a form through the design API alone; clone fields from the same form; a just-added field can read empty in the first workflow run). Cause: building a ticket counter form and ticket numbering.
+
 - 2026-11-06: Added WP-069 (assignments in one Set Variables node read pre-node values; chain dependent assignments). Cause: a ledger fold wrote level 1 instead of 3 on a replay with prior history.
 
 - 2026-11-06: Added `references/project-knowledge.md` (per-project `requirements/` folder, requirements graph plus app graph, staleness check, refresh procedure, comparing requirements with the app) and two lines in `SKILL.md`. Cause: requirements change over time and Claude needs both graphs current to know the project state.

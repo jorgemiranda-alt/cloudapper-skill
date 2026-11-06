@@ -71,3 +71,5 @@ One line per entry: ID, file, title. Grep this for an ID or a keyword, then read
 - WP-067 `wp-triggers-loops.md` Use the trigger record's fields before adding a lookup, and match and copy by reference
 - WP-068 `wp-triggers-loops.md` Guard an update-triggered workflow in its body; don't rely on the trigger rules alone
 - WP-069 `wp-data-expressions.md` Assignments in one Set Variables node all read the values from before the node
+- WP-070 `api-records.md` A duplicate in a unique field is rejected silently
+- WP-071 `api-forms-menus.md` Edit or create a form through the design API alone, without the designer
