@@ -41,12 +41,27 @@
 
   | Question | Script / file |
   |---|---|
-  | Which forms and workflow nodes use field X | `find-field.js` with `{ field: '<label or internal name>' }` |
+  | One-line API calls (records, workflows, runs) | `ca.js` with `{}` once per page, then `ca.<helper>` from `browser_evaluate` (below) |
+| Which forms and workflow nodes use field X | `find-field.js` with `{ field: '<label or internal name>' }` |
   | One workflow's steps | the export's `wf__<seq>__<name>.json` (WP-045); no browser call |
   | Records per form | `record-count.js` with `{}` or `{ forms: ['<title>'] }` |
   | What triggers or writes form X | `graphify query` on the export's `graph.json` |
   | Broken nodes in the builder | `validate-workflows.js` (WP-038) with `{ sequences: [..] }` or `{ names: [..] }` |
   | Did a run do the right thing | `verify-workflow-run.js` (WP-039) with `{ chain, since, checks: '<source>' }` |
+
+- **`ca.js` helpers** (installed on `window.ca`, lost on reload; the helper returns its names):
+
+  | Call | Returns |
+  |---|---|
+  | `ca.find(form, r => cond, ['field', ..], max)` | matching records, only `id` + the fields named (form = title or id) |
+  | `ca.count(form, r => cond?)` | a number |
+  | `ca.setClient(id)` then `ca.save(form, [{id, _version_, field: v}])` | `[{id, status}]`; status 2 = rejected (WP-070) |
+  | `ca.forms()`, `ca.fields(form)` | ids and titles, field names and types |
+  | `ca.wfList()`, `w = await ca.wfGet(name)`, `ca.wfSteps(w)`, `ca.wfPut(w)` | summary, full object (keep in a variable), step outline, save |
+  | `ca.validate(expr)`, `ca.lastRun(name)` | validator result; last run status and failed steps only |
+
+  Keep big objects inside the page (`window.w = await ca.wfGet(..)`) and return only the part you need.
+- **Integration systems (UKG and others):** call them in `browser_run_code` with `page.request` (Node side, no CORS). Read connection settings from the app's config record with `page.evaluate(() => ca.find(..))` inside the same code, get a token, call the endpoint and return only filtered fields. Never return the token, the password or the client secret.
 
 ## 4. Capture a designer save (read-only) and save-swap (write)
 
