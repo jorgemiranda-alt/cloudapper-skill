@@ -4,6 +4,10 @@ One line per change: date, what changed, entry IDs. Newest first.
 
 ## 2026-11
 
+- 2026-11-06: New safety rule in SKILL.md: change apps only through the API, never by driving the designer or App Studio, and never ask the user to do it in the designer; ask when no API way is known. WP-028, WP-043 and WP-044 marked superseded or reference-only (use WP-071). Source: the owner's instruction "ONLY USE API ALWAYS".
+
+- 2026-11-06: Added WP-072 (button that collects input: custom action ActivityType 4 → ON_DEMAND UI workflow ADD_NEW_RECORD on a child form with _triggerForm pre-fill → After Create backend workflow), with the exact shapes. WP-071 caveat corrected: buttons pass through a design-API save, child relations do not. Source: an owner-built button read back from an app.
+
 - 2026-11-06: Added WP-070 (unique-field duplicates return HTTP 200 with item Status 2 and are not saved; guarantee free values in the workflow) and WP-071 (edit or create a form through the design API alone; clone fields from the same form; a just-added field can read empty in the first workflow run). Cause: building a ticket counter form and ticket numbering.
 
 - 2026-11-06: Added WP-069 (assignments in one Set Variables node read pre-node values; chain dependent assignments). Cause: a ledger fold wrote level 1 instead of 3 on a replay with prior history.

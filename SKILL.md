@@ -18,7 +18,7 @@ This file holds the rules that apply to every task. Read the reference that matc
 | Build or change workflow nodes through the API (JSON shape per actionType, trigger codes, id rewriting) | `references/node-templates.md` |
 | Drive the browser with the Playwright MCP | `references/playwright-efficiency.md` |
 | Copy features or a whole app from one app/account to another | `references/copy-between-apps.md` |
-| Build a new app or form in the designer | `references/building-apps.md` |
+| Build a new app or form (through the API) | `references/building-apps.md` |
 | Design, name or review anything (SOLID on CloudApper, naming, workflow/config/report conventions) | `references/conventions.md` |
 | Design a solution or integration architecture (UKG, REST, webhooks, SFTP, middleware; scaling and efficiency) | `references/architecture.md` |
 | Document an app (technical / troubleshooting guide, or a PM handover guide) | `references/documentation.md` |
@@ -38,6 +38,7 @@ Most CloudApper customers have a **Production** app and a **UAT** (test) app, of
 
 ## Safety rules that apply to every task
 
+- **Change apps only through the API.** Make every change (forms, fields, dropdown choices, relations, privileges, menus, buttons, UI workflows, backend workflows, records) with the APIs: design API (`get-app-data-for-design` + `EntityType/SaveEntityType`, WP-071), workflow API, UI-workflow configuration API (WP-072), records API. Never drive the designer or App Studio to change something (no clicking Save, dragging controls, typing into the JSON editors, capturing and replaying designer saves), and never ask the user to make the change in the designer. If you know no API way for a change, say so and ask; do not fall back to the UI. Opening a page to look (a half-scale screenshot to confirm a visual) is allowed.
 - **Never run, activate or trigger a workflow on your own.** The user starts runs. You may save definitions and toggle on/off only when asked; say clearly when a toggle changes live behaviour.
 - **Back up before you edit.** Save the current definition of every workflow/form you will change to a local, dated folder first, and keep it until the user confirms the result. (A backup deleted too early once made a rollback impossible.)
 - **Secrets.** Workflow connectors contain credentials (UKG, other vendor APIs, keys). Never print, log or put them in docs. When inspecting workflow JSON, print only structure: for a connector print the method, the URL host and the names of its headers and body keys, **never its `Request` text** (a masking pattern on the text misses values inside `urlencoded` arrays and escaped JSON; a username, password and client id once appeared in output this way). Before saving a workflow cloned from another one, check by code that none of the source's literal values (other than known constants such as `grant_type` `password`) appear in the new JSON, and read credentials from the project's config record. Delete raw dumps with secrets when done, and tell the user which local folders still contain them.
