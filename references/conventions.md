@@ -26,6 +26,7 @@ Use when designing, building, reviewing or changing any CloudApper app. Every ru
 
 - **Forms:** singular business noun ("Invoice", "Time Entry"). No "Copy", "Test" or "(DO NOT USE)" in live forms.
 - **Fields:** clear label with units where useful ("Eligible Minutes", "Amount ($)"). Never reuse one label for two meanings; avoid typos (they end up in expressions).
+- **Email addresses use the Email field type**, never a plain text field. It validates the format on entry and lets email actions and notifications use the field as a recipient. This covers email fields that a sync fills (for example UKG employee or supervisor email) as well as ones users type. When adding the field through the design API, copy the `ControlType`/`DataType` of an Email field the designer created (in this app or another) rather than guessing the code. When you find an existing email held in a text field, tell the user and offer to convert it.
 - **Workflows:** `<Area> - <What it does>` ("Invoice - Calculate Totals and Taxes"). Version numbers only when versions really coexist.
 - **Workflow steps:** numbered in run order, verb first ("05 Load the Rule for this Date"); routes state their condition ("Yes - Rule Found", "Else - No Rule").
 - **Menus:** group by the user's task and order by daily use (e.g. Daily Work · Periods · Synced Data · Setup · Admin); plural nouns users recognise, naming the source when data is synced ("UKG Time Entries"); setup and admin data in restricted groups; one distinct icon per item; hide auto-created "Add X" entries users don't need.

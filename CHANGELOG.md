@@ -4,6 +4,7 @@ One line per change: date, what changed, entry IDs. Newest first.
 
 ## 2026-11
 
+- 2026-11-06: conventions.md: email addresses use the Email field type (owner rule).
 - 2026-11-06: Added `scripts/ca.js` (one-line API helpers on `window.ca`, playwright-efficiency §3) and the SKILL.md rule that every CloudApper and integration (UKG etc.) request runs through Playwright and returns only the needed fields.
 - 2026-11-06: Menus (api-forms-menus §5): three levels work (group → group → item); move items via SaveDynamicMenuItem with ParentID/Level/SequenceNo; hide auto-created per-form groups with Ishidden instead of deleting. Confirmed in the app.
 
