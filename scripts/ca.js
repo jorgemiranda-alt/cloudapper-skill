@@ -40,7 +40,9 @@ async function installCa(opts = {}) {
     if (!f) throw new Error('No form ' + name);
     return f.Id;
   };
-  const pick = (r, fields) => fields ? Object.fromEntries(['id', ...fields].map(k => [k, r[k]])) : r;
+  // Keeps <field>ReferenceId for named reference fields: filtering on a reference id that was trimmed away
+  // compares undefined === undefined and matches the wrong records.
+  const pick = (r, fields) => fields ? Object.fromEntries(['id', '_version_', ...fields.flatMap(k => r[k + 'ReferenceId'] !== undefined ? [k, k + 'ReferenceId'] : [k])].map(k => [k, r[k]])) : r;
 
   const ca = {
     clientId, appId, apiBase, designBase, call, parse,
@@ -57,14 +59,16 @@ async function installCa(opts = {}) {
     },
     async count(form, where) { return where ? (await ca.find(form, where, [])).length
       : (await call('POST', apiBase + 'v3/Records/fetch', { StartRow: 0, TotalRows: 1, SearchType: 0, TypeId: await formId(form), FilterConfigurations: [], SortConfigurations: [] })).Result.Count; },
-    // Update or create records: items [{id?, _version_?, field: value}]; batches of 20. Returns per-item status (2 = rejected, WP-070).
+    // Update or create records: items [{id?, _version_?, field: value}]; batches of 20.
+    // The API answers only {Success, Message} per call, with no per-record status: rejected duplicates (WP-070)
+    // are silent, so compare counts before and after. Returns { sent, calls, failed: [messages] }.
     async save(form, items) {
-      guard(); const TypeId = await formId(form); const out = [];
+      guard(); const TypeId = await formId(form); const failed = []; let calls = 0;
       for (let i = 0; i < items.length; i += 20) {
         const res = await call('POST', apiBase + 'v3/Records?records-required=true', { Items: items.slice(i, i + 20).map(x => ({ TypeId, ...x })) });
-        for (const it of (res.Result || res.Items || [])) out.push({ id: it.id ?? it.Id, status: it.Status });
+        calls++; if (res && res.Success === false) failed.push(`batch ${i / 20}: ${res.Message}`);
       }
-      return out;
+      return { sent: items.length, calls, failed };
     },
     forms: async () => { details = details || (await call('GET', apiBase + `v3/Apps/${appId}/details`)).Result; return details.Schemas.map(s => ({ id: s.Id, title: s.Title })); },
     fields: async form => { const id = await formId(form); return details.Schemas.find(s => s.Id === id).Fields

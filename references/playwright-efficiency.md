@@ -53,9 +53,9 @@
 
   | Call | Returns |
   |---|---|
-  | `ca.find(form, r => cond, ['field', ..], max)` | matching records, only `id` + the fields named (form = title or id) |
+  | `ca.find(form, r => cond, ['field', ..], max)` | matching records with `id`, `_version_`, the fields named and their `ReferenceId`s (form = title or id) |
   | `ca.count(form, r => cond?)` | a number |
-  | `ca.setClient(id)` then `ca.save(form, [{id, _version_, field: v}])` | `[{id, status}]`; status 2 = rejected (WP-070) |
+  | `ca.setClient(id)` then `ca.save(form, [{id, _version_, field: v}])` | `{sent, calls, failed}`; no per-record status, so check with `ca.count` (WP-070) |
   | `ca.forms()`, `ca.fields(form)` | ids and titles, field names and types |
   | `ca.wfList()`, `w = await ca.wfGet(name)`, `ca.wfSteps(w)`, `ca.wfPut(w)` | summary, full object (keep in a variable), step outline, save |
   | `ca.validate(expr)`, `ca.lastRun(name)` | validator result; last run status and failed steps only |
