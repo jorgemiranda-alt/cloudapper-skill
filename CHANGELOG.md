@@ -4,6 +4,8 @@ One line per change: date, what changed, entry IDs. Newest first.
 
 ## 2026-11
 
+- 2026-11-06: Menus (api-forms-menus §5): three levels work (group → group → item); move items via SaveDynamicMenuItem with ParentID/Level/SequenceNo; hide auto-created per-form groups with Ishidden instead of deleting. Confirmed in the app.
+
 - 2026-11-06: WP-073 extended: menu items created through SaveDynamicMenuItem own their views (MenuId) and start with none, so create a default view per item; integer `>=` filters work; sort format still unknown. Confirmed in the app.
 
 - 2026-11-06: Added WP-073 (saved list views: GET/POST api/v3/formviews/, copy a view of the form, drop Id/CreatedDate/CreatedBy, set Fields, FilterConfiguration and PermissionType). Confirmed in the app by the owner.
