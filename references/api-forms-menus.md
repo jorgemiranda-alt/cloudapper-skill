@@ -63,3 +63,9 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 
 - `GET API v2/Apps/ui-workflow-definition/{clientId}/{appId}` → `Result` = JSON string of the list.
 - `PUT API v2/Configurations/update-app-configuration?config-to-update=Workflow` body `{AppId, ClientId, Configuration:[...full list...]}` → replaces the whole list (read, modify, write back).
+
+### WP-076 Change a form's record title through the API
+**Rule:** The record title (`DisplayName`) is built from the fields with a `DisplayNumber`, in that order (1, 2, ...). To change it, set `DisplayNumber` on those fields in the design object (`AllFields` and the matching `<Attribute ... DisplayNumber="n">` in `EntitityXML`), save with `EntityType/SaveEntityType` (WP-071 rules), and read back. Then update existing records: send `DisplayName` itself through `POST API v3/Records` in batches of 20 (WP-027), built the same way (field values joined by a space), and compare every record afterwards.
+**Why:** Saving the form does not recompute titles of existing records, and re-saving a record without `DisplayName` keeps the old title; the app's own screens send the title with each save.
+**Caveats:** Reference fields elsewhere keep the old display text until those records are saved again. Check whether records saved later by a workflow get the new title; if not, map `DisplayName` in that workflow too.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: Employees title changed from Person Number + Full Name to Full Name + Person Number; 474 records updated and read back with no mismatch.
