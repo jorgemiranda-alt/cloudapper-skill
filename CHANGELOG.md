@@ -4,6 +4,8 @@ One line per change: date, what changed, entry IDs. Newest first.
 
 ## 2026-11
 
+- 2026-11-06: Added `references/project-knowledge.md` (per-project `requirements/` folder, requirements graph plus app graph, staleness check, refresh procedure, comparing requirements with the app) and two lines in `SKILL.md`. Cause: requirements change over time and Claude needs both graphs current to know the project state.
+
 - 2026-11-05: WP-061: procedure to convert existing dropdown keys to labels (inventory, designer change, migrate stored values, map every workflow use, dedupe OR groups, verify); never add the label as an extra OR rule. WP-063 caveat changed to match. Cause: covered checks carried `= dro_choice_1 OR = dro_choice_2 OR = Open` and 28 uses had to be converted.
 
 - 2026-11-05: WP-060 caveat: change a WHILE loop's condition and max iterations together. Cause: a widened 100-day window kept max 30 and stopped silently after 30 days.
