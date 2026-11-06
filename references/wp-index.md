@@ -76,3 +76,4 @@ One line per entry: ID, file, title. Grep this for an ID or a keyword, then read
 - WP-072 `building-apps.md` A button that asks the user for input: button → UI workflow → pre-filled child record → After Create workflow
 - WP-073 `api-forms-menus.md` Create a saved list view through the API (and menu items that own views)
 - WP-074 `api-records.md` Link a child record to its parent through the records API
+- WP-075 `api-workflows.md` Email a record with a report attached (Email Notification connector)

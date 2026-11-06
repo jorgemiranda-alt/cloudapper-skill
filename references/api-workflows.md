@@ -95,3 +95,22 @@ After saving, reload the builder page and open the node: a blank "Type of Record
 **Caveats:** Related: WP-030 to WP-037. If the editor has the workflow open, it may save in between and your next API save gets a 409 "updated version already exists": reload the workflow, reapply the change on the latest version, and ask the user to close the panel with Close, not Done.
 Before saving, ask whether the tab's cached copy is current; a stale copy gives a 409. Scan every workflow for the shapes you rebuilt (short ids, plain fields with three-part paths) after fixing one node, and report that the scan does not prove the editor opens them.
 **Status:** Hypothesis · checked 2026-11 · Studio 8.2.0.25 · Evidence: an update node built from a create node's assignments opened with a blank record type (shortened form id), then with raw field names (form id inserted into plain-field paths); both fixed by using the full id and `<nodeId>.<field>`, then reopened in the editor.
+
+### WP-075 Email a record with a report attached (Email Notification connector)
+**Rule:** Use the Email Notification connector (`Connector.Notification.dll`, shown as "Email Notification (Extended v3.5)") after a step that fetches the record the report is built on. Its properties (`connectorSpec.Properties`, by `Name`):
+
+| Property | ControlType | Use |
+|---|---|---|
+| `connectorDataSource1` | 107 DataSourceSelector | data source for field values in the message (optional) |
+| `emailTo`, `emailCc`, `emailBcc`, `emailReplyTo` | 104 | `Value` = `{Contacts:[], Users:[], Roles:[], ContactFields:[<expression>]}`; a `ContactFields` entry is an expression whose argument is an email-type field (DataType 7), e.g. `__TRIGGERRECORD.<field>` |
+| `emailSubject` | 4 text | text with `__expNNN__` placeholders; each placeholder is defined in the property's `Variables` array (same shape as REST connector variables: `{Name, Expression, Arguments:[{Field, FieldNodeId:"<nodeId>.<field>", NodeId, TypeId, ControlType, DataType, Label}], ExpressionText}`) |
+| `emailBody` | 20 HTML | HTML with the same placeholders and `Variables`; use inline styles, email clients drop `<style>` blocks |
+| `emailAttachment1` | 108 AttachmentChooser | attach files from attachment fields |
+| `FileUrl` | 4 | attach a file by URL |
+| `connectorDataSource2` | 107 | **data source for the report**: `{TypeId:<form the report is built on>, SourceNodeId:<id of the step that fetched that record>}` |
+| `reportChooser1` | 109 ReportChooser | **the report to attach**; its editor (AdvancedReportChooser) picks a report of that form and builds filter rules over the data source, so the attached report is limited to the fetched record |
+
+Steps: (1) build the report on the parent form (DevExpress report; list with `GET RAPI Reports/app-reports`); (2) in the workflow, fetch the parent record (LOOKUP_RECORD) from the trigger, e.g. by ticket number; (3) set `connectorDataSource2` to that step and form; (4) choose the report in `reportChooser1` and filter it to the fetched record; (5) recipients from email-type fields (see `conventions.md`: email addresses use the Email field type).
+**Why:** The report attachment is driven by its own data source, separate from the message's data source; without `connectorDataSource2` the chooser has no form to list reports for.
+**Caveats:** The saved `Value` shape of `reportChooser1` has not been observed yet (empty `[]` everywhere checked). Capture it from a node where the report was chosen before building one through the API, and add it here. The subject/body placeholder pattern was saved through the API and passes `validate-expression`; confirm with a real run that the sent email shows values, not `__exp…__` text.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Partial (report chooser value not yet seen). Evidence: property list and control types read from a designer-built email node and the web app's control-type enum (ReportChooser = 109, AttachmentChooser = 108, DataSourceSelector = 107).
