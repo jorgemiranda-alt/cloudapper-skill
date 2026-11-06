@@ -4,6 +4,8 @@ One line per change: date, what changed, entry IDs. Newest first.
 
 ## 2026-11
 
+- 2026-11-06: Added WP-073 (saved list views: GET/POST api/v3/formviews/, copy a view of the form, drop Id/CreatedDate/CreatedBy, set Fields, FilterConfiguration and PermissionType). Confirmed in the app by the owner.
+
 - 2026-11-06: New safety rule in SKILL.md: change apps only through the API, never by driving the designer or App Studio, and never ask the user to do it in the designer; ask when no API way is known. WP-028, WP-043 and WP-044 marked superseded or reference-only (use WP-071). Source: the owner's instruction "ONLY USE API ALWAYS".
 
 - 2026-11-06: Added WP-072 (button that collects input: custom action ActivityType 4 → ON_DEMAND UI workflow ADD_NEW_RECORD on a child form with _triggerForm pre-fill → After Create backend workflow), with the exact shapes. WP-071 caveat corrected: buttons pass through a design-API save, child relations do not. Source: an owner-built button read back from an app.
