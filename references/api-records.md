@@ -33,3 +33,9 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 **Why:** The list's parent column (marked SYS) shows `ParentDisplayName`. Rows with only `ParentId` are linked but look unlinked in the grid; rows without `ParentId` are not linked at all, and a report over the child form mixes every parent's rows.
 **Caveats:** Read one record back after the first write before updating the rest.
 **Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: 604 child rows linked and 742 dummy rows given their display name; read back with no blanks.
+
+### WP-077 Reference fields keep a copy of the target's title
+**Rule:** A reference field stores the target record's title as text at the moment the link is made (`<field>`), next to `<field>ReferenceId`. After changing a form's title (WP-076), rewrite that text on every referencing record: find reference fields to the form in `v3/Apps/{appId}/details` (ControlType 12 with the form's id), and send `<field>` = the target's current `DisplayName` together with the unchanged `<field>ReferenceId` and `<field>ReferenceTypeId` (WP-037), in batches of 20. Try two records first and read them back.
+**Why:** The list and forms show the stored text, so references made under the old title keep showing it (here, just the employee number) until rewritten. Workflow steps that link a record (`Field: "id"` of a fetched record) or copy another reference take the target's title at run time, so they need no change.
+**Caveats:** Before a bulk update of a form with an "updated" trigger, check what the trigger would do. In this test, 255 updates through `POST API v3/Records` started no run of the update-triggered workflow; confirm that again before relying on it.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: 444 references on 8 forms rewritten and read back with links intact; the Exception update-triggered workflow logged no run.
