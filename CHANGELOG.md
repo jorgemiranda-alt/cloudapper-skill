@@ -4,6 +4,7 @@ One line per change: date, what changed, entry IDs. Newest first.
 
 ## 2026-11
 
+- 2026-11-06: WP-074 link child records to their parent (ParentId, ParentTypeId, ParentDisplayName). WP-075 Email Notification connector: placeholders in subject/body, report attachment (reportChooser value formats), confirmed by a real send. WP-076 change a form's record title (DisplayNumber) and rewrite existing titles. WP-077 reference fields keep a copy of the target's title; rewrite after a title change. WP-078 two-column desktop layout with related fields paired by row, including forms with child forms. ca.js fixes (reference ids kept by find; save reports calls/failures). UKG bulk employee details via data multi_read (integrations-ukg.md). UKG calls go through a project UKG toolkit when one exists.
 - 2026-11-06: conventions.md: email addresses use the Email field type (owner rule).
 - 2026-11-06: Added `scripts/ca.js` (one-line API helpers on `window.ca`, playwright-efficiency §3) and the SKILL.md rule that every CloudApper and integration (UKG etc.) request runs through Playwright and returns only the needed fields.
 - 2026-11-06: Menus (api-forms-menus §5): three levels work (group → group → item); move items via SaveDynamicMenuItem with ParentID/Level/SequenceNo; hide auto-created per-form groups with Ishidden instead of deleting. Confirmed in the app.
