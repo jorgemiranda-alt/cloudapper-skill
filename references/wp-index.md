@@ -80,3 +80,4 @@ One line per entry: ID, file, title. Grep this for an ID or a keyword, then read
 - WP-076 `api-forms-menus.md` Change a form's record title through the API
 - WP-077 `api-records.md` Reference fields keep a copy of the target's title
 - WP-078 `api-forms-menus.md` Lay out a form in two desktop columns through the API
+- WP-079 `api-forms-menus.md` Give a menu a new icon through the API (upload, then IconURL)
