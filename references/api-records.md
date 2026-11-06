@@ -27,3 +27,9 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 **Why:** A create whose unique field repeats an existing value returns HTTP 200 with the item marked `Status: 2`, and no record is saved. Nothing reports an error, so a workflow or script that trusts the response loses the record.
 **Caveats:** Workflow CREATE_RECORD steps are likely to fail the same way; read the record count after a test run.
 **Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: a second record with the same unique Counter Name returned HTTP 200, item Status 2, and the form still held one record.
+
+### WP-074 Link a child record to its parent through the records API
+**Rule:** When you create or update a record of a child form with `POST API v3/Records`, set the three system fields `ParentId` (parent record id), `ParentTypeId` (parent form id) and `ParentDisplayName` (the parent's `DisplayName`). Find child forms in `v3/Apps/{appId}/details` → `ParentChildRelations`; the parent link is not in the form's `Fields`, so a field listing misses it.
+**Why:** The list's parent column (marked SYS) shows `ParentDisplayName`. Rows with only `ParentId` are linked but look unlinked in the grid; rows without `ParentId` are not linked at all, and a report over the child form mixes every parent's rows.
+**Caveats:** Read one record back after the first write before updating the rest.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: 604 child rows linked and 742 dummy rows given their display name; read back with no blanks.
