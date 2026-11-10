@@ -4,6 +4,7 @@ One line per change: date, what changed, entry IDs. Newest first.
 
 ## 2026-11
 
+- 2026-11-10: `create-form.js` puts `ViewType: 1` and `ItemLayout` inside the Primary View's `ViewDefinition`, as designer views have them; without them the view's edit dialog showed no view type selected.
 - 2026-11-10: Added WP-083 (every workflow node needs a `children` array) in `api-workflows.md`; `validate-workflows.js` reports `CHILDREN_MISSING`; fixed `ca.validate` body (`{Value: <expression object>}`; the old `{Expression}` body returned 500 for every expression).
 - 2026-11-10: ca.js helpers `ca.design()`, `ca.menus()`, `ca.views()`, `ca.sub`; `scripts/state.js` (design-state counts, test leftovers); runner saves results over 6,000 characters to a file and returns a 500-character preview.
 - 2026-11-10: Added `scripts/menu.js`, `scripts/view.js`, `scripts/relation.js` (tested on UAT through cloudapper_run). WP-073: update a view with PUT formviews/{id}, delete with DELETE. WP-082 child forms are EventTypes (link converts; UnlinkChildFromParent; DeleteEventType/abc). create-form.js removes child forms and checks IsSaved. Runner passes ca.js hosts to every script and takes outDir for exports.

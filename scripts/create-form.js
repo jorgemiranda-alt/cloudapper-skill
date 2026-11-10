@@ -115,7 +115,7 @@ async function createForm(o = {}) {
         const vis = o.fields.some(f => f.visible) ? user.filter((f, i) => o.fields[i].visible) : user.slice(0, 5);
         await ca.call('POST', A + 'v3/formviews/', { Title: 'Primary View', Description: '', ViewType: 1, ItemLayout: { LayoutType: 0 }, TypeId: id, MenuId: menu.MenuID, DefaultView: true, PermissionType: 2,
           FormViewPermissions: [{ PermissionType: 2, PermittedId: '' }, { PermissionType: 1, PermittedId: sub }],
-          ViewDefinition: { Fields: vis.map(f => f.Name), FilterConfiguration: { Condition: 'AND', Rules: [] }, SortConfigurations: [] } });
+          ViewDefinition: { ViewType: 1, ItemLayout: { LayoutType: 0 }, Fields: vis.map(f => f.Name), FilterConfiguration: { Condition: 'AND', Rules: [] }, SortConfigurations: [] } });
         const back = ((await ca.call('GET', A + 'v3/formviews/')).Result || []).find(v => v.TypeId === id && v.Title === 'Primary View');
         view = back ? `created (${(back.ViewDefinition?.Fields || []).length} columns, default ${back.DefaultView})` : 'POST sent but not found on read-back';
         if (!back) problems.push(view);
