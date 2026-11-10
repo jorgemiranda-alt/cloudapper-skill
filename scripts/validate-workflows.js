@@ -221,6 +221,7 @@ async function validateWorkflows(opts = {}) {
 
     for (const { n, parent, type } of info.values()) {
       const d = n.data || {};
+      if (!Array.isArray(n.children)) add('error', 'CHILDREN_MISSING', 'Node has no children array; the builder shows the tree unconnected (WP-083)', n);
       if (n.id !== TRIGGER && !NODE_ID.test(n.id)) add('warn', 'NODE_ID_FORMAT', 'Node id is not "s" + 13 digits', n);
       if (type === 'ROUTE' && (!parent || parent.data.actionType !== 'ROUTER')) add('error', 'ROUTE_PARENT', 'ROUTE is not directly under a ROUTER', n);
       if (type === 'ROUTER') for (const c of n.children || []) if (c.data.actionType !== 'ROUTE') add('error', 'ROUTER_CHILD', 'ROUTER child "' + c.data.name + '" is not a ROUTE', n);

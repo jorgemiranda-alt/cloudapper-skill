@@ -92,7 +92,7 @@ async function installCa(opts = {}) {
       walk(cfg.root || cfg, 'root');
       return out;
     },
-    validate: async (expression, extra = {}) => (await call('POST', apiBase + 'v3/Workflows/validate-expression', { Expression: expression, ...extra })),
+    validate: async (expression, extra = {}) => (await call('POST', apiBase + 'v3/Workflows/validate-expression', { Value: { Name: '__exp1__', Expression: expression, Arguments: [], ExpressionText: expression, NodeDisplayText: '', ...extra } })),
     // Last run of a workflow: times, status (1 ok, 2 failed, 3 running) and failed steps only.
     async lastRun(name) {
       const id = /^[0-9a-f-]{36}$/i.test(name) ? name : (await ca.wfGet(name)).AutomationId;

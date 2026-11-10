@@ -37,6 +37,7 @@ One line per entry: ID, file, title. Grep this for an ID or a keyword, then read
 - WP-033 `api-workflows.md` Write argument paths in the designer's formats
 - WP-034 `api-workflows.md` Write update and create nodes the way the designer saves them
 - WP-035 `api-workflows.md` An iterator node needs node type `FOREACH`
+- WP-083 `api-workflows.md` Every workflow node needs a `children` array, leaves included
 - WP-036 `api-workflows.md` Filter with `=`, not `contains`, and test a filter through the records API first
 - WP-037 `api-records.md` Set a reference field through the records API
 - WP-038 `api-workflows.md` Validate workflow nodes without opening the builder

@@ -48,6 +48,12 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 **Why:** The engine dispatches on the node's `type`. A `FOREACH` iterator typed `ACTION` runs as an ordinary action and fails with "Requested value 'FOREACH' was not found" (parsing the action type), stopping at the first iterator.
 **Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: three iterators typed `ACTION` failed the run at the first loop; after setting `FOREACH` the same workflow ran through all nodes.
 
+### WP-083 Every workflow node needs a `children` array, leaves included
+**Rule:** Give every node you build through the API a `children` key; a node with nothing after it gets `children: []`. Check the whole tree before `POST`/`PUT API v3/Workflows`.
+**Why:** The designer saves every node with `children`. The engine runs a tree whose leaves lack it, but the builder can't lay it out: it shows the Trigger alone with the other nodes stacked unconnected in the top-left corner.
+**Caveats:** The tree in the API is unchanged, so `wfSteps` and `validate-workflows.js` look fine; the validator now reports `CHILDREN_MISSING`. If the owner saves in the builder while it shows the broken layout, read the tree back before relying on it.
+**Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: an API-built 11-node workflow whose two leaf nodes lacked `children` rendered unconnected; adding `children: []` to those two nodes made the builder show every node connected.
+
 ### WP-036 Filter with `=`, not `contains`, and test a filter through the records API first
 **Rule:** For an exact text match use the `=` operator on the full value; don't use `contains` to match part of a path or phrase. Store literal filter values as plain strings (e.g. `"False"`), as existing nodes do, not as an expression of a quoted string. Before building a lookup, try its filter with `POST API v3/Records/fetch` (`FilterConfigurations:[{Condition:"AND",Rules:[{Field,Operator,Value}]}]`, read-only) and compare the count with what you expect.
 **Why:** `contains` behaved as a word match: "Back of House" matched every record, and values containing `/` matched all of them, while `=` returned exactly the expected set. A node with a `contains` filter on such text failed at run time with "Query syntax error".
