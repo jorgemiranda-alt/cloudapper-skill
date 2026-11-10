@@ -21,7 +21,8 @@ const OUT = process.env.CLOUDAPPER_BACKUP_DIR || path.join(os.homedir(), 'clouda
 let ctx, page;
 async function getPage(url) {
   if (!ctx || !ctx.pages().length) {
-    ctx = await chromium.launchPersistentContext(PROFILE, { channel: 'chrome', headless: false, viewport: null });
+    try { ctx = await chromium.launchPersistentContext(PROFILE, { channel: 'chrome', headless: false, viewport: null }); }
+    catch (e) { throw new Error('Could not start the cloudapper Chrome window (profile in use by another session? close that session or its cloudapper window): ' + String(e.message).split(String.fromCharCode(10))[0].slice(0, 160)); }
     page = ctx.pages()[0] || await ctx.newPage();
   }
   if (page.isClosed()) page = ctx.pages()[0] || await ctx.newPage();
@@ -43,11 +44,12 @@ async function loadRunner() {
 async function run({ script, spec = {}, url }) {
   const file = path.basename(script.endsWith('.js') ? script : script + '.js');
   if (!fs.existsSync(path.join(SCRIPTS, file))) return { error: `No script ${file}`, scripts: fs.readdirSync(SCRIPTS).filter(f => f.endsWith('.js')) };
+  if (file === 'help.js') { const { runner: r, error } = await loadRunner(); return error ? { error } : r.runScript({ page: null, file, spec, SCRIPTS, OUT }); }
   const p = await getPage(url);
   // Signed in = an access token and the app URL. Wait up to 50 s (MCP clients time out at 60 s) for the user to sign in in the window.
   const ready = async () => /\/(\d{6,})\/(?:app|design|studio)\/[0-9a-f-]{36}/i.test(p.url()) && await p.evaluate(() => !!localStorage.getItem('accessToken') && performance.getEntriesByType('resource').some(e => e.name.includes('.cloudapper.com/api/'))).catch(() => false);
   for (let i = 0; i < 10 && !(await ready()); i++) await p.waitForTimeout(5000);
-  if (!(await ready())) return { signIn: true, message: 'Sign in in the cloudapper Chrome window and open the app, then call again (pass url to open it).', at: new URL(p.url()).host };
+  if (!(await ready())) return { signIn: true, message: 'Sign in in the cloudapper Chrome window and open the app, then call again (pass url to open it).', at: (() => { try { const u = new URL(p.url()); return u.host + u.pathname.replace(/[0-9a-f-]{36}/gi, '<id>').replace(/\d{6,}/g, '<client>'); } catch (e) { return p.url().slice(0, 40) || 'blank page'; } })() };
   if (url && !p.url().startsWith(url)) { await p.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 }); await p.waitForTimeout(8000); }
   const m = p.url().match(/\/(\d{6,})\/(?:app|design|studio)\/([0-9a-f-]{36})/i);
   const { runner: r, error } = await loadRunner();

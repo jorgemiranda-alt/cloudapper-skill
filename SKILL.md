@@ -34,6 +34,7 @@ Most CloudApper customers have a **Production** app and a **UAT** (test) app, of
 - Ask: "Is this for Production or UAT?" and name the account/app you are signed in to, so the user can catch a mismatch.
 - Default to **UAT**. Treat **Production as read-only**: no changes, no workflow runs, and no logins or reads unless the user explicitly asks for that specific action. Copying *from* Production is a read; copying *to* it is a change.
 - Check the URL's client ID before every write (`/<clientId>/app/<appId>`). A script that writes should refuse to run when the page is on the wrong client.
+- With the `cloudapper_run` MCP tool, writes go to whatever app its window has open (no allowlist), and one client can hold many customers' apps: check the app id (`ca-eval` `ca.appId`, or the `url` you pass) before every write.
 - Project facts (accounts, client/app IDs, which app is Production) are not stored in this skill. Look for them in the project's own notes or docs and in memory; if missing, ask the user.
 
 ## Safety rules that apply to every task
