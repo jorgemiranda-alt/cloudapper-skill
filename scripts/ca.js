@@ -70,6 +70,11 @@ async function installCa(opts = {}) {
       }
       return { sent: items.length, calls, failed };
     },
+    // Design-side reads, so probes stay one short line (keep the objects in the page, return a summary).
+    sub: (() => { try { const t = (localStorage.getItem('accessToken') || '').replace(/"/g, ''); return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).sub; } catch (e) { return null; } })(),
+    design: async () => (await call('GET', designBase + `user-management/get-app-data-for-design/${clientId}/${appId}/${ca.sub}`)).Result,
+    menus: async () => { const r = await call('POST', designBase + 'Settings/GetAllDynamicMenuItems', { ClientID: clientId, AppId: appId }); return r.Result || r; },
+    views: async () => (await call('GET', apiBase + 'v3/formviews/')).Result || [],
     forms: async () => { details = details || (await call('GET', apiBase + `v3/Apps/${appId}/details`)).Result; return details.Schemas.map(s => ({ id: s.Id, title: s.Title })); },
     fields: async form => { const id = await formId(form); return details.Schemas.find(s => s.Id === id).Fields
       .filter(f => /Field\d+$/.test(f.Name || '')).map(f => ({ name: f.Name, label: f.Title || f.Label, type: f.Type })); },

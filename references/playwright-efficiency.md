@@ -24,7 +24,7 @@
 
 ## 3. Localhost helpers for big payloads and saving files
 
-- **Preferred: the `cloudapper_run` MCP tool** (`mcp/server.mjs`, see README). `cloudapper_run({script:'<name>', spec:{..}, url?})` runs `scripts/<name>.js` in the server's own signed-in Chrome window and returns only the script's result: no code echo, no loader, no Playwright browser lock. It loads `ca.js` first and allows writes on the app open in its window (no allowlist: check the page's client and app before every write, SKILL.md environment rules), passes the field templates to `create-form.js`, and writes backups and `__caeFiles` (export) to `CLOUDAPPER_BACKUP_DIR`. One-line calls: `script:'ca-eval', spec:{expr:"ca.count('Employee')"}`. If it returns `signIn:true`, ask the user to sign in in that window. Change behaviour in `scripts/` or `mcp/runner.mjs` (reloaded on the next call); keep the `ca.js` load in `mcp/server.mjs`, the only file whose change needs a reconnect. The loader below is the fallback when the server is not registered.
+- **Preferred: the `cloudapper_run` MCP tool** (`mcp/server.mjs`, see README). `cloudapper_run({script:'<name>', spec:{..}, url?})` runs `scripts/<name>.js` in the server's own signed-in Chrome window and returns only the script's result: no code echo, no loader, no Playwright browser lock. It loads `ca.js` first and allows writes on the app open in its window (no allowlist: check the page's client and app before every write, SKILL.md environment rules), passes the field templates to `create-form.js`, and writes backups and `__caeFiles` (export) to `CLOUDAPPER_BACKUP_DIR`. One-line calls: `script:'ca-eval', spec:{expr:"ca.count('Employee')"}`; use the helpers (`ca.design()`, `ca.menus()`, `ca.views()`, `ca.sub`) instead of writing fetches inline, and turn any probe you repeat into a script. Before and after a change, `script:'state'` returns the app's counts (`{prefix:'ZZ'}` finds test leftovers). Results over 6,000 characters (`spec.maxChars`) are saved to a file and only a 500-character preview comes back. If it returns `signIn:true`, ask the user to sign in in that window. Change behaviour in `scripts/` or `mcp/runner.mjs` (reloaded on the next call); keep the `ca.js` load in `mcp/server.mjs`, the only file whose change needs a reconnect. The loader below is the fallback when the server is not registered.
 
 - **Serve** payload files to the browser: `python -I -m http.server 8765 --bind 127.0.0.1` in the folder, then `await (await page.request.get('http://127.0.0.1:8765/body.json')).json()` (Node side, so no CORS).
 - **Save** from the browser to disk: a tiny Python `do_PUT` server bound to 127.0.0.1 that writes `<dir>/<basename>`; `await page.request.put('http://127.0.0.1:8766/name.json', { data: buffer })`. Use it for backups and report packages.
@@ -47,6 +47,10 @@
 | Which forms and workflow nodes use field X | `find-field.js` with `{ field: '<label or internal name>' }` |
   | One workflow's steps | the export's `wf__<seq>__<name>.json` (WP-045); no browser call |
   | Create, edit or remove a form (writes; after `ca.js` + `ca.setClient`) | `create-form.js` with the spec (WP-081); with the loader, also pass `templates`: load each `ft-<type>.json` and `ft-_form.json` with `page.request.get` and pass them as `templates: { _form, text, number, ... }`; for `remove`, save `res.backup` with `page.request.put` and drop it from the result |
+  | Menus: list, move, rename, hide, group, landing page (writes) | `menu.js` with `{ action:'list'|'update'|'group'|'delete', .. }` |
+  | Saved list views (writes) | `view.js` with `{ action:'list'|'create'|'update'|'delete', .. }` (WP-073) |
+  | Parent/child forms (writes) | `relation.js` with `{ action:'list'|'link'|'unlink', .. }` (WP-082) |
+  | Design state (forms, child forms, relations, menus, views; test leftovers) | `state.js` with `{}`, `{ names:true }` or `{ prefix:'ZZ' }` |
   | Records per form | `record-count.js` with `{}` or `{ forms: ['<title>'] }` |
   | What triggers or writes form X | `graphify query` on the export's `graph.json` |
   | Broken nodes in the builder | `validate-workflows.js` (WP-038) with `{ sequences: [..] }` or `{ names: [..] }` |
@@ -62,6 +66,7 @@
   | `ca.forms()`, `ca.fields(form)` | ids and titles, field names and types |
   | `ca.wfList()`, `w = await ca.wfGet(name)`, `ca.wfSteps(w)`, `ca.wfPut(w)` | summary, full object (keep in a variable), step outline, save |
   | `ca.validate(expr)`, `ca.lastRun(name)` | validator result; last run status and failed steps only |
+  | `ca.design()`, `ca.menus()`, `ca.views()`, `ca.sub` | design object, all menu items, all list views (big: summarize in the same expression), signed-in user id |
 
   Keep big objects inside the page (`window.w = await ca.wfGet(..)`) and return only the part you need.
 - **Integration systems (UKG and others):** call them in `browser_run_code` with `page.request` (Node side, no CORS). Read connection settings from the app's config record with `page.evaluate(() => ca.find(..))` inside the same code, get a token, call the endpoint and return only filtered fields. Never return the token, the password or the client secret.

@@ -7,7 +7,7 @@
 // Specs (opts):
 //   { action:'create', title, description?, fields:[{label, type, unique?, mandatory?, hint?, choices?, visible?}] }
 //   { action:'edit', form:<title|id>, add:[fields], update:[{label, newLabel?, mandatory?, unique?, hint?}], remove:[labels] }
-//   { action:'remove', form:<title|id>, confirm:true, confirmWithRecords?:<count> }
+//   { action:'remove', form:<title|id>, confirm:true, confirmWithRecords?:<count>, confirmRelations?:true }
 // Types: text, number, decimal, email, date, datetime, yesno, switch, dropdown (choices), textarea,
 // formref (target:<form title|id>), attachment. A template with verified:false is used but reported in `unverified`.
 // Returns { ok, action, form, id, fields:[names], records:{before, after}, problems:[..], unverified:[..] };
@@ -30,7 +30,8 @@ async function createForm(o = {}) {
   await guard();
 
   let d = await design();
-  const find = key => d.EntityTypes.find(e => e.EntityTypeID === key || e.Tittle === key);
+  // Child forms are EventTypes (EventTypeID), made by linking a form to a parent (relation.js).
+  const find = key => d.EntityTypes.find(e => e.EntityTypeID === key || e.Tittle === key) || (d.EventTypes || []).find(e => e.EventTypeID === key || e.Tittle === key);
   const hasRelations = id => d.ParentChildRelations.some(r => JSON.stringify(r).includes(id));
 
   const nextIndex = (fields, prefix) => Math.max(-1, ...fields.map(f => (f.Name.match(new RegExp('^' + prefix + '(\\d+)$')) || [])[1]).filter(Boolean).map(Number)) + 1;
@@ -125,7 +126,7 @@ async function createForm(o = {}) {
 
   const e = find(o.form);
   if (!e) throw new Error('No form ' + o.form);
-  const id = e.EntityTypeID;
+  const id = e.EntityTypeID || e.EventTypeID;
 
   if (o.action === 'edit') {
     if (hasRelations(id)) throw new Error('Form has parent/child relations: edit it per WP-078 caveats, not with this script (WP-071).');
@@ -166,16 +167,22 @@ async function createForm(o = {}) {
     if (o.confirm !== true) throw new Error('remove needs confirm:true');
     const n = await count(id);
     if (n !== 0 && o.confirmWithRecords !== n) throw new Error(`Form has ${n} records; pass confirmWithRecords:${n} to remove it anyway.`);
-    if (hasRelations(id)) throw new Error('Form has parent/child relations; remove them first.');
+    if (hasRelations(id) && o.confirmRelations !== true) throw new Error('Form has parent/child relations; pass confirmRelations:true to remove it with them.');
     const wfs = ((await ca.call('GET', A + 'v3/Workflows')).Result || []).filter(w => JSON.stringify(w).includes(id)).map(w => w.Name);
     if (wfs.length) throw new Error('Workflows reference this form: ' + wfs.join(', '));
     const backup = clone(e);
-    await ca.call('POST', D + 'EntityType/DeleteEntityType', { entityType: e, LiAnalyticsSetting: null });
+    // A child form (EventType) has its own delete call; DeleteEntityType on one returns without error and does nothing.
+    const body = clone(e); body.Client = { ...(body.Client || {}), ClientName: (d.Client || {}).ClientName, AppName: (d.App || {}).AppName };
+    const r = e.EventTypeID
+      ? await ca.call('POST', D + 'EventType/DeleteEventType/abc', { eventType: body, LiAnalyticsSetting: null })
+      : await ca.call('POST', D + 'EntityType/DeleteEntityType', { entityType: body, LiAnalyticsSetting: null });
+    if (r && r.IsSaved === false) problems.push('delete answered IsSaved:false');
     d = await design();
     const gone = !find(id);
     const forms = (await ca.call('GET', A + `v3/Apps/${app}/details`)).Result.Schemas.some(s => s.Id === id);
     if (!gone) problems.push('form still in the design object');
     if (forms) problems.push('form still in app details');
+    if (hasRelations(id)) problems.push('relation still listed');
     return { ok: !problems.length, action: 'remove', form: e.Tittle, id, records: { before: n }, problems, backup };
   }
   throw new Error("action must be 'create', 'edit' or 'remove'");

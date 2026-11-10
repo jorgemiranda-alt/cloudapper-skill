@@ -10,8 +10,17 @@ export const runIn = (p, file, opts, SCRIPTS) => p.evaluate(([s, o]) => { if (ty
   [wrap(fs.readFileSync(path.join(SCRIPTS, file), 'utf8')), opts]);
 
 export async function runScript({ page: p, file, spec, SCRIPTS, OUT, writable }) {
-  const save = (name, data) => { fs.mkdirSync(OUT, { recursive: true }); const f = path.join(OUT, path.basename(name)); fs.writeFileSync(f, typeof data === 'string' ? data : JSON.stringify(data, null, 1)); return f; };
-  const opts = { ...spec };
+  // spec.outDir (a folder path) sends export files there instead of OUT; outDir:false keeps them in the page.
+  const save = (name, data, dir = OUT) => { fs.mkdirSync(dir, { recursive: true }); const f = path.join(dir, path.basename(name)); fs.writeFileSync(f, typeof data === 'string' ? data : JSON.stringify(data, null, 1)); return f; };
+  // help: the header comment of each script (Node side, no page call). spec.script = one script in full.
+  const NL = String.fromCharCode(10);
+  if (file === 'help.js') {
+    const head = f => fs.readFileSync(path.join(SCRIPTS, f), 'utf8').replaceAll(String.fromCharCode(13), '').split(NL).filter((l, i, a) => l.startsWith('//') && a.slice(0, i).every(x => x.startsWith('//'))).map(l => l.slice(3)).join(NL);
+    if (spec.script) return head(path.basename(spec.script.endsWith('.js') ? spec.script : spec.script + '.js'));
+    return Object.fromEntries(fs.readdirSync(SCRIPTS).filter(f => f.endsWith('.js') && f !== 'help.js').map(f => [f.slice(0, -3), head(f).split(NL)[0]]));
+  }
+  // Older scripts find the API host from the page's requests, which a fresh page may not have made yet.
+  const opts = { ...(await p.evaluate(() => ({ apiBase: window.ca.apiBase, designBase: window.ca.designBase }))), ...spec };
   if (file === 'create-form.js') {
     const dir = path.join(SCRIPTS, 'field-templates');
     opts.templates = Object.fromEntries(fs.readdirSync(dir).filter(f => f.endsWith('.json')).map(f => [f.slice(0, -5), JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'))]));
@@ -20,8 +29,11 @@ export async function runScript({ page: p, file, spec, SCRIPTS, OUT, writable })
   try { res = await runIn(p, file, opts, SCRIPTS); }
   catch (e) { return { error: String(e.message).replace(/^page\.evaluate: (Error: )?/, '').split('\n')[0].slice(0, 400), writable }; }
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-  if (res && res.backup) res.backup = save(`backup-${res.form || 'form'}-${stamp}.json`, res.backup);
+  if (res && res.backup) res.backup = save(`backup-${res.backupName || res.form || "form"}-${stamp}.json`, res.backup);
   const files = await p.evaluate(() => { const f = globalThis.__caeFiles; delete globalThis.__caeFiles; return f; });
-  if (files && spec.outDir !== false) res = { ...res, savedTo: path.dirname(Object.entries(files).map(([n, d]) => save(n, d)).pop() || OUT), files: Object.keys(files).length };
+  if (files && spec.outDir !== false) res = { ...res, savedTo: path.dirname(Object.entries(files).map(([n, d]) => save(n, d, typeof spec.outDir === 'string' ? spec.outDir : OUT)).pop() || OUT), files: Object.keys(files).length };
+  // A careless call must not flood the conversation: big results go to a file, with a short preview.
+  const text = JSON.stringify(res);
+  if (text && text.length > (spec.maxChars || 6000)) return { truncated: true, chars: text.length, savedTo: save(`result-${file.replace(/\.js$/, '')}-${stamp}.json`, res), preview: text.slice(0, 500) };
   return res;
 }

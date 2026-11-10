@@ -4,6 +4,8 @@ One line per change: date, what changed, entry IDs. Newest first.
 
 ## 2026-11
 
+- 2026-11-10: ca.js helpers `ca.design()`, `ca.menus()`, `ca.views()`, `ca.sub`; `scripts/state.js` (design-state counts, test leftovers); runner saves results over 6,000 characters to a file and returns a 500-character preview.
+- 2026-11-10: Added `scripts/menu.js`, `scripts/view.js`, `scripts/relation.js` (tested on UAT through cloudapper_run). WP-073: update a view with PUT formviews/{id}, delete with DELETE. WP-082 child forms are EventTypes (link converts; UnlinkChildFromParent; DeleteEventType/abc). create-form.js removes child forms and checks IsSaved. Runner passes ca.js hosts to every script and takes outDir for exports.
 - 2026-11-10: MCP server no longer restricts writes to an allowlist (owner's choice); writes go to the app open in its window, so the environment check before a write is Claude's (SKILL.md).
 - 2026-11-10: MCP server split: `mcp/runner.mjs` (per-script handling, backups) is re-imported when it changes, so script and runner edits need no reconnect; the write guard and `ca.js` load stay in `server.mjs`.
 - 2026-11-10: Added the `cloudapper` MCP server (`mcp/`, one tool `cloudapper_run` running skill scripts in its own signed-in Chrome, write allowlist, backups to disk) and `scripts/ca-eval.js`. Five more verified field templates (email, decimal, form reference, switch, attachment); `create-form.js` takes `target` for form references. WP-081 updated.

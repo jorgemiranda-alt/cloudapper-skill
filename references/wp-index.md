@@ -83,3 +83,4 @@ One line per entry: ID, file, title. Grep this for an ID or a keyword, then read
 - WP-079 `api-forms-menus.md` Give a menu a new icon through the API (upload, then IconURL)
 - WP-080 `api-forms-menus.md` Every new form: two columns per section, and a public default Primary View with the visible fields
 - WP-081 `api-forms-menus.md` Build fields from a stored template per type (create-form.js); ControlType 4 is both text and number
+- WP-082 `api-forms-menus.md` Child forms are EventTypes: link to make one, unlink and delete with the EventType calls (relation.js)
