@@ -24,6 +24,8 @@
 
 ## 3. Localhost helpers for big payloads and saving files
 
+- **Preferred: the `cloudapper_run` MCP tool** (`mcp/server.mjs`, see README). `cloudapper_run({script:'<name>', spec:{..}, url?})` runs `scripts/<name>.js` in the server's own signed-in Chrome window and returns only the script's result: no code echo, no loader, no Playwright browser lock. It loads `ca.js` first and allows writes on the app open in its window (no allowlist: check the page's client and app before every write, SKILL.md environment rules), passes the field templates to `create-form.js`, and writes backups and `__caeFiles` (export) to `CLOUDAPPER_BACKUP_DIR`. One-line calls: `script:'ca-eval', spec:{expr:"ca.count('Employee')"}`. If it returns `signIn:true`, ask the user to sign in in that window. Change behaviour in `scripts/` or `mcp/runner.mjs` (reloaded on the next call); keep the `ca.js` load in `mcp/server.mjs`, the only file whose change needs a reconnect. The loader below is the fallback when the server is not registered.
+
 - **Serve** payload files to the browser: `python -I -m http.server 8765 --bind 127.0.0.1` in the folder, then `await (await page.request.get('http://127.0.0.1:8765/body.json')).json()` (Node side, so no CORS).
 - **Save** from the browser to disk: a tiny Python `do_PUT` server bound to 127.0.0.1 that writes `<dir>/<basename>`; `await page.request.put('http://127.0.0.1:8766/name.json', { data: buffer })`. Use it for backups and report packages.
 - Bind to 127.0.0.1 only, run in the background, stop both when done, and delete folders holding secrets at the end (tell the user what remains).
@@ -44,6 +46,7 @@
   | One-line API calls (records, workflows, runs) | `ca.js` with `{}` once per page, then `ca.<helper>` from `browser_evaluate` (below) |
 | Which forms and workflow nodes use field X | `find-field.js` with `{ field: '<label or internal name>' }` |
   | One workflow's steps | the export's `wf__<seq>__<name>.json` (WP-045); no browser call |
+  | Create, edit or remove a form (writes; after `ca.js` + `ca.setClient`) | `create-form.js` with the spec (WP-081); with the loader, also pass `templates`: load each `ft-<type>.json` and `ft-_form.json` with `page.request.get` and pass them as `templates: { _form, text, number, ... }`; for `remove`, save `res.backup` with `page.request.put` and drop it from the result |
   | Records per form | `record-count.js` with `{}` or `{ forms: ['<title>'] }` |
   | What triggers or writes form X | `graphify query` on the export's `graph.json` |
   | Broken nodes in the builder | `validate-workflows.js` (WP-038) with `{ sequences: [..] }` or `{ names: [..] }` |

@@ -31,9 +31,15 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         name = os.path.basename(unquote(self.path.split("?")[0]))
         # .js from this folder (skill scripts), app.json from the export folder (freshness check).
-        folder = os.path.dirname(os.path.abspath(__file__)) if name.endswith(".js") else OUT
+        # ft-<type>.json: scripts/field-templates/<type>.json (create-form.js templates).
+        here = os.path.dirname(os.path.abspath(__file__))
+        ok = name.endswith(".js") or name == "app.json" or (name.startswith("ft-") and name.endswith(".json"))
+        if name.startswith("ft-"):
+            folder, name = os.path.join(here, "field-templates"), name[3:]
+        else:
+            folder = here if name.endswith(".js") else OUT
         path = os.path.join(folder, name)
-        if not (name.endswith(".js") or name == "app.json") or not os.path.isfile(path):
+        if not ok or not os.path.isfile(path):
             self.send_response(404)
             self.end_headers()
             return

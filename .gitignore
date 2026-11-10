@@ -4,3 +4,5 @@
 evals/results/
 *-workspace/
 __pycache__/
+# MCP server dependencies
+mcp/node_modules/

@@ -15,7 +15,7 @@ from pathlib import Path
 ALLOWED_CLOUDAPPER_HOSTS = re.compile(
     r"web|www|account|docs|m2sys|m2sys-(?:api|designapi|reportapi)|(?:api|api-design|designapi|reportapi)-cl\d+")
 ALLOW_MARKER = "leak-check: allow"
-SKIP_DIRS = {".git", "evals/results", "node_modules", "__pycache__"}
+SKIP_DIRS = {".git", "evals/results", "node_modules", "mcp/node_modules", "__pycache__"}
 TEXT_SUFFIXES = {".md", ".json", ".yml", ".yaml", ".txt", ".py", ".js", ".toml", ""}
 STALE_MONTHS = 12
 

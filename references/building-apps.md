@@ -3,6 +3,8 @@
 ## Defaults
 
 - Build **manually** (Build Manually / Start from Scratch). Don't use the AI app builders unless the user asks.
+- Create, edit and remove forms with `scripts/create-form.js` (WP-081): it builds fields from stored templates per type, never from another form's fields.
+- Every new form: two columns per section and a public, default Primary View with only the visible fields (WP-080).
 - Start from a short design: forms and fields (with types and which are references), parent/child forms, statuses and who changes them, menus per role, workflows (trigger, steps, external calls), reports. Agree on it before building.
 - Build order: forms → child forms and relations → menus → roles/privileges → UI workflows → backend workflows (off) → reports → buttons → test data → turn workflows on in UAT → test.
 
@@ -49,7 +51,7 @@
 **Do not use for changes:** app changes go through the API (SKILL.md safety rules, WP-071). Kept for reference only.
 **Rule:** After typing in the control search, make one throwaway drag to a spot outside the column (the first drag after typing is ignored), then drag for real. Drop about 25 px below the last field's input and inside the column; an empty column takes a drop anywhere. Check that the field count rose before editing properties, because a missed drop sends your edits to the previously selected field. Save every three or four fields. A Lookup control needs a Form control on the form first; references to other forms are Form controls. Before creating anything, check the app name or logo in the header: a new browser tab can open the designer in the last app used, and the design `initialize` link for the right app switches it back.
 **Why:** The designer ignores a drop that misses the column and keeps the old selection, and its session state follows the browser profile, not the URL.
-**Caveats:** If screenshots time out, the page renderer is stuck: open a new tab, and expect unsaved fields to be lost. Faster alternative for many fields: WP-043.
+**Caveats:** If screenshots time out, the page renderer is stuck: open a new tab, and expect unsaved fields to be lost. Use `scripts/create-form.js` instead (WP-081).
 **Status:** Observed · checked 2026-11 · Studio 8.2.0.25 · Evidence: about 40 fields added across four forms; missed drops, a stuck renderer and a designer opened in a different app each happened and these steps avoided repeats.
 
 ### WP-045 Export the app to local files and a graph, and query the graph before opening the designer
