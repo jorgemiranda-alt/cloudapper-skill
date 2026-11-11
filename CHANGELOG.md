@@ -3,6 +3,9 @@
 One line per change: date, what changed, entry IDs. Newest first.
 
 ## 2026-11
+- 2026-11-11: WP-085 (filter rule types: dropdown literal, text vs reference arg, no nested reference args, builder check after wfPut); WP-061 evidence extended.
+
+- 2026-11-11: Added WP-084 (a form reference displays the target's first field: make it a readable name; look references up by `<field>ReferenceId`) in `api-forms-menus.md`; conventions.md §2 gains "readable fields for people, IDs for machines" and "the record title is a name, never an ID". `create-form.js` edit gains `order` (labels to put first; the first becomes the record title).
 
 - 2026-11-10: `create-form.js` puts `ViewType: 1` and `ItemLayout` inside the Primary View's `ViewDefinition`, as designer views have them; without them the view's edit dialog showed no view type selected.
 - 2026-11-10: Added WP-083 (every workflow node needs a `children` array) in `api-workflows.md`; `validate-workflows.js` reports `CHILDREN_MISSING`; fixed `ca.validate` body (`{Value: <expression object>}`; the old `{Expression}` body returned 500 for every expression).

@@ -85,3 +85,5 @@ One line per entry: ID, file, title. Grep this for an ID or a keyword, then read
 - WP-080 `api-forms-menus.md` Every new form: two columns per section, and a public default Primary View with the visible fields
 - WP-081 `api-forms-menus.md` Build fields from a stored template per type (create-form.js); ControlType 4 is both text and number
 - WP-082 `api-forms-menus.md` Child forms are EventTypes: link to make one, unlink and delete with the EventType calls (relation.js)
+- WP-084 `api-forms-menus.md` A form reference displays the target's first field: make it a readable name, not an ID; look references up by ReferenceId
+- WP-085 `api-workflows.md` A filter value must be a field of the same type as the filtered field; the validator does not prove the designer can show it

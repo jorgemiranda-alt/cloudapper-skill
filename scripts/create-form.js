@@ -6,7 +6,7 @@
 // the templates: `templates: { _form, text, number, ... }` fetched from save_server.py as `ft-<type>.json`.
 // Specs (opts):
 //   { action:'create', title, description?, fields:[{label, type, unique?, mandatory?, hint?, choices?, visible?}] }
-//   { action:'edit', form:<title|id>, add:[fields], update:[{label, newLabel?, mandatory?, unique?, hint?}], remove:[labels] }
+//   { action:'edit', form:<title|id>, add:[fields], update:[{label, newLabel?, mandatory?, unique?, hint?}], remove:[labels], order?:[labels first] }
 //   { action:'remove', form:<title|id>, confirm:true, confirmWithRecords?:<count>, confirmRelations?:true }
 // Types: text, number, decimal, email, date, datetime, yesno, switch, dropdown (choices), textarea,
 // formref (target:<form title|id>), attachment. A template with verified:false is used but reported in `unverified`.
@@ -151,6 +151,14 @@ async function createForm(o = {}) {
     (o.add || []).forEach((s, i) => { const f = makeField(s, named); place(f, users.length + i); named.push(f); added.push(f); });
     const sys = form.AllFields.findIndex(f => f.ControlType === 99);
     form.AllFields.splice(sys < 0 ? form.AllFields.length : sys, 0, ...added);
+    if (o.order) { // labels listed first (the first one becomes the record title, WP-084), then the rest in their current order
+      const all = form.AllFields.filter(isUser);
+      const miss = o.order.filter(l => !all.some(f => f.Label === l));
+      if (miss.length) return { ok: false, action: 'edit', form: e.Tittle, problems: miss.map(l => `order: no field ${l}`) };
+      const sorted = [...o.order.map(l => all.find(f => f.Label === l)), ...all.filter(f => !o.order.includes(f.Label))];
+      sorted.forEach((f, i) => place(f, i));
+      let k = 0; form.AllFields = form.AllFields.map(f => isUser(f) ? sorted[k++] : f);
+    }
     // Second column for forms made before WP-080 that have only one.
     if (added.length && !form.AllFields.some(f => f.ControlType === 8 && f.ColumnNumber === 2)) form.AllFields.splice(form.AllFields.findIndex(f => f.ControlType === 8) + 1, 0, Object.assign(clone(T._form.column), { GroupNumber: 1, ColumnNumber: 2 }));
     for (const t of Object.values(T)) if (t.counter) form[t.counter] = Math.max(form[t.counter] || 0, nextIndex(named, t.prefix));
