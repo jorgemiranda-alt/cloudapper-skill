@@ -64,6 +64,8 @@ The server does not restrict writes: they go to whatever app is open in its wind
 | `scripts/ca-eval.js` | Runs one `ca.*` expression and returns its value (for `cloudapper_run`) | When a task runs it |
 | `mcp/` | `cloudapper` MCP server: one tool, `cloudapper_run`, that runs these scripts in its own signed-in Chrome and returns only their result. `server.mjs` = window, sign-in, tool definition (fixed); `runner.mjs` = per-script handling (hot-reloaded) | When registered |
 | `scripts/menu.js` | List, update (title, parent, order, hidden, icon, landing), create groups and delete menu items, with backup and read-back | When a task runs it |
+| `scripts/workflow.js` | List, outline, back up, create (from node templates, saved off), edit one assignment or rule, validate, toggle and check runs of backend workflows; self-check `scripts/workflow.selftest.mjs` | When a task runs it |
+| `scripts/integration.js` | Call UKG, Odoo or another REST API with the app's config record; credentials stay on the Node side and are scrubbed from the result; self-check `scripts/integration.selftest.mjs` | When a task runs it |
 | `scripts/view.js` | List, create, update and delete saved list views (fields and filters by label) (WP-073) | When a task runs it |
 | `scripts/relation.js` | List, link and unlink parent/child forms (WP-082) | When a task runs it |
 | `scripts/state.js` | Read-only: counts of forms, child forms, relations, menus, views; finds test leftovers by prefix | When a task runs it |

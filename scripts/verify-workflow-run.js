@@ -57,6 +57,9 @@ async function verifyWorkflowRun(o) {
   const workflows = new Map();
   const runs = [];
   for (const step of o.chain) {
+    // automationId may be the workflow's exact name (workflow.js check-run passes what the user gave).
+    if (!/^[0-9a-f-]{36}$/i.test(step.automationId)) step.automationId = ((await call('GET', 'Workflows')).find(x => x.Name === step.automationId) || {}).AutomationId;
+    if (!step.automationId) throw new Error('No workflow named ' + step.name);
     const w = await call('GET', 'Workflows/' + step.automationId);
     const names = new Map();
     const walk = n => { names.set(n.id, (n.data && n.data.name || '').trim()); (n.children || []).forEach(walk); };

@@ -66,5 +66,5 @@ Node `type` is `TRIGGER`, `ACTION`, `FOREACH`, `ROUTER` or `ROUTE` (WP-035).
 ## 5. Not captured (needs the designer)
 
 No saved example in the source app for these, or not yet tested; ask the user to add one in the designer, then read it back before cloning:
-- A workflow-level template, and whether a brand-new workflow may use a fresh GUID as `GlobalVariables.Id` (the copies seen reuse another workflow's Id).
+- A workflow-level template. (A fresh GUID as `GlobalVariables.Id` was accepted on create and validated with 0 findings, 2026-11, `scripts/workflow.js`; the builder view of that workflow is not yet recorded.)
 - Webhook trigger, Return node, a current-date function for "last N days" (check WP-052), a ROUTE with no rules (else route), LOOKUP_RECORDS with sorting (`filterSorting` was always empty), a connector response schema created through the API (WP-046).
