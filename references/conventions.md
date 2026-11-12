@@ -46,6 +46,10 @@ Use when designing, building, reviewing or changing any CloudApper app. Every ru
 - **Fail loudly:** every external call has a failure route that sets Failed + a reason. Nothing stays at an in-between status.
 - **No logs inside loops:** loops collect their details into workflow variables (one line per pass, or counters) and one summary log after the loop shows every iteration. Log record counts before and after every bulk delete.
 - **Keep it small:** a workflow doing two jobs is split and connected by a job record or a status change.
+  - *Two jobs* means: it calculates business data and also sends it out (write-back, export, email), or it does work for several independent units (sites, periods) that should fail and retry apart. An ingest workflow that fetches and stores is one job, whatever its size; node count alone is no reason to split.
+  - *How:* the first workflow creates a job record (or sets a status); the new workflow triggers on it and sits **later** in the list (WP-001). A status trigger needs a real change (WP-002).
+  - *When not to:* a later step needs the split-off result in the same run. Whether the parent waits for a triggered run depends on the trigger and step, and some steps only queue it (WP-005), so don't count on it unless the trigger is non-async and a test run's execution log shows the parent waited. Otherwise keep the steps together, or let the second workflow carry the chain on itself.
+  - Splitting adds workflows to order, test and keep in sync: don't split into copies (§8), and don't split a slow external call per record; batch it instead (`architecture.md` §4).
 
 ## 4. Configuration and data
 
@@ -70,6 +74,7 @@ Use when designing, building, reviewing or changing any CloudApper app. Every ru
 ## 7. Testing and documentation
 
 - After every change: one end-to-end test with a known date, checked against expected numbers (e.g. totals equal their source, shares add up to 100%). The user runs workflows; read the logs afterwards.
+- Keep the checks as files in the project (`tests/<workflow>.checks.js`) and rerun them after every later change: this is the repeatable test checklist (§8). Cover the cases in WP-039 (happy path, rerun, failure route, empty input, scope, chain).
 - Keep the app documentation current: flow, status lifecycle, workflows in order, setup records and what each controls (documentation.md).
 
 ## 8. Where the platform limits these ideas

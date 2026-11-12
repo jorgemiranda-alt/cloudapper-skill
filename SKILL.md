@@ -68,7 +68,7 @@ Learned the hard way; details and evidence via `references/wp-index.md`.
 - After every change, **read it back** (API); for workflows, open the builder once to check it renders.
 - Large or repeated changes: a Python builder that fills templates from existing nodes, then a guarded apply script, both kept in the project.
 - API-built nodes run but may not open in the editor (WP-030 to WP-038): copy a designer-saved node, fix what `scripts/validate-workflows.js` reports, open each new node and clear its errors before the user runs it.
-- **Testing means a real run (no dry-run).** The user runs it on a marked UAT record; then check the written values with `scripts/verify-workflow-run.js` (WP-039), since a successful log can still hide wrong values.
+- **Testing means a real run (no dry-run).** The user runs it on a marked UAT record; then check the written values with `scripts/verify-workflow-run.js` (WP-039), since a successful log can still hide wrong values. Save the checks in the project (`tests/<workflow>.checks.js`, passed as `checksFile`) and rerun them after later changes.
 
 ## Documentation and skill updates
 

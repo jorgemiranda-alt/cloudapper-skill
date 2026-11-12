@@ -71,6 +71,15 @@ Entries headed `WP-0xx` use the format and statuses explained at the top of `wor
 2. The user runs it on a clearly marked test record in UAT.
 3. Run `scripts/verify-workflow-run.js` (read-only) with `chain` (the workflows in run order), `since` (just before the run) and `checks`. It waits until every workflow of the chain has finished (`ready: false` until then, WP-005), and reports failed runs, run order, step warnings and a workflow that did not fire.
 4. Its `checks` then compare the written records with values calculated from the business rule. Examples: totals and shares reconcile, percentages sum to 100, no duplicate or stale rows, no record outside the test scope changed.
+5. Save the checks so the test can be rerun after every later change: one file per workflow or chain in the project, `tests/<workflow>.checks.js`, and pass it as `checksFile` (absolute path) to `cloudapper_run` `workflow` `check-run`; the runner reads it, so the source never enters the conversation. The file is one `async ({ records, eq, near, check }) => { ... }` expression, headed by comments: the chain, how the test record is marked (for example a `ZZ` title prefix, found later with `state.js` `prefix`), the cases it covers and where the expected values come from.
+
+**Cases to cover** (each one the user runs on a marked UAT record; check what applies):
+- **Happy path** with known inputs and expected values worked out by hand or from the requirement.
+- **Rerun:** run it again on the same scope; the result is the same, with no duplicate or stale rows (run stamp + cleanup, WP-008; status-triggered steps need a real status change, WP-002).
+- **Failure route:** a record or config that makes a step fail (missing setup row, bad external response) ends at Failed with a reason, and nothing stays at an in-between status.
+- **Empty input:** nothing to process ends cleanly (Completed, counts 0), not Failed or stuck.
+- **Scope:** records outside the test scope (other site, period or parent) keep their `LastModifyDate`.
+- **Chain:** every workflow of the chain fired, in order; for a split workflow, the later step saw the earlier one's result (WP-005).
 **Why:** There is no dry-run, debug or rollback mode: Run Now and on-demand actions are real runs (§3). A run can log success on every step and still write wrong values, so the log alone does not prove the result.
 **Caveats:**
 - The log has no trigger record id: tie runs to the test by time window and the records' `CreateDate` / `LastModifyDate`.

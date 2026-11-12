@@ -223,8 +223,8 @@ async function validateWorkflows(opts = {}) {
       const d = n.data || {};
       if (!Array.isArray(n.children)) add('error', 'CHILDREN_MISSING', 'Node has no children array; the builder shows the tree unconnected (WP-083)', n);
       if (n.id !== TRIGGER && !NODE_ID.test(n.id)) add('warn', 'NODE_ID_FORMAT', 'Node id is not "s" + 13 digits', n);
-      if (type === 'ROUTE' && (!parent || parent.data.actionType !== 'ROUTER')) add('error', 'ROUTE_PARENT', 'ROUTE is not directly under a ROUTER', n);
-      if (type === 'ROUTER') for (const c of n.children || []) if (c.data.actionType !== 'ROUTE') add('error', 'ROUTER_CHILD', 'ROUTER child "' + c.data.name + '" is not a ROUTE', n);
+      if (type === 'ROUTE' && (!parent || (parent.data || {}).actionType !== 'ROUTER')) add('error', 'ROUTE_PARENT', 'ROUTE is not directly under a ROUTER', n);
+      if (type === 'ROUTER') for (const c of n.children || []) if ((c.data || {}).actionType !== 'ROUTE') add('error', 'ROUTER_CHILD', 'ROUTER child "' + ((c.data || {}).name || c.id) + '" is not a ROUTE', n);
       if (type === 'ROUTER' && !(n.children || []).length) add('warn', 'ROUTER_EMPTY', 'ROUTER has no routes', n);
       const nodeType = ['TRIGGER', 'FOREACH', 'ROUTER', 'ROUTE'].includes(type) ? type : 'ACTION';
       if (n.type !== nodeType) add('error', 'NODE_TYPE', 'Node type "' + n.type + '" should be "' + nodeType + '" for ' + type + ' (WP-035)', n, 'type');

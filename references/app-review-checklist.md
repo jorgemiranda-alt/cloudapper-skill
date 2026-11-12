@@ -14,7 +14,9 @@ Use this when documenting or auditing an app, to write the "Findings and recomme
 ## Workflow logic
 - Router routes assumed exclusive; always-true `!= A OR != B`; dead `1 = 0` branches; DEBUG_LOG nodes left in.
 - Stale field references after form changes.
-- Logic or lists copied into N workflows; thresholds and dates that disagree between copies.
+- Logic or lists copied into N workflows; thresholds and dates that disagree between copies (also near-copies: a workflow that is another plus a few steps).
+- A workflow doing two jobs (calculates and sends out, or several independent units in one run) → split per `conventions.md` §3 "Keep it small"; a later step that needs the result in the same run stays together.
+- An external call per record inside a loop over form records → batch it (`architecture.md` §4); page and time-window loops are fine.
 - Business rules keyed on a person's name.
 - Workflow writes the status that triggers itself; order wrong for the chain it needs (see WP-001, `wp-triggers-loops.md`).
 - Pairing records by "newest by CreateDate"; durations truncated by `DateDiffHour`.

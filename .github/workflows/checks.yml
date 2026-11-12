@@ -24,9 +24,10 @@ jobs:
           node-version: "24"
       - name: JS syntax check
         run: for f in mcp/*.mjs scripts/*.js; do node --check "$f" || exit 1; done
-      - name: Self-checks (integration, workflow, MCP queue, save_server CORS)
+      - name: Self-checks (integration, workflow, validator, MCP queue, save_server CORS)
         run: |
           node scripts/integration.selftest.mjs
+          node scripts/validate-workflows.selftest.mjs
           node mcp/queue.selftest.mjs
           node scripts/workflow.selftest.mjs
           python -I scripts/save_server.selftest.py

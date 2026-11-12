@@ -21,6 +21,11 @@ export async function runScript({ page: p, file, spec, SCRIPTS, OUT, writable })
   }
   // Older scripts find the API host from the page's requests, which a fresh page may not have made yet.
   const opts = { ...(await p.evaluate(() => ({ apiBase: window.ca.apiBase, designBase: window.ca.designBase }))), ...spec };
+  // checksFile: a saved checks file in the project (absolute path), read here so its source never enters the conversation.
+  if (spec.checksFile) {
+    if (!path.isAbsolute(spec.checksFile) || !fs.existsSync(spec.checksFile)) return { error: `checksFile must be an absolute path to an existing file: ${spec.checksFile}` };
+    opts.checks = fs.readFileSync(spec.checksFile, 'utf8'); delete opts.checksFile;
+  }
   if (file === 'create-form.js') {
     const dir = path.join(SCRIPTS, 'field-templates');
     opts.templates = Object.fromEntries(fs.readdirSync(dir).filter(f => f.endsWith('.json')).map(f => [f.slice(0, -5), JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'))]));
@@ -41,7 +46,7 @@ export async function runScript({ page: p, file, spec, SCRIPTS, OUT, writable })
       delete opts.workflows;
       file = 'validate-workflows.js';
       Object.assign(opts, { apiCheck: true, automationIds: ids });
-    } else if (spec.action === 'check-run' && spec.checks) {
+    } else if (spec.action === 'check-run' && opts.checks) {
       file = 'verify-workflow-run.js';
       opts.chain = spec.chain || [{ name: spec.workflow, automationId: spec.workflow }];
     }

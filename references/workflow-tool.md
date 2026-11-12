@@ -14,7 +14,7 @@ Use `cloudapper_run({script:'workflow', spec})` to read, create and edit backend
 | `set-expression` | `{ appId, workflow, node, field, value, op? }` (`field` = a filter or route rule's field, or `while` / `max` of a WHILE loop) | same |
 | `validate` | `{ workflows:[ids or names] }` (one kind per call) | `validate-workflows.js` findings, with the API expression check |
 | `toggle` | `{ appId, workflow, on }` | Status after read-back. Changes live behaviour: only when the user asks |
-| `check-run` | `{ workflow, runs? }`; add `since` and `checks:'<source>'` for record checks | last runs (status, times, failed or warned steps), or `verify-workflow-run.js` results (WP-039) |
+| `check-run` | `{ workflow, runs? }`; add `since` and `checksFile:'<absolute path>'` (a saved checks file, WP-039) or `checks:'<source>'` for record checks | last runs (status, times, failed or warned steps), or `verify-workflow-run.js` results (WP-039) |
 
 Every write needs `appId` equal to the app open in the window (`ca.appId`) and passes the client guard, so check the environment first (`SKILL.md`).
 
