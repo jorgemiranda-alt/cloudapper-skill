@@ -3,7 +3,7 @@
 // writes need ca.setClient. Specs (opts):
 //   { action:'list' }  -> [{ parent, child, childKind: 'form'|'child form' }]
 //   { action:'link', parent:<title|id>, children:[<title|id>, ..], confirm:true }  -> reads the links back
-//   { action:'unlink', parent:<title|id>, child:<title|id>, confirm:true, confirmWithRecords?:<count> }
+//   { action:'unlink', parent:<title|id>, child:<title|id>, confirm:true, confirmWithRecords?:<count> }  -> returns the removed relation(s) as `backup`
 // Linking turns each child form into a child form of the parent (an EventType: it leaves the design object's
 // EntityTypes and appears in EventTypes, fields kept). Create a child form with create-form.js, then link it.
 // Unlink: POST DAPI EntityType/UnlinkChildFromParent/{parentId}/{childId}/{appId}/{clientId} (the designer warns
@@ -31,12 +31,14 @@ async function relationTool(o = {}) {
     if (!d.ParentChildRelations.some(r => r.ParentId === parentId && r.ChildId === childId)) throw new Error(`${o.child} is not a child of ${o.parent}`);
     const n = await ca.count(childId);
     if (n !== 0 && o.confirmWithRecords !== n) throw new Error(`${o.child} has ${n} records; pass confirmWithRecords:${n} to unlink anyway.`);
-    const before = d.ParentChildRelations.length;
+    // The child's own design object too: unlinking can change it or remove it ('gone'), and the link alone can't restore that.
+    const before = d.ParentChildRelations.length, backup = JSON.parse(JSON.stringify({ relations: d.ParentChildRelations.filter(r => r.ParentId === parentId && r.ChildId === childId),
+      child: d.EntityTypes.find(e => e.EntityTypeID === childId) || (d.EventTypes || []).find(e => e.EventTypeID === childId) }));
     await ca.call('POST', D + `EntityType/UnlinkChildFromParent/${parentId}/${childId}/${ca.appId}/${ca.clientId}`, null);
     d = await design();
     const problems = d.ParentChildRelations.some(r => r.ParentId === parentId && r.ChildId === childId) ? ['link still listed'] : [];
     const kind = d.EntityTypes.some(e => e.EntityTypeID === childId) ? 'form' : (d.EventTypes || []).some(e => e.EventTypeID === childId) ? 'child form' : 'gone';
-    return { ok: !problems.length, action: 'unlink', relations: { before, after: d.ParentChildRelations.length }, childNow: kind, records: { before: n, after: kind === 'gone' ? null : await ca.count(childId).catch(() => null) }, problems };
+    return { ok: !problems.length, action: 'unlink', backupName: 'relation-' + String(o.parent).replace(/[^\w-]+/g, '_'), backup, relations: { before, after: d.ParentChildRelations.length }, childNow: kind, records: { before: n, after: kind === 'gone' ? null : await ca.count(childId).catch(() => null) }, problems };
   }
   const childIds = (o.children || []).map(idOf);
   if (!childIds.length) throw new Error('link needs children');

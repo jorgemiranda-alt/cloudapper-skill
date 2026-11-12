@@ -13,9 +13,9 @@ import { z } from 'zod';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { pathToFileURL, fileURLToPath } from 'node:url';
 
-const SCRIPTS = path.join(path.dirname(new URL(import.meta.url).pathname.replace(/^\/(\w:)/, '$1')), '..', 'scripts');
+const SCRIPTS = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'scripts');
 const PROFILE = process.env.CLOUDAPPER_PROFILE || path.join(process.env.LOCALAPPDATA || os.homedir(), 'cloudapper-mcp', 'profile');
 const OUT = process.env.CLOUDAPPER_BACKUP_DIR || path.join(os.homedir(), 'cloudapper-backups');
 
@@ -96,9 +96,27 @@ async function run({ script, spec = {}, url }) {
   return r.runScript({ page: p, file, spec, SCRIPTS, OUT, writable });
 }
 
+// Calls for the same app run one after another: they share a tab, and each reloads ca.js and reads __caeFiles.
+// Calls for different apps still run in parallel. A call the client gave up on (60 s) keeps running in the page,
+// so the next one waits for it, at most 5 min. A call cancelled while waiting never runs (no late writes).
+// ponytail: a hung script only delays its app's queue by the cap; it keeps running in the page.
+const lanes = new Map();
+function queued(args, signal) {
+  if (path.basename(String(args.script)).replace(/\.js$/, '') === 'help') return run(args);
+  const key = (appOf(args.url) || appOf(page && !page.isClosed() && page.url()) || '-').toLowerCase();
+  const call = Promise.race([lanes.get(key), new Promise(r => setTimeout(r, 300000).unref())]).then(() => {
+    if (signal && signal.aborted) throw new Error('Cancelled by the client while waiting for an earlier call on this app; nothing ran');
+    return run(args);
+  });
+  const tail = call.catch(() => {});
+  lanes.set(key, tail);
+  tail.then(() => { if (lanes.get(key) === tail) lanes.delete(key); });
+  return call;
+}
+
 const server = new McpServer({ name: 'cloudapper', version: '1.0.0' });
 server.registerTool('cloudapper_run', {
   description: 'Run a cloudapper skill script (scripts/<name>.js) in the signed-in CloudApper window; returns its short summary. Scripts and spec options: cloudapper skill, playwright-efficiency.md §3. Pass url (the app URL) on every call when working on several apps: each app has its own tab. Writes go to the app of that tab: check it is the intended (UAT) app first.',
   inputSchema: { script: z.string(), spec: z.record(z.string(), z.any()).optional(), url: z.string().optional() },
-}, async args => ({ content: [{ type: 'text', text: JSON.stringify(await run(args).catch(e => ({ error: String(e.message).split(String.fromCharCode(10))[0].slice(0, 300) }))) }] }));
+}, async (args, extra) => ({ content: [{ type: 'text', text: JSON.stringify(await queued(args, extra && extra.signal).catch(e => ({ error: String(e.message).split(String.fromCharCode(10))[0].slice(0, 300) }))) }] }));
 await server.connect(new StdioServerTransport());

@@ -2,11 +2,13 @@
 
 Usage: python -I save_server.py <output_dir> [port]   (default port 8766)
 Binds to 127.0.0.1 only and keeps the basename of each path, so a request can't write outside
-<output_dir>. Allows CORS so a script on the CloudApper page can PUT to it. Stop it when done.
+<output_dir>. Allows CORS only for *.cloudapper.com pages, so a script on the CloudApper page can
+PUT to it and other sites can't. Stop it when done.
 GET /<name>.js returns that script from this folder, so a Playwright call can load export-app.js
 without pasting (and echoing) its source. GET /app.json returns the last export's app.json.
 """
 import os
+import re
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer as HTTPServer
 from urllib.parse import unquote
@@ -17,7 +19,12 @@ PORT = int(sys.argv[2]) if len(sys.argv) > 2 else 8766
 
 class Handler(BaseHTTPRequestHandler):
     def _cors(self):
-        self.send_header("Access-Control-Allow-Origin", "*")
+        # Only CloudApper pages get CORS: with "*" any site open in Chrome could PUT files into OUT.
+        origin = self.headers.get("Origin", "")
+        if not re.fullmatch(r"https://([\w-]+\.)*cloudapper\.com", origin):
+            return
+        self.send_header("Access-Control-Allow-Origin", origin)
+        self.send_header("Vary", "Origin")
         self.send_header("Access-Control-Allow-Methods", "PUT, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "*")
         # Chrome's private network access check for a public page calling localhost.

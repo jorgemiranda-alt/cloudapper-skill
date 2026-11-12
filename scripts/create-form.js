@@ -11,7 +11,7 @@
 // Types: text, number, decimal, email, date, datetime, yesno, switch, dropdown (choices), textarea,
 // formref (target:<form title|id>), attachment. A template with verified:false is used but reported in `unverified`.
 // Returns { ok, action, form, id, fields:[names], records:{before, after}, problems:[..], unverified:[..] };
-// remove also returns `backup` (the full design object): the loader saves it to a file and drops it.
+// edit and remove also return `backup` (the form's full pre-change design object): the loader saves it to a file and drops it.
 
 async function createForm(o = {}) {
   const ca = window.ca;
@@ -131,7 +131,7 @@ async function createForm(o = {}) {
   if (o.action === 'edit') {
     if (hasRelations(id)) throw new Error('Form has parent/child relations: edit it per WP-078 caveats, not with this script (WP-071).');
     const before = await count(id);
-    const form = clone(e); form.IsEdit = true;
+    const backup = clone(e), form = clone(e); form.IsEdit = true;
     const labels = new Set(form.AllFields.filter(isUser).map(f => f.Label));
     for (const l of o.remove || []) { if (!labels.has(l)) problems.push(`remove: no field ${l}`); }
     form.AllFields = form.AllFields.filter(f => !(isUser(f) && (o.remove || []).includes(f.Label)));
@@ -168,7 +168,7 @@ async function createForm(o = {}) {
     if (back) for (const l of o.remove || []) if (back.AllFields.some(f => isUser(f) && f.Label === l)) problems.push(`still present: ${l}`);
     const after = await count(id);
     if (after !== before) problems.push(`record count changed ${before} -> ${after}`);
-    return { ok: !problems.length, action: 'edit', form: e.Tittle, id, fields: back ? back.AllFields.filter(isUser).map(f => `${f.Name}:${f.Label}`) : [], records: { before, after }, problems, unverified: [...unverified] };
+    return { ok: !problems.length, action: 'edit', form: e.Tittle, id, backupName: 'form-' + String(e.Tittle).replace(/[^\w-]+/g, '_'), backup, fields: back ? back.AllFields.filter(isUser).map(f => `${f.Name}:${f.Label}`) : [], records: { before, after }, problems, unverified: [...unverified] };
   }
 
   if (o.action === 'remove') {

@@ -19,6 +19,22 @@ jobs:
         run: python scripts/check_skill.py
         env:
           LEAK_DENYLIST: ${{ secrets.LEAK_DENYLIST }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: JS syntax check
+        run: for f in mcp/*.mjs scripts/*.js; do node --check "$f" || exit 1; done
+      - name: Self-checks (integration, workflow, MCP queue, save_server CORS)
+        run: |
+          node scripts/integration.selftest.mjs
+          node mcp/queue.selftest.mjs
+          node scripts/workflow.selftest.mjs
+          python -I scripts/save_server.selftest.py
+      - name: MCP server smoke test (help needs no browser)
+        run: |
+          cd mcp && npm ci
+          timeout 60 node test-client.mjs '{"script":"help"}' | tee out.txt
+          grep -q '"create-form"' out.txt
       - name: Secret scan of the whole history
         uses: gitleaks/gitleaks-action@v2
         env:

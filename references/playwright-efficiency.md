@@ -37,6 +37,7 @@
         globalThis.CAE_OPTIONS = o; return (0, eval)('(async () => {' + s.replace(/await (\w+)\(globalThis\.\w+( \|\| \{\})?\);\s*$/, 'return await $1(globalThis.CAE_OPTIONS);') + '})()'); }, [src, opts]); };
     return await run('record-count.js', {}); }
   ```
+  Writing scripts return `backup` (the pre-change definition): save it and drop it from the result, so it never enters the conversation: `const res = await run(..); if (res && res.backup) { const n = 'backup-' + (res.backupName || res.form || 'form') + '-' + Date.now() + '.json'; await page.request.put(S + n, { data: JSON.stringify(res.backup, null, 1) }); res.backup = n; } return res;`.
   Options travel as JSON, so pass a function option (the verifier's `checks`) as a source string: `checks: 'async ({ records, eq, check }) => { ... }'`.
   Freshness check first: `run('export-app.js', { since: (await (await page.request.get(S + 'app.json')).json()).fingerprint })` (the save server serves the export's `app.json`). For `export-app.js`, after `run` add `for (const [n, d] of Object.entries(await page.evaluate(() => globalThis.__caeFiles))) await page.request.put(S + encodeURIComponent(n), { data: JSON.stringify(d, null, 1) });`.
 - **Read-only question scripts** (run with the loader, return names and counts only):
